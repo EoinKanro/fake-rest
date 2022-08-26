@@ -35,13 +35,8 @@ public class RouterController implements BaseController {
 
             if (log.isTraceEnabled()) log.trace(LOG_INFO, request.getMethod(), request.getRequestURI(), uri, body, headers);
 
-            if (method != null) {
-                result = restClient.execute(method, uri, headers, body);
+            result = restClient.execute(method, uri, headers, body);
 
-            } else {
-                log.error("Cant convert method [{}] to httpMethod", conf.getMethod());
-                result = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-            }
         } catch (Exception e) {
             log.error("Error while redirecting from [{}] to [{}]", conf.getUri(), conf.getToUrl(), e);
             result = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

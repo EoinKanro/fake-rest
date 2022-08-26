@@ -87,6 +87,10 @@ abstract class FakeControllerTest {
         return provideAllMethodsDelay(DELAY_MS);
     }
 
+    static Stream<RequestMethod> provideAllMethods() {
+        return Stream.of(RequestMethod.values());
+    }
+
     /**
      * Init and fill controller data
      */

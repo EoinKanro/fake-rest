@@ -26,12 +26,13 @@ public class GroovyController extends FakeController {
                                                         "import org.springframework.http.HttpStatus \n" +
                                                         "import io.github.ivanrosw.fakerest.core.utils.JsonUtils \n" +
                                                         "import io.github.ivanrosw.fakerest.core.model.ControllerData \n" +
-                                                        "import org.springframework.http.HttpHeaders \n";
+                                                        "import org.springframework.http.HttpHeaders \n" +
+                                                        "import com.fasterxml.jackson.databind.node.ObjectNode \n";
 
     private final GroovyShell groovyShell;
 
     @Builder
-    public GroovyController(ControllerData controllerData, ControllerConfig controllerConfig, JsonUtils jsonUtils, HttpUtils httpUtils, SystemUtils systemUtils) {
+    public GroovyController(ControllerConfig controllerConfig, ControllerData controllerData,  JsonUtils jsonUtils, HttpUtils httpUtils, SystemUtils systemUtils) {
         Binding groovyBinding = new Binding();
         groovyShell = new GroovyShell(groovyBinding);
         groovyShell.setVariable("uri", controllerConfig.getUri());

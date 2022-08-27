@@ -81,6 +81,12 @@ public class TestControllersFabric {
         return new RouterController(routerConfig, httpUtils, restClient);
     }
 
+    public GroovyController createGroovyController(String uri, RequestMethod method, long delayMs, String groovyScript) {
+        ControllerConfig config = createControllerConfig(uri, method, ControllerFunctionMode.READ, null, delayMs,
+                false, groovyScript);
+        return new GroovyController(config, controllerData, jsonUtils, httpUtils, systemUtils);
+    }
+
     private ControllerConfig createControllerConfig(String uri, RequestMethod method, ControllerFunctionMode functionMode,
                                                     String answer, long delayMs, boolean generateId, String groovyScript) {
         ControllerConfig config = new ControllerConfig();

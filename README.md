@@ -79,8 +79,8 @@ You can use several variables in code:
 
 Groovy code should return [GroovyAnswer](core/src/main/java/io/github/ivanrosw/fakerest/core/model/GroovyAnswer.java)
 
-You don't need to write "import..." of GroovyAnswer, ControllerData, JsonUtils, HttpStatus. It will be appended automatically.
-But it's necessary if you want to import something else.
+You don't need to write "import..." of GroovyAnswer, HttpStatus, JsonUtils, ControllerData, HttpHeaders, ObjectNode. It will be appended automatically.
+But imports are necessary if you want to import something else.
 
 #### Configuration routers
 Routers configuration contains parameters:

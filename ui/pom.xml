@@ -25,7 +25,6 @@
                             <goal>install-node-and-npm</goal>
                         </goals>
                         <configuration>
-                            <skip>true</skip>
                             <nodeVersion>v16.14.2</nodeVersion>
                         </configuration>
                     </execution>

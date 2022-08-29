@@ -10,7 +10,7 @@ Requirements for build
 
 Build project
 ```
-mvn clean install -DskipTests
+mvn package -P !ui-install-npm -P ui-skip-install-npm -DskipTests
 ```
 
 Start application

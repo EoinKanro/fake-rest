@@ -10,7 +10,7 @@ Requirements for build
 
 Build project
 ```
-mvn clean install -DskipTests
+mvn clean install -P !install-npm -DskipTests
 ```
 
 Start application

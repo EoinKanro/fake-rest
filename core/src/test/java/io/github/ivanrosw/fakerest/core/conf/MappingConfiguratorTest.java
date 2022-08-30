@@ -31,6 +31,8 @@ abstract class MappingConfiguratorTest {
   @Autowired
   protected RequestMappingHandlerMapping handlerMapping;
   @Autowired
+  protected MappingConfiguratorData mappingConfiguratorData;
+  @Autowired
   protected JsonUtils jsonUtils;
 
   protected static String[] allUris;

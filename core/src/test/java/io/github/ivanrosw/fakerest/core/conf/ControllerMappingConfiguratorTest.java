@@ -51,9 +51,6 @@ class ControllerMappingConfiguratorTest extends MappingConfiguratorTest{
   @SpyBean
   private ControllerMappingConfigurator controllerMappingConfigurator;
 
-  @Autowired
-  private MappingConfiguratorData mappingConfiguratorData;
-
   private static Stream<Arguments> provideAllUrisMethodsFunctionMods() {
     List<Arguments> arguments = new ArrayList<>();
     RequestMethod[] requestMethods = RequestMethod.values();
@@ -334,6 +331,8 @@ class ControllerMappingConfiguratorTest extends MappingConfiguratorTest{
     controller.setGroovyScript(GROOVY_SCRIPT);
     controllerMappingConfigurator.registerController(controller);
 
+    when(yamlConfigurator.isControllerExist(controller)).thenReturn(true);
+
     UriConfigHolder<ControllerConfig> uriConfigHolder = mappingConfiguratorData.getControllers().get(controller.getId());
     List<RequestMappingInfo> requestMappingInfos = new ArrayList<>(uriConfigHolder.getRequestMappingInfo().keySet());
 
@@ -345,6 +344,7 @@ class ControllerMappingConfiguratorTest extends MappingConfiguratorTest{
     for (RequestMappingInfo requestMappingInfo : requestMappingInfos) {
       assertFalse(handlerMapping.getHandlerMethods().containsKey(requestMappingInfo));
     }
+    verify(yamlConfigurator).deleteController(controller);
   }
 
   @ParameterizedTest
@@ -357,6 +357,8 @@ class ControllerMappingConfiguratorTest extends MappingConfiguratorTest{
     controller.setFunctionMode(functionMode);
     controller.setAnswer(COLLECTION_JSON_ANSWER);
     controllerMappingConfigurator.registerController(controller);
+
+    when(yamlConfigurator.isControllerExist(controller)).thenReturn(true);
 
     RequestMethod secondMethod = null;
     for (RequestMethod requestMethod : RequestMethod.values()) {
@@ -382,6 +384,12 @@ class ControllerMappingConfiguratorTest extends MappingConfiguratorTest{
       assertFalse(handlerMapping.getHandlerMethods().containsKey(requestMappingInfo));
     }
     assertNotEquals(0, controllerData.getAllData(controller.getUri()).size());
+    verify(yamlConfigurator).deleteController(controller);
+  }
+
+  @Test
+  void unregisterController_ControllerNotExist_ConfigException() {
+    assertThrows(ConfigException.class, () -> controllerMappingConfigurator.unregisterController(ID));
   }
 
   @ParameterizedTest

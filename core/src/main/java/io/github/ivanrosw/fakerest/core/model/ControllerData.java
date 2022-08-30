@@ -54,19 +54,12 @@ public class ControllerData {
         getDataCollection(url).remove(key);
     }
 
-    public void deleteUrlData(String url) {
+    public void deleteAllData(String url) {
         allData.remove(url);
     }
 
     private Map<String, ObjectNode> getDataCollection(String url) {
-        Map<String, ObjectNode> result;
-        if (allData.containsKey(url)) {
-            result = allData.get(url);
-        } else {
-            result = new ConcurrentHashMap<>();
-            allData.put(url, result);
-        }
-        return result;
+        return allData.computeIfAbsent(url, key -> new ConcurrentHashMap<>());
     }
 
     public String buildKey(ObjectNode data, List<String> idParams) {

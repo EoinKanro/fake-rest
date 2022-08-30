@@ -7,6 +7,7 @@ import io.github.ivanrosw.fakerest.core.controller.*;
 import io.github.ivanrosw.fakerest.core.model.*;
 import io.github.ivanrosw.fakerest.core.utils.IdGenerator;
 import io.github.ivanrosw.fakerest.core.utils.JsonUtils;
+import io.github.ivanrosw.fakerest.core.utils.SystemUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -28,6 +29,8 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
     private ControllerData controllerData;
     @Autowired
     private JsonUtils jsonUtils;
+    @Autowired
+    private SystemUtils systemUtils;
 
     /**
      * Method to init and run controller
@@ -37,9 +40,10 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
      * @throws ConfigException - if config don't contain all necessary info or url already registered
      */
     public void registerController(ControllerConfig conf) throws ConfigException {
+        beforeInitControllerCheckBase(conf);
         List<String> idParams = httpUtils.getIdParams(conf.getUri());
         ControllerSaveInfoMode mode = identifyMode(conf, idParams);
-        beforeInitControllerCheck(conf, mode);
+        beforeInitControllerCheckMode(conf, mode);
 
         if (mode == ControllerSaveInfoMode.COLLECTION) conf.setIdParams(idParams);
 
@@ -69,9 +73,9 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
         if (mode == ControllerSaveInfoMode.COLLECTION) loadCollectionAnswerData(conf);
 
         addUrls(configHolder);
-
         mappingConfiguratorData.getControllers().put(conf.getId(), configHolder);
         if (!yamlConfigurator.isControllerExist(conf) && !yamlConfigurator.addController(conf)) {
+            log.error("Cant save config to yaml. Method: [{}],  Urls:{}", conf.getMethod(), configHolder.getUsedUrls());
             unregisterController(conf.getId());
         } else {
             log.info("Registered controllers. Method: [{}],  Urls:{}", conf.getMethod(), configHolder.getUsedUrls());
@@ -82,10 +86,9 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
      * Check configuration before init and run controller
      *
      * @param conf - config with all necessary info to init controller
-     * @param mode - static or collection mode
      * @throws ConfigException - if config don't contain all necessary info or url already registered
      */
-    private void beforeInitControllerCheck(ControllerConfig conf, ControllerSaveInfoMode mode) throws ConfigException {
+    private void beforeInitControllerCheckBase(ControllerConfig conf) throws ConfigException {
         if (conf.getUri() == null || conf.getUri().isEmpty()) {
             throw new ConfigException("Controller: Uri must be not blank");
         }
@@ -95,10 +98,25 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
         if (conf.getFunctionMode() == null) {
             throw new ConfigException("Controller: function mode must be specified");
         }
+        if (conf.getFunctionMode() == ControllerFunctionMode.GROOVY &&
+            (conf.getGroovyScript() == null || conf.getGroovyScript().isEmpty())) {
+            throw new ConfigException("Controller: groovy script must be specified");
+        }
+    }
 
+    /**
+     * Check configuration before init and run controller after init mode
+     *
+     * @param conf - config with all necessary info to init controller
+     * @param mode - static or collection mode
+     * @throws ConfigException - if config don't contain all necessary info or url already registered
+     */
+    private void beforeInitControllerCheckMode(ControllerConfig conf, ControllerSaveInfoMode mode) throws ConfigException {
         List<String> urls = mappingConfiguratorData.getMethodsUrls().computeIfAbsent(conf.getMethod(), key -> new ArrayList<>());
         if (urls.contains(conf.getUri()) ||
-                (conf.getFunctionMode() == ControllerFunctionMode.READ && mode == ControllerSaveInfoMode.COLLECTION && urls.contains(httpUtils.getBaseUri(conf.getUri())))) {
+                (conf.getFunctionMode() == ControllerFunctionMode.READ &&
+                 mode == ControllerSaveInfoMode.COLLECTION &&
+                 urls.contains(httpUtils.getBaseUri(conf.getUri())))) {
             throw new ConfigException(String.format("Controller: Duplicated urls: %s", conf.getUri()));
         }
     }
@@ -141,6 +159,7 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
                     .controllerConfig(conf)
                     .jsonUtils(jsonUtils)
                     .httpUtils(httpUtils)
+                    .systemUtils(systemUtils)
                     .build();
             requestMappingInfo.put(getAllMappingInfo, readAllController);
             usedUrls.add(baseUri);
@@ -156,6 +175,7 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
                     .controllerConfig(conf)
                     .jsonUtils(jsonUtils)
                     .httpUtils(httpUtils)
+                    .systemUtils(systemUtils)
                     .build();
             requestMappingInfo.put(readOneMappingInfo, getOneController);
             usedUrls.add(conf.getUri());
@@ -172,6 +192,7 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
                     .controllerConfig(conf)
                     .jsonUtils(jsonUtils)
                     .httpUtils(httpUtils)
+                    .systemUtils(systemUtils)
                     .build();
             requestMappingInfo.put(readStaticMappingInfo, getStaticController);
             usedUrls.add(conf.getUri());
@@ -204,6 +225,7 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
                     .controllerConfig(conf)
                     .jsonUtils(jsonUtils)
                     .httpUtils(httpUtils)
+                    .systemUtils(systemUtils)
                     .idGenerator(idGenerator)
                     .build();
             requestMappingInfo.put(createOneInfo, createOneController);
@@ -221,6 +243,7 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
                     .controllerConfig(conf)
                     .jsonUtils(jsonUtils)
                     .httpUtils(httpUtils)
+                    .systemUtils(systemUtils)
                     .idGenerator(idGenerator)
                     .build();
             requestMappingInfo.put(createStaticInfo, createStaticController);
@@ -252,6 +275,7 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
                     .controllerConfig(conf)
                     .jsonUtils(jsonUtils)
                     .httpUtils(httpUtils)
+                    .systemUtils(systemUtils)
                     .build();
             requestMappingInfo.put(updateOneInfo, updateOneController);
             usedUrls.add(conf.getUri());
@@ -268,6 +292,7 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
                     .controllerConfig(conf)
                     .jsonUtils(jsonUtils)
                     .httpUtils(httpUtils)
+                    .systemUtils(systemUtils)
                     .build();
             requestMappingInfo.put(updateStaticInfo, updateStaticController);
             usedUrls.add(conf.getUri());
@@ -298,6 +323,7 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
                     .controllerConfig(conf)
                     .jsonUtils(jsonUtils)
                     .httpUtils(httpUtils)
+                    .systemUtils(systemUtils)
                     .build();
             requestMappingInfo.put(deleteOneInfo, deleteOneController);
             usedUrls.add(conf.getUri());
@@ -314,6 +340,7 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
                     .controllerConfig(conf)
                     .jsonUtils(jsonUtils)
                     .httpUtils(httpUtils)
+                    .systemUtils(systemUtils)
                     .build();
             requestMappingInfo.put(deleteStaticInfo, deleteStaticController);
             usedUrls.add(conf.getUri());
@@ -341,6 +368,7 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
                 .controllerConfig(conf)
                 .jsonUtils(jsonUtils)
                 .httpUtils(httpUtils)
+                .systemUtils(systemUtils)
                 .build();
 
         requestMappingInfo.put(groovyInfo, groovyController);
@@ -426,7 +454,7 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
             }
 
             if (!isFound) {
-                controllerData.deleteUrlData(conf.getUri());
+                controllerData.deleteAllData(conf.getUri());
             }
         }
     }

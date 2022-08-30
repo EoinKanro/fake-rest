@@ -23,7 +23,9 @@ public class UpdateController extends FakeModifyController {
         if (body != null && !body.isEmpty()) {
             result = updateOne(request, body);
         } else {
-            result = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            ObjectNode error = jsonUtils.createJson();
+            jsonUtils.putString(error, DESCRIPTION_PARAM, NULL_BODY);
+            result = new ResponseEntity<>(error.toString(), HttpStatus.BAD_REQUEST);
         }
         return result;
     }
@@ -39,7 +41,7 @@ public class UpdateController extends FakeModifyController {
         ResponseEntity<String> result;
         ObjectNode bodyJson = jsonUtils.toObjectNode(body);
 
-        if (bodyJson != null && !bodyJson.isNull()) {
+        if (bodyJson != null && !bodyJson.isEmpty()) {
             Map<String, String> ids = httpUtils.getUrlIds(request);
             String key = controllerData.buildKey(ids, controllerConfig.getIdParams());
 

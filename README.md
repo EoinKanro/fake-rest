@@ -72,13 +72,15 @@ You can configure groovy controller with your code.
 You can use several variables in code:
 - body - request body
 - uri - uri of controller
+- headers - headers from request, spring object
 - [controllerData](core/src/main/java/io/github/ivanrosw/fakerest/core/model/ControllerData.java) - collection with data for all collection controllers
 - [jsonUtils](core/src/main/java/io/github/ivanrosw/fakerest/core/utils/JsonUtils.java) - utils to work with json
+- [systemUtils](core/src/main/java/io/github/ivanrosw/fakerest/core/utils/SystemUtils.java) - it has just one method for now - sleep
 
 Groovy code should return [GroovyAnswer](core/src/main/java/io/github/ivanrosw/fakerest/core/model/GroovyAnswer.java)
 
-You don't need to write "import..." of GroovyAnswer, ControllerData, JsonUtils, HttpStatus. It will be appended automatically.
-But it's necessary if you want to import something else.
+You don't need to write "import..." of GroovyAnswer, HttpStatus, JsonUtils, ControllerData, HttpHeaders, ObjectNode. It will be appended automatically.
+But imports are necessary if you want to import something else.
 
 #### Configuration routers
 Routers configuration contains parameters:

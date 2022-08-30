@@ -1,5 +1,6 @@
 package io.github.ivanrosw.fakerest.core.controller;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.ivanrosw.fakerest.core.model.ControllerSaveInfoMode;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -19,6 +20,10 @@ import javax.servlet.http.HttpServletRequest;
 public abstract class FakeModifyController extends FakeController {
 
     private static final String LOG_INFO = "Got request \r\nMethod: [{}] \r\nUri: [{}] \r\nBody: [{}]";
+
+    protected static final String NULL_BODY = "body is null";
+    protected static final String NULL_BODY_OR_ANSWER = "body is null and answer not specified";
+    protected static final String MISSING_IDS = "some ids are missing";
 
     @Override
     public final ResponseEntity<String> handle(HttpServletRequest request) {
@@ -69,7 +74,9 @@ public abstract class FakeModifyController extends FakeController {
         }else if (body != null && !body.isEmpty()) {
             result = new ResponseEntity<>(body, HttpStatus.OK);
         } else {
-            result = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            ObjectNode badRequest = jsonUtils.createJson();
+            jsonUtils.putString(badRequest, DESCRIPTION_PARAM, NULL_BODY_OR_ANSWER);
+            result = new ResponseEntity<>(badRequest.toString(), HttpStatus.BAD_REQUEST);
         }
         return result;
     }

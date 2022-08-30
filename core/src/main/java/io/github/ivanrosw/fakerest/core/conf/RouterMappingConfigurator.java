@@ -55,6 +55,7 @@ public class RouterMappingConfigurator extends MappingConfigurator {
         mappingConfiguratorData.getRouters().put(conf.getId(), configHolder);
 
         if (!yamlConfigurator.isRouterExist(conf) && !yamlConfigurator.addRouter(conf)) {
+            log.error("Cant save config to yaml. Method: [{}],  Urls:{}", conf.getMethod(), configHolder.getUsedUrls());
             unregisterRouter(conf.getId());
         } else {
             log.info("Registered router. Method: [{}],  Urls:{}", conf.getMethod(), configHolder.getUsedUrls());
@@ -68,11 +69,17 @@ public class RouterMappingConfigurator extends MappingConfigurator {
      * @throws ConfigException - if config don't contain all necessary info or url already registered
      */
     private void beforeInitRouterCheck(RouterConfig conf) throws ConfigException {
-        if (conf.getUri() == null || conf.getToUrl() == null || conf.getUri().isEmpty() || conf.getToUrl().isEmpty()) {
+        if (conf.getUri() == null || conf.getUri().isEmpty() || conf.getToUrl() == null || conf.getToUrl().isEmpty()) {
             throw new ConfigException("Router: Uri and toUrl must be not blank");
+        }
+        if (conf.getUri().equals(conf.getToUrl())) {
+            throw new ConfigException("Router: Uri and toUrl can't be equals");
         }
         if (conf.getMethod() == null) {
             throw new ConfigException("Router: Method must be specified");
+        }
+        if (conf.getToUrl().contains("\\")) {
+            conf.setToUrl(conf.getToUrl().replace("\\", "/"));
         }
 
         List<String> urls = mappingConfiguratorData.getMethodsUrls().computeIfAbsent(conf.getMethod(), key -> new ArrayList<>());

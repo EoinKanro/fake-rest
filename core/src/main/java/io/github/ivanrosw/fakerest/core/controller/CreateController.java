@@ -27,7 +27,9 @@ public class CreateController extends FakeModifyController {
         if (body != null && !body.isEmpty()) {
             result = saveOne(body);
         } else {
-            result = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            ObjectNode error = jsonUtils.createJson();
+            jsonUtils.putString(error, DESCRIPTION_PARAM, NULL_BODY);
+            result = new ResponseEntity<>(error.toString(), HttpStatus.BAD_REQUEST);
         }
         return result;
     }
@@ -39,27 +41,64 @@ public class CreateController extends FakeModifyController {
      * @return - response
      */
     private ResponseEntity<String> saveOne(String body) {
-        ResponseEntity<String> result;
+        ResponseEntity<String> result = null;
         ObjectNode bodyJson = jsonUtils.toObjectNode(body);
 
-        if (bodyJson != null && !bodyJson.isNull()) {
+        if (bodyJson != null && !bodyJson.isEmpty()) {
             if (controllerConfig.isGenerateId()) {
                 addId(bodyJson);
-            }
-            String key = controllerData.buildKey(bodyJson, controllerConfig.getIdParams());
-
-            if (!controllerData.containsKey(controllerConfig.getUri(), key)) {
-                controllerData.putData(controllerConfig.getUri(), key, bodyJson);
-                result = new ResponseEntity<>(bodyJson.toString(), HttpStatus.OK);
-            } else {
+            } else if (!checkIds(bodyJson)){
                 ObjectNode error = jsonUtils.createJson();
-                jsonUtils.putString(error, DESCRIPTION_PARAM, String.format(KEY_ALREADY_EXIST, key));
+                jsonUtils.putString(error, DESCRIPTION_PARAM, MISSING_IDS);
                 result = new ResponseEntity<>(error.toString(), HttpStatus.BAD_REQUEST);
+            }
+
+            if (result == null) {
+                result = saveOne(bodyJson);
             }
         } else {
             ObjectNode error = jsonUtils.createJson();
             jsonUtils.putString(error, DESCRIPTION_PARAM, String.format(DATA_NOT_JSON, body));
             result = new ResponseEntity<>(error.toString(), HttpStatus.BAD_REQUEST);
+        }
+        return result;
+    }
+
+    /**
+     * Save info to collection
+     *
+     * @param body - request body
+     * @return - response
+     */
+    private ResponseEntity<String> saveOne(ObjectNode body) {
+        ResponseEntity<String> result;
+        String key = controllerData.buildKey(body, controllerConfig.getIdParams());
+
+        if (!controllerData.containsKey(controllerConfig.getUri(), key)) {
+            controllerData.putData(controllerConfig.getUri(), key, body);
+            result = new ResponseEntity<>(body.toString(), HttpStatus.OK);
+        } else {
+            ObjectNode error = jsonUtils.createJson();
+            jsonUtils.putString(error, DESCRIPTION_PARAM, String.format(KEY_ALREADY_EXIST, key));
+            result = new ResponseEntity<>(error.toString(), HttpStatus.BAD_REQUEST);
+        }
+        return result;
+    }
+
+    /**
+     * Check all ids exist and not empty
+     *
+     * @param data - data from request
+     * @return - all ids exist and not empty
+     */
+    private boolean checkIds(ObjectNode data) {
+        boolean result = true;
+        for (String id : controllerConfig.getIdParams()) {
+            String idValue = jsonUtils.getString(data, id);
+            if (idValue == null || idValue.isEmpty()) {
+                result = false;
+                break;
+            }
         }
         return result;
     }

@@ -147,7 +147,7 @@ public class YamlConfigurator {
     }
 
     /**
-     * Delete config to file
+     * Delete config from file
      *
      * @param conf - config
      * @param keyParam - controller or router area
@@ -334,6 +334,6 @@ public class YamlConfigurator {
     private void writeConfig(ObjectNode conf) throws IOException {
         File file = getConfigFile();
         log.info("Writing file {}", file.getAbsolutePath());
-        mapper.writer().writeValue(getConfigFile(), conf);
+        mapper.writer().writeValue(file, conf);
     }
 }

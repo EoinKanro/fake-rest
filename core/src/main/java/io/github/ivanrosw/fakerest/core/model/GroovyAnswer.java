@@ -1,7 +1,6 @@
 package io.github.ivanrosw.fakerest.core.model;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.http.HttpStatus;
 
 /**
@@ -9,6 +8,8 @@ import org.springframework.http.HttpStatus;
  */
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class GroovyAnswer {
 
     private HttpStatus httpStatus;

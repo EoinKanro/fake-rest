@@ -5,6 +5,7 @@ import io.github.ivanrosw.fakerest.core.model.ControllerSaveInfoMode;
 import io.github.ivanrosw.fakerest.core.model.ControllerConfig;
 import io.github.ivanrosw.fakerest.core.utils.HttpUtils;
 import io.github.ivanrosw.fakerest.core.utils.JsonUtils;
+import io.github.ivanrosw.fakerest.core.utils.SystemUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -30,15 +31,11 @@ public abstract class FakeController implements BaseController {
 
     protected JsonUtils jsonUtils;
     protected HttpUtils httpUtils;
+    protected SystemUtils systemUtils;
 
     protected void delay() {
         if (controllerConfig.getDelayMs() > 0) {
-            try {
-                Thread.sleep(controllerConfig.getDelayMs());
-            } catch (Exception e) {
-                log.error("Interrupt error", e);
-                Thread.currentThread().interrupt();
-            }
+            systemUtils.sleep(controllerConfig.getDelayMs());
         }
     }
 }

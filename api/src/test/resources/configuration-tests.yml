@@ -3,6 +3,7 @@ rest:
   controllers:
     - uri: '/test/'
       method: GET
+      functionMode: READ
   routers:
     - uri: '/test'
       toUrl: '/test/'

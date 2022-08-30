@@ -1,8 +1,6 @@
 package io.github.ivanrosw.fakerest.core.controller;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import io.github.ivanrosw.fakerest.core.model.GeneratorPattern;
-import io.github.ivanrosw.fakerest.core.utils.IdGenerator;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -12,39 +10,49 @@ import org.springframework.http.ResponseEntity;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
+/**
+ * Controller that can update data in collection
+ */
 @SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class PostController extends FakeModifyController {
-
-    private IdGenerator idGenerator;
+public class UpdateController extends FakeModifyController {
 
     @Override
     protected ResponseEntity<String> handleOne(HttpServletRequest request, String body) {
         ResponseEntity<String> result;
         if (body != null && !body.isEmpty()) {
-            result = saveOne(body);
+            result = updateOne(request, body);
         } else {
-            result = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            ObjectNode error = jsonUtils.createJson();
+            jsonUtils.putString(error, DESCRIPTION_PARAM, NULL_BODY);
+            result = new ResponseEntity<>(error.toString(), HttpStatus.BAD_REQUEST);
         }
         return result;
     }
 
-    private ResponseEntity<String> saveOne(String body) {
+    /**
+     * Update data in collection
+     *
+     * @param request - request
+     * @param body - body from request
+     * @return - response
+     */
+    private ResponseEntity<String> updateOne(HttpServletRequest request, String body) {
         ResponseEntity<String> result;
         ObjectNode bodyJson = jsonUtils.toObjectNode(body);
 
-        if (bodyJson != null && !bodyJson.isNull()) {
-            if (controllerConfig.isGenerateId()) {
-                addId(bodyJson);
-            }
-            String key = controllerData.buildKey(bodyJson, controllerConfig.getIdParams());
+        if (bodyJson != null && !bodyJson.isEmpty()) {
+            Map<String, String> ids = httpUtils.getUrlIds(request);
+            String key = controllerData.buildKey(ids, controllerConfig.getIdParams());
 
-            if (!controllerData.containsKey(controllerConfig.getUri(), key)) {
+            if (controllerData.containsKey(controllerConfig.getUri(), key)) {
+                ids.forEach((id, value) -> jsonUtils.putString(bodyJson, id, value));
+
                 controllerData.putData(controllerConfig.getUri(), key, bodyJson);
                 result = new ResponseEntity<>(bodyJson.toString(), HttpStatus.OK);
             } else {
                 ObjectNode error = jsonUtils.createJson();
-                jsonUtils.putString(error, DESCRIPTION_PARAM, String.format(KEY_ALREADY_EXIST, key));
+                jsonUtils.putString(error, DESCRIPTION_PARAM, String.format(KEY_NOT_FOUND, key));
                 result = new ResponseEntity<>(error.toString(), HttpStatus.BAD_REQUEST);
             }
         } else {
@@ -54,13 +62,4 @@ public class PostController extends FakeModifyController {
         }
         return result;
     }
-
-    private void addId(ObjectNode data) {
-        Map<String, GeneratorPattern> generatorPatterns = controllerConfig.getGenerateIdPatterns();
-        controllerConfig.getIdParams().forEach(idParam -> {
-            GeneratorPattern pattern = generatorPatterns == null ? null : generatorPatterns.get(idParam);
-            jsonUtils.putString(data, idParam, idGenerator.generateId(pattern));
-        });
-    }
-
 }

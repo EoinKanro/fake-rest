@@ -12,10 +12,13 @@ import org.springframework.context.annotation.Configuration;
 import javax.annotation.PostConstruct;
 import java.util.List;
 
+/**
+ * Configuration class that load configuration from file and init
+ */
 @Slf4j
 @Configuration
 @ConfigurationProperties(prefix = "rest")
-public class MappingConfiguration {
+public class MappingConfigurationLoader {
 
     @Setter(AccessLevel.PACKAGE)
     private List<ControllerConfig> controllers;
@@ -24,19 +27,21 @@ public class MappingConfiguration {
     private List<RouterConfig> routers;
 
     @Autowired
-    private MappingConfigurator configurator;
+    private ControllerMappingConfigurator controllersConfigurator;
+    @Autowired
+    private RouterMappingConfigurator routersConfigurator;
 
     @PostConstruct
     private void init() throws ConfigException {
         initControllers();
         initRouters();
-        configurator.printUrls();
+        controllersConfigurator.printUrls();
     }
 
     private void initControllers() throws ConfigException {
         if (controllers != null) {
             for (ControllerConfig conf : controllers) {
-                configurator.registerController(conf);
+                controllersConfigurator.registerController(conf);
             }
         }
     }
@@ -44,7 +49,7 @@ public class MappingConfiguration {
     private void initRouters() throws ConfigException {
         if (routers != null) {
             for (RouterConfig conf : routers) {
-                configurator.registerRouter(conf);
+                routersConfigurator.registerRouter(conf);
             }
         }
     }

@@ -25,6 +25,10 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.file.Paths;
 
+/**
+ * Class works with application.yml file
+ * It's can create or delete controllers or routers configurations in file
+ */
 @Slf4j
 @Component
 public class YamlConfigurator {
@@ -55,46 +59,99 @@ public class YamlConfigurator {
 
     //CONTROLLER
 
-    void addController(ControllerConfig conf) {
-        addConfig(conf, CONTROLLERS_PARAM);
+    /**
+     * Add controller config to file
+     *
+     * @param conf - controller config
+     * @return - config added
+     */
+    boolean addController(ControllerConfig conf) {
+        return addConfig(conf, CONTROLLERS_PARAM);
     }
 
+    /**
+     * Delete controller config from file
+     *
+     * @param conf - controller config
+     */
     void deleteController(ControllerConfig conf) {
         deleteConfig(conf, CONTROLLERS_PARAM);
     }
 
+    /**
+     * Check is controller config exists in file
+     *
+     * @param conf - controller config
+     * @return - is config exist
+     */
     boolean isControllerExist(ControllerConfig conf) {
         return isConfigExist(conf, CONTROLLERS_PARAM);
     }
 
     //ROUTER
 
-    void addRouter(RouterConfig conf) {
-        addConfig(conf, ROUTERS_PARAM);
+    /**
+     * Add router config to file
+     *
+     * @param conf - router config
+     * @return - config added
+     */
+    boolean addRouter(RouterConfig conf) {
+        return addConfig(conf, ROUTERS_PARAM);
     }
 
+    /**
+     * Delete router config from file
+     *
+     * @param conf - router config
+     */
     void deleteRouter(RouterConfig conf) {
         deleteConfig(conf, ROUTERS_PARAM);
     }
 
+    /**
+     * Check is router config exists in file
+     *
+     * @param conf - router config
+     * @return - is config exist
+     */
     boolean isRouterExist(RouterConfig conf) {
         return isConfigExist(conf, ROUTERS_PARAM);
     }
 
     //GENERALE
 
-    private void addConfig(BaseUriConfig conf, String keyParam) {
-        ObjectNode yaml = getConfig();
-        ArrayNode configs = getControllersOrRouters(yaml, keyParam);
-        ObjectNode jsonConf = jsonUtils.toObjectNode(conf);
-        jsonConf.remove(ID_PARAM);
-        configs.add(jsonConf);
-        writeConfig(yaml);
-        log.info("Added {} to config. Method: {}, uri: {}", conf instanceof ControllerConfig ? CONTROLLER_PARAM : ROUTER_PARAM,
-                                                            conf.getMethod(),
-                                                            conf.getUri());
+    /**
+     * Add new config to file
+     *
+     * @param conf - config
+     * @param keyParam - controller or router area
+     * @return - config added
+     */
+    private boolean addConfig(BaseUriConfig conf, String keyParam) {
+        try {
+            ObjectNode yaml = getConfig();
+            ArrayNode configs = getControllersOrRouters(yaml, keyParam);
+            ObjectNode jsonConf = jsonUtils.toObjectNode(conf);
+            jsonConf.remove(ID_PARAM);
+            configs.add(jsonConf);
+            writeConfig(yaml);
+            log.info("Added {} to config. Method: {}, uri: {}", conf instanceof ControllerConfig ? CONTROLLER_PARAM : ROUTER_PARAM,
+                    conf.getMethod(),
+                    conf.getUri());
+            return true;
+        } catch (Exception e) {
+            log.error("Error while saving config", e);
+            return false;
+        }
     }
 
+    /**
+     * Delete config from file
+     *
+     * @param conf - config
+     * @param keyParam - controller or router area
+     */
     private void deleteConfig(BaseUriConfig conf, String keyParam) {
         ObjectNode yaml = getConfig();
         ArrayNode configs = getControllersOrRouters(yaml, keyParam);
@@ -113,13 +170,24 @@ public class YamlConfigurator {
         }
 
         if (isDeleted) {
-            writeConfig(yaml);
-            log.info("Deleted {} from config. Method: {}, uri: {}", conf instanceof ControllerConfig ? CONTROLLER_PARAM : ROUTER_PARAM,
-                                                                    conf.getMethod(),
-                                                                    conf.getUri());
+            try {
+                writeConfig(yaml);
+                log.info("Deleted {} from config. Method: {}, uri: {}", conf instanceof ControllerConfig ? CONTROLLER_PARAM : ROUTER_PARAM,
+                        conf.getMethod(),
+                        conf.getUri());
+            } catch (Exception e) {
+                log.error("Error while deleting config", e);
+            }
         }
     }
 
+    /**
+     * Check is config exists in file
+     *
+     * @param conf - config
+     * @param keyParam - controller or router area
+     * @return - is config exist
+     */
     private boolean isConfigExist(BaseUriConfig conf, String keyParam) {
         ObjectNode yaml = getConfig();
         ArrayNode configs = getControllersOrRouters(yaml, keyParam);
@@ -139,6 +207,13 @@ public class YamlConfigurator {
         return result;
     }
 
+    /**
+     * Get array of configurations from config file
+     *
+     * @param yaml - configuration file
+     * @param key - controller or router area
+     * @return - array of configurations
+     */
     private ArrayNode getControllersOrRouters(ObjectNode yaml, String key) {
         ObjectNode rest = getRest(yaml);
 
@@ -152,6 +227,12 @@ public class YamlConfigurator {
         return value;
     }
 
+    /**
+     * Get controllers and routers config array from config file
+     *
+     * @param yaml - config
+     * @return - controllers and routers config array from config file
+     */
     private ObjectNode getRest(ObjectNode yaml) {
         ObjectNode rest;
         if (yaml.has(REST_PARAM)) {
@@ -165,6 +246,11 @@ public class YamlConfigurator {
 
     //FILE
 
+    /**
+     * Get configuration
+     *
+     * @return - configuration file in json format
+     */
     private ObjectNode getConfig() {
         ObjectNode conf;
         try {
@@ -176,12 +262,24 @@ public class YamlConfigurator {
         return conf;
     }
 
+    /**
+     * Read configuration file
+     *
+     * @return - configuration file
+     * @throws IOException - exception from {@link #getYamlPath()}
+     */
     private File getConfigFile() throws IOException {
         String yamlPath = getYamlPath();
         log.info("Getting file {}", yamlPath);
         return new File(yamlPath);
     }
 
+    /**
+     * Get path to configuration file
+     *
+     * @return - path to configuration file
+     * @throws UnsupportedEncodingException - if can't decode string
+     */
     private String getYamlPath() throws UnsupportedEncodingException {
         String projectPath = System.getProperty("user.dir");
         String decodedPath = URLDecoder.decode(projectPath, "UTF-8");
@@ -201,6 +299,13 @@ public class YamlConfigurator {
         return result == null ? decodedPath + File.separator + YAML_NAME : result;
     }
 
+    /**
+     * Get path to loaded configuration file
+     *
+     * @param projectFolder - full path to project folder
+     * @param sourceName - spring source name of loaded configuration
+     * @return - path to configuration file or null
+     */
     private String getYamlPath(String projectFolder, String sourceName) {
         String result = null;
         String filePath = sourceName.substring(sourceName.indexOf("[") + 1, sourceName.indexOf("]"));
@@ -221,13 +326,14 @@ public class YamlConfigurator {
         return result;
     }
 
-    private void writeConfig(ObjectNode conf) {
-        try {
-            File file = getConfigFile();
-            log.info("Writing file {}", file.getAbsolutePath());
-            mapper.writer().writeValue(getConfigFile(), conf);
-        } catch (Exception e) {
-            log.error("Error while writing config", e);
-        }
+    /**
+     * Write data to configuration file
+     *
+     * @param conf - configuration file in json format
+     */
+    private void writeConfig(ObjectNode conf) throws IOException {
+        File file = getConfigFile();
+        log.info("Writing file {}", file.getAbsolutePath());
+        mapper.writer().writeValue(file, conf);
     }
 }

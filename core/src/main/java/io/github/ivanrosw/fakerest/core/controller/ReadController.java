@@ -2,7 +2,7 @@ package io.github.ivanrosw.fakerest.core.controller;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import io.github.ivanrosw.fakerest.core.model.ControllerMode;
+import io.github.ivanrosw.fakerest.core.model.ControllerSaveInfoMode;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -13,10 +13,13 @@ import org.springframework.http.ResponseEntity;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
+/**
+ * Controller that can read data from collection
+ */
 @Slf4j
 @SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class GetController extends FakeController {
+public class ReadController extends FakeController {
 
     private static final String LOG_INFO = "Got request \r\nMethod: [{}] \r\nUri: [{}]";
 
@@ -26,9 +29,9 @@ public class GetController extends FakeController {
         delay();
 
         ResponseEntity<String> result;
-        if (mode == ControllerMode.COLLECTION_ALL) {
+        if (saveInfoMode == ControllerSaveInfoMode.COLLECTION_ALL) {
             result = handleAll();
-        } else if (mode == ControllerMode.COLLECTION_ONE) {
+        } else if (saveInfoMode == ControllerSaveInfoMode.COLLECTION_ONE) {
             result = handleId(request);
         } else {
             result = handleNoId();
@@ -36,6 +39,11 @@ public class GetController extends FakeController {
         return result;
     }
 
+    /**
+     * Process request to get all data from collection
+     *
+     * @return - response
+     */
     private ResponseEntity<String> handleAll() {
         ResponseEntity<String> result;
         Map<String, ObjectNode> allData = controllerData.getAllData(controllerConfig.getUri());
@@ -49,6 +57,12 @@ public class GetController extends FakeController {
         return result;
     }
 
+    /**
+     * Process request to get data by id
+     *
+     * @param request - request to controller
+     * @return - response
+     */
     private ResponseEntity<String> handleId(HttpServletRequest request) {
         ResponseEntity<String> result;
 
@@ -66,7 +80,11 @@ public class GetController extends FakeController {
         return result;
     }
 
-
+    /**
+     * Return static answer
+     *
+     * @return - response
+     */
     private ResponseEntity<String> handleNoId() {
         return new ResponseEntity<>(controllerConfig.getAnswer(), HttpStatus.OK);
     }

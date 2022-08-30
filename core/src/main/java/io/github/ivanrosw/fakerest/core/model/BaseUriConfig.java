@@ -3,6 +3,9 @@ package io.github.ivanrosw.fakerest.core.model;
 import lombok.*;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+/**
+ * Base config for controllers and routers
+ */
 @Getter
 @Setter
 @NoArgsConstructor

@@ -18,28 +18,35 @@ rest:
     -
       uri: '/test/{id}/{id2}'
       method: GET
+      functionMode: READ
     -
       uri: '/test/{id}/{id2}'
       method: POST
+      functionMode: CREATE
       generateId: true
       generateIdPatterns:
         id: UUID
     -
       uri: '/test2/{id}'
       method: GET
+      functionMode: READ
       answer: '{"id":"1","data":"value"}'
     -
       uri: '/test2/{id}'
       method: POST
+      functionMode: CREATE
     -
       uri: '/test2/{id}'
       method: PUT
+      functionMode: UPDATE
     -
       uri: '/test2/{id}'
       method: DELETE
+      functionMode: DELETE
     -
       uri: '/test3'
       method: POST
+      functionMode: CREATE
   routers:
     -
       uri: '/test'

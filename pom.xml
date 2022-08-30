@@ -13,7 +13,7 @@
 	<groupId>io.github.ivanrosw.fakerest</groupId>
 	<artifactId>fakerest</artifactId>
 	<name>fakerest</name>
-	<version>1.0.3</version>
+	<version>1.1.0</version>
 
 	<properties>
 		<java.version>8</java.version>
@@ -63,6 +63,27 @@
 			<artifactId>jackson-dataformat-yaml</artifactId>
 			<version>2.12.5</version>
 		</dependency>
+		<dependency>
+			<groupId>org.codehaus.groovy</groupId>
+			<artifactId>groovy-all</artifactId>
+			<version>3.0.11</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.codehaus.groovy</groupId>
+					<artifactId>groovy-test</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.codehaus.groovy</groupId>
+					<artifactId>groovy-test-junit5</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.codehaus.groovy</groupId>
+					<artifactId>groovy-testng</artifactId>
+				</exclusion>
+			</exclusions>
+			<type>pom</type>
+		</dependency>
+
 	</dependencies>
 
 	<build>
@@ -117,9 +138,23 @@
 							<goal>copy</goal>
 						</goals>
 						<configuration>
-							<sourceFile>LICENSE</sourceFile>
-							<destinationFile>appbuild/target/LICENSE</destinationFile>
+							<sourceFile>${maven.multiModuleProjectDirectory}/LICENSE</sourceFile>
+							<destinationFile>${maven.multiModuleProjectDirectory}/appbuild/target/LICENSE</destinationFile>
 						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-help-plugin</artifactId>
+				<version>3.1.0</version>
+				<executions>
+					<execution>
+						<id>show-profiles</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>active-profiles</goal>
+						</goals>
 					</execution>
 				</executions>
 			</plugin>

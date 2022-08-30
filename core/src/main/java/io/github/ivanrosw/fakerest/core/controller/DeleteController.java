@@ -9,6 +9,9 @@ import org.springframework.http.ResponseEntity;
 
 import javax.servlet.http.HttpServletRequest;
 
+/**
+ * Controller that can delete data from collection
+ */
 @SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class DeleteController extends FakeModifyController {

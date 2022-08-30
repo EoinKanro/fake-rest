@@ -2,6 +2,9 @@ package io.github.ivanrosw.fakerest.core.model;
 
 import lombok.*;
 
+/**
+ * Config for routers
+ */
 @Getter
 @Setter
 @NoArgsConstructor

@@ -1,6 +1,7 @@
 package io.github.ivanrosw.fakerest.core.controller;
 
-import io.github.ivanrosw.fakerest.core.model.ControllerMode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.github.ivanrosw.fakerest.core.model.ControllerSaveInfoMode;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -10,12 +11,19 @@ import org.springframework.http.ResponseEntity;
 
 import javax.servlet.http.HttpServletRequest;
 
+/**
+ * Base class for CUD controllers that can modify data in collection
+ */
 @Slf4j
 @SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 public abstract class FakeModifyController extends FakeController {
 
     private static final String LOG_INFO = "Got request \r\nMethod: [{}] \r\nUri: [{}] \r\nBody: [{}]";
+
+    protected static final String NULL_BODY = "body is null";
+    protected static final String NULL_BODY_OR_ANSWER = "body is null and answer not specified";
+    protected static final String MISSING_IDS = "some ids are missing";
 
     @Override
     public final ResponseEntity<String> handle(HttpServletRequest request) {
@@ -35,10 +43,17 @@ public abstract class FakeModifyController extends FakeController {
         }
         return result;
     }
-    
+
+    /**
+     * Process handled request
+     *
+     * @param request - request to controller
+     * @param body - body from request
+     * @return - response
+     */
     private ResponseEntity<String> processRequest(HttpServletRequest request, String body) {
         ResponseEntity<String> result;
-        if (mode == ControllerMode.COLLECTION_ONE) {
+        if (saveInfoMode == ControllerSaveInfoMode.COLLECTION_ONE) {
             result = handleOne(request, body);
         } else {
             result = returnAnswerOrBody(body);
@@ -46,6 +61,12 @@ public abstract class FakeModifyController extends FakeController {
         return result;
     }
 
+    /**
+     * Return static data
+     *
+     * @param body - body from request
+     * @return - response
+     */
     protected ResponseEntity<String> returnAnswerOrBody(String body) {
         ResponseEntity<String> result;
         if (controllerConfig.getAnswer() != null) {
@@ -53,10 +74,19 @@ public abstract class FakeModifyController extends FakeController {
         }else if (body != null && !body.isEmpty()) {
             result = new ResponseEntity<>(body, HttpStatus.OK);
         } else {
-            result = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            ObjectNode badRequest = jsonUtils.createJson();
+            jsonUtils.putString(badRequest, DESCRIPTION_PARAM, NULL_BODY_OR_ANSWER);
+            result = new ResponseEntity<>(badRequest.toString(), HttpStatus.BAD_REQUEST);
         }
         return result;
     }
 
+    /**
+     * Process request in controller with mode {@link ControllerSaveInfoMode#COLLECTION_ONE}
+     *
+     * @param request - request to controller
+     * @param body - body from request
+     * @return - response
+     */
     protected abstract ResponseEntity<String> handleOne(HttpServletRequest request, String body);
 }

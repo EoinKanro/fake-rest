@@ -15,10 +15,10 @@ public class IdGenerator {
 
     public String generateId(GeneratorPattern pattern) {
         String result;
-        if (pattern == GeneratorPattern.UUID) {
-            result = generateUUID();
-        } else {
+        if (pattern == GeneratorPattern.SEQUENCE) {
             result = generateSequence();
+        } else {
+            result = generateUUID();
         }
         return result;
     }

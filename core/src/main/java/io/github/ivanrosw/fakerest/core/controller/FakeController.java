@@ -1,19 +1,19 @@
 package io.github.ivanrosw.fakerest.core.controller;
 
 import io.github.ivanrosw.fakerest.core.model.ControllerData;
-import io.github.ivanrosw.fakerest.core.model.ControllerMode;
+import io.github.ivanrosw.fakerest.core.model.ControllerSaveInfoMode;
 import io.github.ivanrosw.fakerest.core.model.ControllerConfig;
-import io.github.ivanrosw.fakerest.core.utils.IdGenerator;
 import io.github.ivanrosw.fakerest.core.utils.HttpUtils;
 import io.github.ivanrosw.fakerest.core.utils.JsonUtils;
+import io.github.ivanrosw.fakerest.core.utils.SystemUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 
-import javax.servlet.http.HttpServletRequest;
-
+/**
+ * Base class for all CRUD and Groovy controllers
+ */
 @Slf4j
 @SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
@@ -25,21 +25,17 @@ public abstract class FakeController implements BaseController {
 
     protected static final String DESCRIPTION_PARAM = "description";
 
-    protected ControllerMode mode;
+    protected ControllerSaveInfoMode saveInfoMode;
     protected ControllerData controllerData;
     protected ControllerConfig controllerConfig;
 
     protected JsonUtils jsonUtils;
     protected HttpUtils httpUtils;
+    protected SystemUtils systemUtils;
 
     protected void delay() {
         if (controllerConfig.getDelayMs() > 0) {
-            try {
-                Thread.sleep(controllerConfig.getDelayMs());
-            } catch (Exception e) {
-                log.error("Interrupt error", e);
-                Thread.currentThread().interrupt();
-            }
+            systemUtils.sleep(controllerConfig.getDelayMs());
         }
     }
 }

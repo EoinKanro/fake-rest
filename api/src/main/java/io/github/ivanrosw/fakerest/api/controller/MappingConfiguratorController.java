@@ -59,7 +59,7 @@ public class MappingConfiguratorController {
     @PostMapping("/controller")
     public ResponseEntity<String> addController(@RequestBody ControllerConfig conf) {
         log.info("Got request for create controller:");
-        log.info(conf.toString());
+        log.info(String.valueOf(conf));
         return updateConfig(new ControllerAdder(), conf);
     }
     private class ControllerAdder implements UpdateProcessor<ControllerConfig> {
@@ -105,7 +105,7 @@ public class MappingConfiguratorController {
     @PostMapping("/router")
     public ResponseEntity<String> addRouter(@RequestBody RouterConfig conf) {
         log.info("Got request for create router:");
-        log.info(conf.toString());
+        log.info(String.valueOf(conf));
         return updateConfig(new RouterAdder(), conf);
     }
     private class RouterAdder implements UpdateProcessor<RouterConfig> {

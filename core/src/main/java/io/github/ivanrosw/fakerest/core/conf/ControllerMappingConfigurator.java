@@ -40,9 +40,10 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
      * @throws ConfigException - if config don't contain all necessary info or url already registered
      */
     public void registerController(ControllerConfig conf) throws ConfigException {
+        beforeInitControllerCheckBase(conf);
         List<String> idParams = httpUtils.getIdParams(conf.getUri());
         ControllerSaveInfoMode mode = identifyMode(conf, idParams);
-        beforeInitControllerCheck(conf, mode);
+        beforeInitControllerCheckMode(conf, mode);
 
         if (mode == ControllerSaveInfoMode.COLLECTION) conf.setIdParams(idParams);
 
@@ -72,9 +73,9 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
         if (mode == ControllerSaveInfoMode.COLLECTION) loadCollectionAnswerData(conf);
 
         addUrls(configHolder);
-
         mappingConfiguratorData.getControllers().put(conf.getId(), configHolder);
         if (!yamlConfigurator.isControllerExist(conf) && !yamlConfigurator.addController(conf)) {
+            log.error("Cant save config to yaml. Method: [{}],  Urls:{}", conf.getMethod(), configHolder.getUsedUrls());
             unregisterController(conf.getId());
         } else {
             log.info("Registered controllers. Method: [{}],  Urls:{}", conf.getMethod(), configHolder.getUsedUrls());
@@ -85,10 +86,9 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
      * Check configuration before init and run controller
      *
      * @param conf - config with all necessary info to init controller
-     * @param mode - static or collection mode
      * @throws ConfigException - if config don't contain all necessary info or url already registered
      */
-    private void beforeInitControllerCheck(ControllerConfig conf, ControllerSaveInfoMode mode) throws ConfigException {
+    private void beforeInitControllerCheckBase(ControllerConfig conf) throws ConfigException {
         if (conf.getUri() == null || conf.getUri().isEmpty()) {
             throw new ConfigException("Controller: Uri must be not blank");
         }
@@ -98,10 +98,25 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
         if (conf.getFunctionMode() == null) {
             throw new ConfigException("Controller: function mode must be specified");
         }
+        if (conf.getFunctionMode() == ControllerFunctionMode.GROOVY &&
+            (conf.getGroovyScript() == null || conf.getGroovyScript().isEmpty())) {
+            throw new ConfigException("Controller: groovy script must be specified");
+        }
+    }
 
+    /**
+     * Check configuration before init and run controller after init mode
+     *
+     * @param conf - config with all necessary info to init controller
+     * @param mode - static or collection mode
+     * @throws ConfigException - if config don't contain all necessary info or url already registered
+     */
+    private void beforeInitControllerCheckMode(ControllerConfig conf, ControllerSaveInfoMode mode) throws ConfigException {
         List<String> urls = mappingConfiguratorData.getMethodsUrls().computeIfAbsent(conf.getMethod(), key -> new ArrayList<>());
         if (urls.contains(conf.getUri()) ||
-                (conf.getFunctionMode() == ControllerFunctionMode.READ && mode == ControllerSaveInfoMode.COLLECTION && urls.contains(httpUtils.getBaseUri(conf.getUri())))) {
+                (conf.getFunctionMode() == ControllerFunctionMode.READ &&
+                 mode == ControllerSaveInfoMode.COLLECTION &&
+                 urls.contains(httpUtils.getBaseUri(conf.getUri())))) {
             throw new ConfigException(String.format("Controller: Duplicated urls: %s", conf.getUri()));
         }
     }

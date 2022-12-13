@@ -6,7 +6,6 @@ Fake-Rest is used to create REST controllers for test your projects
 
 Requirements for build
 - Java 8+
-- NPM
 
 Build project
 ```

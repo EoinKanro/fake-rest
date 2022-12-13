@@ -17,6 +17,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.stream.Stream;
+
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -143,15 +145,14 @@ class YamlConfiguratorTest {
     assertNotEquals(TEST_FILE_CONTENT, readConfigFile());
   }
 
+  @SneakyThrows
   private String readConfigFile() {
     StringBuilder stringBuilder = new StringBuilder();
-    try (Stream<String> lines = Files.lines(Paths.get(getClass().getClassLoader().getResource(TEST_FILE_NAME).getFile()), StandardCharsets.UTF_8)) {
+    try (Stream<String> lines = Files.lines(Paths.get(getClass().getClassLoader().getResource(TEST_FILE_NAME).toURI()), StandardCharsets.UTF_8)) {
       lines.forEach(line -> {
         stringBuilder.append(line);
         stringBuilder.append("\n");
       });
-    } catch (IOException e) {
-      throw new RuntimeException(e);
     }
     return stringBuilder.toString();
   }

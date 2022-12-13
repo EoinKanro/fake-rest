@@ -6,11 +6,10 @@ Fake-Rest is used to create REST controllers for test your projects
 
 Requirements for build
 - Java 8+
-- NPM
 
 Build project
 ```
-mvn package -P !ui-install-npm -P ui-skip-install-npm -DskipTests
+mvn package -DskipTests
 ```
 
 Start application

@@ -1,6 +1,6 @@
 # Fake-Rest
 
-Fake-Rest is service to mock REST controllers for test your projects
+Fake-Rest is service to mock REST controllers for testing your projects
 
 ### Getting started
 

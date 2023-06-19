@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>fakerest</artifactId>
-        <groupId>io.github.ivanrosw.fakerest</groupId>
+        <groupId>io.github.eoinkanro.fakerest</groupId>
         <version>1.1.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -13,23 +13,23 @@
 
     <dependencies>
         <dependency>
-            <groupId>io.github.ivanrosw.fakerest</groupId>
+            <groupId>io.github.eoinkanro.fakerest</groupId>
             <artifactId>core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>io.github.ivanrosw.fakerest</groupId>
+            <groupId>io.github.eoinkanro.fakerest</groupId>
             <artifactId>api</artifactId>
             <version>${project.version}</version>
             <exclusions>
                 <exclusion>
-                    <groupId>io.github.ivanrosw.fakerest</groupId>
+                    <groupId>io.github.eoinkanro.fakerest</groupId>
                     <artifactId>core</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>io.github.ivanrosw.fakerest</groupId>
+            <groupId>io.github.eoinkanro.fakerest</groupId>
             <artifactId>ui</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -44,14 +44,14 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <fork>true</fork>
-                    <mainClass>io.github.ivanrosw.fakerest.core.FakeRestApplication</mainClass>
+                    <mainClass>io.github.eoinkanro.fakerest.core.FakeRestApplication</mainClass>
                     <excludes>
                         <exclude>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
                         </exclude>
                         <exclude>
-                            <groupId>io.github.ivanrosw.fakerest</groupId>
+                            <groupId>io.github.eoinkanro.fakerest</groupId>
                             <artifactId>ui</artifactId>
                         </exclude>
                     </excludes>

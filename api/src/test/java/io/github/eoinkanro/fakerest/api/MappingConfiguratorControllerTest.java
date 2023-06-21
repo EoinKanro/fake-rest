@@ -6,6 +6,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import io.github.eoinkanro.commons.utils.JsonUtils;
 import io.github.eoinkanro.fakerest.api.controller.MappingConfiguratorController;
 import io.github.eoinkanro.fakerest.core.conf.ConfigException;
 import io.github.eoinkanro.fakerest.core.conf.ControllerMappingConfigurator;
@@ -15,7 +16,6 @@ import io.github.eoinkanro.fakerest.core.conf.RouterMappingConfigurator;
 import io.github.eoinkanro.fakerest.core.model.ControllerConfig;
 import io.github.eoinkanro.fakerest.core.model.ControllerFunctionMode;
 import io.github.eoinkanro.fakerest.core.model.RouterConfig;
-import io.github.eoinkanro.fakerest.core.utils.JsonUtils;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
@@ -50,9 +50,6 @@ class MappingConfiguratorControllerTest {
 
   @Autowired
   private MappingConfiguratorController mappingConfiguratorController;
-
-  @Autowired
-  private JsonUtils jsonUtils;
 
   private List<ControllerConfig> controllerConfigs;
   private List<RouterConfig> routerConfigs;
@@ -124,7 +121,7 @@ class MappingConfiguratorControllerTest {
     ResponseEntity<String> response = mappingConfiguratorController.addController(controllerConfigs.get(0));
     verify(controllerMappingConfigurator).registerController(controllerConfigs.get(0));
     assertEquals(HttpStatus.OK, response.getStatusCode());
-    assertEquals(jsonUtils.toObjectNode(controllerConfigs.get(0)).toString(), response.getBody());
+    assertEquals(JsonUtils.toObjectNode(controllerConfigs.get(0)).toString(), response.getBody());
   }
 
   @Test
@@ -153,7 +150,7 @@ class MappingConfiguratorControllerTest {
     ResponseEntity<String> response = mappingConfiguratorController.deleteController(CONTROLLER_ID);
     verify(controllerMappingConfigurator).unregisterController(CONTROLLER_ID);
     assertEquals(HttpStatus.OK, response.getStatusCode());
-    assertEquals(jsonUtils.toObjectNode(controllerConfigs.get(0)).toString(), response.getBody());
+    assertEquals(JsonUtils.toObjectNode(controllerConfigs.get(0)).toString(), response.getBody());
   }
 
   @Test
@@ -204,7 +201,7 @@ class MappingConfiguratorControllerTest {
     ResponseEntity<String> response = mappingConfiguratorController.addRouter(routerConfigs.get(0));
     verify(routerMappingConfigurator).registerRouter(routerConfigs.get(0));
     assertEquals(HttpStatus.OK, response.getStatusCode());
-    assertEquals(jsonUtils.toObjectNode(routerConfigs.get(0)).toString(), response.getBody());
+    assertEquals(JsonUtils.toObjectNode(routerConfigs.get(0)).toString(), response.getBody());
   }
 
   @Test
@@ -233,6 +230,6 @@ class MappingConfiguratorControllerTest {
     ResponseEntity<String> response = mappingConfiguratorController.deleteRouter(ROUTER_ID);
     verify(routerMappingConfigurator).unregisterRouter(ROUTER_ID);
     assertEquals(HttpStatus.OK, response.getStatusCode());
-    assertEquals(jsonUtils.toObjectNode(routerConfigs.get(0)).toString(), response.getBody());
+    assertEquals(JsonUtils.toObjectNode(routerConfigs.get(0)).toString(), response.getBody());
   }
 }

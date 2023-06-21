@@ -1,6 +1,7 @@
 package io.github.eoinkanro.fakerest.core.controller;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.github.eoinkanro.commons.utils.JsonUtils;
 import io.github.eoinkanro.fakerest.core.FakeRestApplication;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -44,14 +45,14 @@ class GroovyControllerTest extends FakeControllerTest {
 
     void sendRequest_UseJsonUtilsAndControllerData_ReturnJson(RequestMethod method, long delay) {
         String groovyScript = "import java.util.Collections;" +
-                              "ObjectNode json = jsonUtils.createJson();" +
-                              "jsonUtils.putString(json, \"id\", \"id-value\");" +
+                              "ObjectNode json = JsonUtils.createJson();" +
+                              "JsonUtils.putString(json, \"id\", \"id-value\");" +
                               "String key = controllerData.buildKey(json, Collections.singletonList(\"id\"));" +
                               "controllerData.putData(uri, key, json);" +
                               "return new GroovyAnswer(HttpStatus.OK, json.toString());";
         GroovyController subj = testControllersFabric.createGroovyController(TEST_STATIC_URI, method, delay, groovyScript);
-        ObjectNode expectedJson = jsonUtils.createJson();
-        jsonUtils.putString(expectedJson, "id", "id-value");
+        ObjectNode expectedJson = JsonUtils.createJson();
+        JsonUtils.putString(expectedJson, "id", "id-value");
 
         HttpServletRequest request = createRequest(method, null);
         ResponseEntity<String> response = handleResponse(subj, request, delay);

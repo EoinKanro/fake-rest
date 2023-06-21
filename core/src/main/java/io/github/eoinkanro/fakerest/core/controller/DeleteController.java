@@ -1,6 +1,7 @@
 package io.github.eoinkanro.fakerest.core.controller;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.github.eoinkanro.commons.utils.JsonUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -26,8 +27,8 @@ public class DeleteController extends FakeModifyController {
 
             result = new ResponseEntity<>(data.toString(), HttpStatus.OK);
         } else {
-            ObjectNode error = jsonUtils.createJson();
-            jsonUtils.putString(error, DESCRIPTION_PARAM, String.format(KEY_NOT_FOUND, key));
+            ObjectNode error = JsonUtils.createJson();
+            JsonUtils.putString(error, DESCRIPTION_PARAM, String.format(KEY_NOT_FOUND, key));
             result = new ResponseEntity<>(error.toString(), HttpStatus.BAD_REQUEST);
         }
 

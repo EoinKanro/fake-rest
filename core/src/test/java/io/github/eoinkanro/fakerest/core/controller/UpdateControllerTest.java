@@ -1,6 +1,7 @@
 package io.github.eoinkanro.fakerest.core.controller;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.github.eoinkanro.commons.utils.JsonUtils;
 import io.github.eoinkanro.fakerest.core.FakeRestApplication;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -160,7 +161,7 @@ class UpdateControllerTest extends FakeModifyControllerTest<UpdateController> {
         ObjectNode json = JSON_ONE_ID_FIRST.deepCopy();
         assertEquals(json, controllerData.getData(TEST_COLLECTION_URI_ONE_ID, key));
 
-        jsonUtils.putString(json, DATA_PARAM, getRandomString());
+        JsonUtils.putString(json, DATA_PARAM, getRandomString());
         assertNotEquals(json, controllerData.getData(TEST_COLLECTION_URI_ONE_ID, key));
 
         HttpServletRequest request = createRequestWithUriVariables(requestMethod, json.toString(), variables);
@@ -195,10 +196,10 @@ class UpdateControllerTest extends FakeModifyControllerTest<UpdateController> {
 
         HttpServletRequest request = createRequestWithUriVariables(requestMethod, json.toString(), variables);
         ResponseEntity<String> response = handleResponse(subj, request, delayMs);
-        ObjectNode responseJson = jsonUtils.toObjectNode(response.getBody());
+        ObjectNode responseJson = JsonUtils.toObjectNode(response.getBody());
 
         assertNotEquals(json, responseJson);
-        jsonUtils.putString(json, FIRST_ID_PARAM, FIRST_ID_VALUE);
+        JsonUtils.putString(json, FIRST_ID_PARAM, FIRST_ID_VALUE);
         assertEquals(json, responseJson);
         assertEquals(json, controllerData.getData(TEST_COLLECTION_URI_ONE_ID, key));
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -255,7 +256,7 @@ class UpdateControllerTest extends FakeModifyControllerTest<UpdateController> {
         ObjectNode json = JSON_TWO_ID.deepCopy();
         assertEquals(json, controllerData.getData(TEST_COLLECTION_URI_TWO_IDS, key));
 
-        jsonUtils.putString(json, DATA_PARAM, getRandomString());
+        JsonUtils.putString(json, DATA_PARAM, getRandomString());
         assertNotEquals(json, controllerData.getData(TEST_COLLECTION_URI_TWO_IDS, key));
 
         HttpServletRequest request = createRequestWithUriVariables(requestMethod, json.toString(), variables);
@@ -291,11 +292,11 @@ class UpdateControllerTest extends FakeModifyControllerTest<UpdateController> {
 
         HttpServletRequest request = createRequestWithUriVariables(requestMethod, json.toString(), variables);
         ResponseEntity<String> response = handleResponse(subj, request, delayMs);
-        ObjectNode responseJson = jsonUtils.toObjectNode(response.getBody());
+        ObjectNode responseJson = JsonUtils.toObjectNode(response.getBody());
 
         assertNotEquals(json, responseJson);
-        jsonUtils.putString(json, FIRST_ID_PARAM, FIRST_ID_VALUE);
-        jsonUtils.putString(json, SECOND_ID_PARAM, SECOND_ID_VALUE);
+        JsonUtils.putString(json, FIRST_ID_PARAM, FIRST_ID_VALUE);
+        JsonUtils.putString(json, SECOND_ID_PARAM, SECOND_ID_VALUE);
         assertEquals(json, responseJson);
         assertEquals(json, controllerData.getData(TEST_COLLECTION_URI_TWO_IDS, key));
         assertEquals(HttpStatus.OK, response.getStatusCode());

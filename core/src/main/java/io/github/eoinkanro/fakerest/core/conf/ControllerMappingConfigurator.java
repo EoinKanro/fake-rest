@@ -3,11 +3,10 @@ package io.github.eoinkanro.fakerest.core.conf;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.github.eoinkanro.commons.utils.JsonUtils;
 import io.github.eoinkanro.fakerest.core.controller.*;
 import io.github.eoinkanro.fakerest.core.model.*;
 import io.github.eoinkanro.fakerest.core.utils.IdGenerator;
-import io.github.eoinkanro.fakerest.core.utils.JsonUtils;
-import io.github.eoinkanro.fakerest.core.utils.SystemUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -27,10 +26,6 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
 
     @Autowired
     private ControllerData controllerData;
-    @Autowired
-    private JsonUtils jsonUtils;
-    @Autowired
-    private SystemUtils systemUtils;
 
     /**
      * Method to init and run controller
@@ -146,9 +141,7 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
                     .saveInfoMode(ControllerSaveInfoMode.COLLECTION_ALL)
                     .controllerData(controllerData)
                     .controllerConfig(conf)
-                    .jsonUtils(jsonUtils)
                     .httpUtils(httpUtils)
-                    .systemUtils(systemUtils)
                     .build();
             requestMappingInfo.put(getAllMappingInfo, readAllController);
             usedUrls.add(baseUri);
@@ -162,9 +155,7 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
                     .saveInfoMode(ControllerSaveInfoMode.COLLECTION_ONE)
                     .controllerData(controllerData)
                     .controllerConfig(conf)
-                    .jsonUtils(jsonUtils)
                     .httpUtils(httpUtils)
-                    .systemUtils(systemUtils)
                     .build();
             requestMappingInfo.put(readOneMappingInfo, getOneController);
             usedUrls.add(conf.getUri());
@@ -179,9 +170,7 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
                     .saveInfoMode(ControllerSaveInfoMode.STATIC)
                     .controllerData(controllerData)
                     .controllerConfig(conf)
-                    .jsonUtils(jsonUtils)
                     .httpUtils(httpUtils)
-                    .systemUtils(systemUtils)
                     .build();
             requestMappingInfo.put(readStaticMappingInfo, getStaticController);
             usedUrls.add(conf.getUri());
@@ -212,9 +201,7 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
                     .saveInfoMode(ControllerSaveInfoMode.COLLECTION_ONE)
                     .controllerData(controllerData)
                     .controllerConfig(conf)
-                    .jsonUtils(jsonUtils)
                     .httpUtils(httpUtils)
-                    .systemUtils(systemUtils)
                     .idGenerator(idGenerator)
                     .build();
             requestMappingInfo.put(createOneInfo, createOneController);
@@ -230,9 +217,7 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
                     .saveInfoMode(ControllerSaveInfoMode.STATIC)
                     .controllerData(controllerData)
                     .controllerConfig(conf)
-                    .jsonUtils(jsonUtils)
                     .httpUtils(httpUtils)
-                    .systemUtils(systemUtils)
                     .idGenerator(idGenerator)
                     .build();
             requestMappingInfo.put(createStaticInfo, createStaticController);
@@ -262,9 +247,7 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
                     .saveInfoMode(ControllerSaveInfoMode.COLLECTION_ONE)
                     .controllerData(controllerData)
                     .controllerConfig(conf)
-                    .jsonUtils(jsonUtils)
                     .httpUtils(httpUtils)
-                    .systemUtils(systemUtils)
                     .build();
             requestMappingInfo.put(updateOneInfo, updateOneController);
             usedUrls.add(conf.getUri());
@@ -279,9 +262,7 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
                     .saveInfoMode(ControllerSaveInfoMode.STATIC)
                     .controllerData(controllerData)
                     .controllerConfig(conf)
-                    .jsonUtils(jsonUtils)
                     .httpUtils(httpUtils)
-                    .systemUtils(systemUtils)
                     .build();
             requestMappingInfo.put(updateStaticInfo, updateStaticController);
             usedUrls.add(conf.getUri());
@@ -310,9 +291,7 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
                     .saveInfoMode(ControllerSaveInfoMode.COLLECTION_ONE)
                     .controllerData(controllerData)
                     .controllerConfig(conf)
-                    .jsonUtils(jsonUtils)
                     .httpUtils(httpUtils)
-                    .systemUtils(systemUtils)
                     .build();
             requestMappingInfo.put(deleteOneInfo, deleteOneController);
             usedUrls.add(conf.getUri());
@@ -327,9 +306,7 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
                     .saveInfoMode(ControllerSaveInfoMode.STATIC)
                     .controllerData(controllerData)
                     .controllerConfig(conf)
-                    .jsonUtils(jsonUtils)
                     .httpUtils(httpUtils)
-                    .systemUtils(systemUtils)
                     .build();
             requestMappingInfo.put(deleteStaticInfo, deleteStaticController);
             usedUrls.add(conf.getUri());
@@ -355,9 +332,7 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
         GroovyController groovyController = GroovyController.builder()
                 .controllerData(controllerData)
                 .controllerConfig(conf)
-                .jsonUtils(jsonUtils)
                 .httpUtils(httpUtils)
-                .systemUtils(systemUtils)
                 .build();
 
         requestMappingInfo.put(groovyInfo, groovyController);
@@ -373,7 +348,7 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
      */
     private void loadCollectionAnswerData(ControllerConfig conf) {
         if (conf.getAnswer() != null && (conf.getAnswer().contains("{") || conf.getAnswer().contains("["))) {
-            JsonNode answer = jsonUtils.toJsonNode(conf.getAnswer());
+            JsonNode answer = JsonUtils.toJsonNode(conf.getAnswer());
 
             if (answer instanceof ArrayNode) {
                 ArrayNode array = (ArrayNode) answer;

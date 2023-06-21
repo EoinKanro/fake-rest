@@ -1,6 +1,7 @@
 package io.github.eoinkanro.fakerest.core.controller;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.github.eoinkanro.commons.utils.JsonUtils;
 import io.github.eoinkanro.fakerest.core.model.GeneratorPattern;
 import io.github.eoinkanro.fakerest.core.utils.IdGenerator;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,8 +28,8 @@ public class CreateController extends FakeModifyController {
         if (body != null && !body.isEmpty()) {
             result = saveOne(body);
         } else {
-            ObjectNode error = jsonUtils.createJson();
-            jsonUtils.putString(error, DESCRIPTION_PARAM, NULL_BODY);
+            ObjectNode error = JsonUtils.createJson();
+            JsonUtils.putString(error, DESCRIPTION_PARAM, NULL_BODY);
             result = new ResponseEntity<>(error.toString(), HttpStatus.BAD_REQUEST);
         }
         return result;
@@ -42,14 +43,14 @@ public class CreateController extends FakeModifyController {
      */
     private ResponseEntity<String> saveOne(String body) {
         ResponseEntity<String> result = null;
-        ObjectNode bodyJson = jsonUtils.toObjectNode(body);
+        ObjectNode bodyJson = JsonUtils.toObjectNode(body);
 
         if (bodyJson != null && !bodyJson.isEmpty()) {
             if (controllerConfig.isGenerateId()) {
                 addId(bodyJson);
             } else if (!checkIds(bodyJson)){
-                ObjectNode error = jsonUtils.createJson();
-                jsonUtils.putString(error, DESCRIPTION_PARAM, MISSING_IDS);
+                ObjectNode error = JsonUtils.createJson();
+                JsonUtils.putString(error, DESCRIPTION_PARAM, MISSING_IDS);
                 result = new ResponseEntity<>(error.toString(), HttpStatus.BAD_REQUEST);
             }
 
@@ -57,8 +58,8 @@ public class CreateController extends FakeModifyController {
                 result = saveOne(bodyJson);
             }
         } else {
-            ObjectNode error = jsonUtils.createJson();
-            jsonUtils.putString(error, DESCRIPTION_PARAM, String.format(DATA_NOT_JSON, body));
+            ObjectNode error = JsonUtils.createJson();
+            JsonUtils.putString(error, DESCRIPTION_PARAM, String.format(DATA_NOT_JSON, body));
             result = new ResponseEntity<>(error.toString(), HttpStatus.BAD_REQUEST);
         }
         return result;
@@ -78,8 +79,8 @@ public class CreateController extends FakeModifyController {
             controllerData.putData(controllerConfig.getUri(), key, body);
             result = new ResponseEntity<>(body.toString(), HttpStatus.OK);
         } else {
-            ObjectNode error = jsonUtils.createJson();
-            jsonUtils.putString(error, DESCRIPTION_PARAM, String.format(KEY_ALREADY_EXIST, key));
+            ObjectNode error = JsonUtils.createJson();
+            JsonUtils.putString(error, DESCRIPTION_PARAM, String.format(KEY_ALREADY_EXIST, key));
             result = new ResponseEntity<>(error.toString(), HttpStatus.BAD_REQUEST);
         }
         return result;
@@ -94,7 +95,7 @@ public class CreateController extends FakeModifyController {
     private boolean checkIds(ObjectNode data) {
         boolean result = true;
         for (String id : controllerConfig.getIdParams()) {
-            String idValue = jsonUtils.getString(data, id);
+            String idValue = JsonUtils.getString(data, id);
             if (idValue == null || idValue.isEmpty()) {
                 result = false;
                 break;
@@ -112,7 +113,7 @@ public class CreateController extends FakeModifyController {
         Map<String, GeneratorPattern> generatorPatterns = controllerConfig.getGenerateIdPatterns();
         controllerConfig.getIdParams().forEach(idParam -> {
             GeneratorPattern pattern = generatorPatterns == null ? null : generatorPatterns.get(idParam);
-            jsonUtils.putString(data, idParam, idGenerator.generateId(pattern));
+            JsonUtils.putString(data, idParam, idGenerator.generateId(pattern));
         });
     }
 

@@ -5,10 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import io.github.eoinkanro.commons.utils.JsonUtils;
 import io.github.eoinkanro.fakerest.core.model.BaseUriConfig;
 import io.github.eoinkanro.fakerest.core.model.ControllerConfig;
 import io.github.eoinkanro.fakerest.core.model.RouterConfig;
-import io.github.eoinkanro.fakerest.core.utils.JsonUtils;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,8 +47,6 @@ public class YamlConfigurator {
 
     private ObjectMapper mapper;
 
-    @Autowired
-    private JsonUtils jsonUtils;
     @Autowired
     private ConfigurableEnvironment env;
 
@@ -132,7 +130,7 @@ public class YamlConfigurator {
         try {
             ObjectNode yaml = getConfig();
             ArrayNode configs = getControllersOrRouters(yaml, keyParam);
-            ObjectNode jsonConf = jsonUtils.toObjectNode(conf);
+            ObjectNode jsonConf = JsonUtils.toObjectNode(conf);
             jsonConf.remove(ID_PARAM);
             configs.add(jsonConf);
             writeConfig(yaml);
@@ -159,8 +157,8 @@ public class YamlConfigurator {
         boolean isDeleted = false;
         for (int i = 0; i < configs.size(); i++) {
             JsonNode configsConf = configs.get(i);
-            String configsConfUri = jsonUtils.getString(configsConf, URI_PARAM);
-            String configsConfMethod = jsonUtils.getString(configsConf, METHOD_PARAM);
+            String configsConfUri = JsonUtils.getString(configsConf, URI_PARAM);
+            String configsConfMethod = JsonUtils.getString(configsConf, METHOD_PARAM);
 
             if (conf.getMethod().toString().equals(configsConfMethod) && conf.getUri().equals(configsConfUri)) {
                 configs.remove(i);
@@ -195,8 +193,8 @@ public class YamlConfigurator {
         boolean result = false;
         for (int i = 0; i < configs.size(); i++) {
             JsonNode configsConf = configs.get(i);
-            String configsConfUri = jsonUtils.getString(configsConf, URI_PARAM);
-            String configsConfMethod = jsonUtils.getString(configsConf, METHOD_PARAM);
+            String configsConfUri = JsonUtils.getString(configsConf, URI_PARAM);
+            String configsConfMethod = JsonUtils.getString(configsConf, METHOD_PARAM);
 
             if (conf.getMethod().toString().equals(configsConfMethod) && conf.getUri().equals(configsConfUri)) {
                 result = true;
@@ -219,10 +217,10 @@ public class YamlConfigurator {
 
         ArrayNode value;
         if (rest.has(key)) {
-            value = jsonUtils.getArray(rest, key);
+            value = JsonUtils.getArray(rest, key);
         } else {
-            value = jsonUtils.createArray();
-            jsonUtils.putJson(rest, key, value);
+            value = JsonUtils.createArray();
+            JsonUtils.putJson(rest, key, value);
         }
         return value;
     }
@@ -236,10 +234,10 @@ public class YamlConfigurator {
     private ObjectNode getRest(ObjectNode yaml) {
         ObjectNode rest;
         if (yaml.has(REST_PARAM)) {
-            rest = jsonUtils.getJson(yaml, REST_PARAM);
+            rest = JsonUtils.getJson(yaml, REST_PARAM);
         } else {
-            rest = jsonUtils.createJson();
-            jsonUtils.putJson(yaml, REST_PARAM, rest);
+            rest = JsonUtils.createJson();
+            JsonUtils.putJson(yaml, REST_PARAM, rest);
         }
         return rest;
     }
@@ -256,7 +254,7 @@ public class YamlConfigurator {
         try {
             conf = mapper.readValue(getConfigFile(), ObjectNode.class);
         } catch (Exception e) {
-            conf = jsonUtils.createJson();
+            conf = JsonUtils.createJson();
             log.warn("Error while parse configuration file. Creating new one", e);
         }
         return conf;

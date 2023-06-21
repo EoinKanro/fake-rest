@@ -1,6 +1,5 @@
 package io.github.eoinkanro.fakerest.core.conf;
 
-import io.github.eoinkanro.fakerest.core.utils.JsonUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
@@ -32,8 +31,6 @@ abstract class MappingConfiguratorTest {
   protected RequestMappingHandlerMapping handlerMapping;
   @Autowired
   protected MappingConfiguratorData mappingConfiguratorData;
-  @Autowired
-  protected JsonUtils jsonUtils;
 
   protected static String[] allUris;
 

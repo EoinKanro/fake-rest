@@ -1,11 +1,10 @@
 package io.github.eoinkanro.fakerest.core.controller;
 
+import io.github.eoinkanro.commons.utils.SystemUtils;
 import io.github.eoinkanro.fakerest.core.model.ControllerData;
 import io.github.eoinkanro.fakerest.core.model.ControllerSaveInfoMode;
 import io.github.eoinkanro.fakerest.core.model.ControllerConfig;
 import io.github.eoinkanro.fakerest.core.utils.HttpUtils;
-import io.github.eoinkanro.fakerest.core.utils.JsonUtils;
-import io.github.eoinkanro.fakerest.core.utils.SystemUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -29,13 +28,11 @@ public abstract class FakeController implements BaseController {
     protected ControllerData controllerData;
     protected ControllerConfig controllerConfig;
 
-    protected JsonUtils jsonUtils;
     protected HttpUtils httpUtils;
-    protected SystemUtils systemUtils;
 
     protected void delay() {
         if (controllerConfig.getDelayMs() > 0) {
-            systemUtils.sleep(controllerConfig.getDelayMs());
+            SystemUtils.sleep(controllerConfig.getDelayMs());
         }
     }
 }

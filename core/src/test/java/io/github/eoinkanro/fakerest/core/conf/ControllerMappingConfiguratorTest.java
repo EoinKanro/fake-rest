@@ -10,6 +10,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.github.eoinkanro.commons.utils.JsonUtils;
 import io.github.eoinkanro.fakerest.core.FakeRestApplication;
 import io.github.eoinkanro.fakerest.core.controller.BaseController;
 import io.github.eoinkanro.fakerest.core.controller.CreateController;
@@ -474,14 +475,14 @@ class ControllerMappingConfiguratorTest extends MappingConfiguratorTest{
   private void assertInitJsonAnswer(ControllerConfig collectionController) {
     Map<String, ObjectNode> controllerAllData = controllerData.getAllData(collectionController.getUri());
     assertEquals(1, controllerAllData.size());
-    assertEquals(jsonUtils.toJsonNode(COLLECTION_JSON_ANSWER), controllerAllData.get("1"));
+    assertEquals(JsonUtils.toJsonNode(COLLECTION_JSON_ANSWER), controllerAllData.get("1"));
   }
 
   private void assertInitArrayJsonAnswer(ControllerConfig collectionController) {
     Map<String, ObjectNode> controllerAllData = controllerData.getAllData(collectionController.getUri());
     assertEquals(2, controllerAllData.size());
-    assertEquals(jsonUtils.toJsonNode(COLLECTION_ARRAY_JSON_ANSWER).get(0), controllerAllData.get("1"));
-    assertEquals(jsonUtils.toJsonNode(COLLECTION_ARRAY_JSON_ANSWER).get(1), controllerAllData.get("2"));
+    assertEquals(JsonUtils.toJsonNode(COLLECTION_ARRAY_JSON_ANSWER).get(0), controllerAllData.get("1"));
+    assertEquals(JsonUtils.toJsonNode(COLLECTION_ARRAY_JSON_ANSWER).get(1), controllerAllData.get("2"));
   }
 
   private void setUpYamlOk() {

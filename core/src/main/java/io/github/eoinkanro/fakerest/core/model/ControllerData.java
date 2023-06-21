@@ -1,9 +1,8 @@
 package io.github.eoinkanro.fakerest.core.model;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import io.github.eoinkanro.fakerest.core.utils.JsonUtils;
+import io.github.eoinkanro.commons.utils.JsonUtils;
 import jakarta.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -20,9 +19,6 @@ import java.util.stream.Collectors;
 public class ControllerData {
 
     private static final String KEY_DELIMITER = ":::";
-
-    @Autowired
-    private JsonUtils jsonUtils;
 
     /**
      * Collection with url - controller data
@@ -63,7 +59,7 @@ public class ControllerData {
     }
 
     public String buildKey(ObjectNode data, List<String> idParams) {
-        List<String> ids = idParams.stream().map(param -> jsonUtils.getString(data, param)).collect(Collectors.toList());
+        List<String> ids = idParams.stream().map(param -> JsonUtils.getString(data, param)).collect(Collectors.toList());
         return String.join(KEY_DELIMITER, ids);
     }
 

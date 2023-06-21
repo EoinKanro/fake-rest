@@ -1,6 +1,7 @@
 package io.github.eoinkanro.fakerest.core.controller;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.github.eoinkanro.commons.utils.JsonUtils;
 import io.github.eoinkanro.fakerest.core.model.ControllerSaveInfoMode;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
@@ -73,8 +74,8 @@ public abstract class FakeModifyController extends FakeController {
         }else if (body != null && !body.isEmpty()) {
             result = new ResponseEntity<>(body, HttpStatus.OK);
         } else {
-            ObjectNode badRequest = jsonUtils.createJson();
-            jsonUtils.putString(badRequest, DESCRIPTION_PARAM, NULL_BODY_OR_ANSWER);
+            ObjectNode badRequest = JsonUtils.createJson();
+            JsonUtils.putString(badRequest, DESCRIPTION_PARAM, NULL_BODY_OR_ANSWER);
             result = new ResponseEntity<>(badRequest.toString(), HttpStatus.BAD_REQUEST);
         }
         return result;

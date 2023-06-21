@@ -1,6 +1,7 @@
 package io.github.eoinkanro.fakerest.core.controller;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import io.github.eoinkanro.commons.utils.JsonUtils;
 import io.github.eoinkanro.fakerest.core.FakeRestApplication;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -65,7 +66,7 @@ class ReadControllerTest extends FakeControllerTest {
         ReadController subj = testControllersFabric.createCollectionAllReadController(TEST_COLLECTION_URI_ONE_ID, requestMethod, delayMs);
         HttpServletRequest request = createRequest(requestMethod, EMPTY_REQUEST_BODY);
         ResponseEntity<String> response = handleResponse(subj, request, delayMs);
-        assertEquals(jsonUtils.createArray().toString(), response.getBody());
+        assertEquals(JsonUtils.createArray().toString(), response.getBody());
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
@@ -86,7 +87,7 @@ class ReadControllerTest extends FakeControllerTest {
         ReadController subj = testControllersFabric.createCollectionAllReadController(TEST_COLLECTION_URI_ONE_ID, requestMethod, delayMs);
         HttpServletRequest request = createRequest(requestMethod, EMPTY_REQUEST_BODY);
         ResponseEntity<String> response = handleResponse(subj, request, delayMs);
-        ArrayNode expectedArray = jsonUtils.createArray();
+        ArrayNode expectedArray = JsonUtils.createArray();
         expectedArray.add(JSON_ONE_ID_FIRST);
         expectedArray.add(JSON_ONE_ID_SECOND);
         assertEquals(expectedArray.toString(), response.getBody());
@@ -110,7 +111,7 @@ class ReadControllerTest extends FakeControllerTest {
         ReadController subj = testControllersFabric.createCollectionAllReadController(TEST_COLLECTION_URI_TWO_IDS, requestMethod, delayMs);
         HttpServletRequest request = createRequest(requestMethod, EMPTY_REQUEST_BODY);
         ResponseEntity<String> response = handleResponse(subj, request, delayMs);
-        ArrayNode expectedArray = jsonUtils.createArray();
+        ArrayNode expectedArray = JsonUtils.createArray();
         expectedArray.add(JSON_TWO_ID);
         assertEquals(expectedArray.toString(), response.getBody());
         assertEquals(HttpStatus.OK, response.getStatusCode());

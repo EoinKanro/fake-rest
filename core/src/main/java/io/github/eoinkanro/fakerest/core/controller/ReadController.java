@@ -2,6 +2,7 @@ package io.github.eoinkanro.fakerest.core.controller;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.github.eoinkanro.commons.utils.JsonUtils;
 import io.github.eoinkanro.fakerest.core.model.ControllerSaveInfoMode;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
@@ -48,11 +49,11 @@ public class ReadController extends FakeController {
         ResponseEntity<String> result;
         Map<String, ObjectNode> allData = controllerData.getAllData(controllerConfig.getUri());
         if (allData.size() > 0) {
-            ArrayNode array = jsonUtils.createArray();
+            ArrayNode array = JsonUtils.createArray();
             allData.forEach((key, data) -> array.add(data));
             result = new ResponseEntity<>(array.toString(), HttpStatus.OK);
         } else {
-            result = new ResponseEntity<>(jsonUtils.createArray().toString(), HttpStatus.OK);
+            result = new ResponseEntity<>(JsonUtils.createArray().toString(), HttpStatus.OK);
         }
         return result;
     }
@@ -73,8 +74,8 @@ public class ReadController extends FakeController {
             ObjectNode data = controllerData.getData(controllerConfig.getUri(), key);
             result = new ResponseEntity<>(data.toString(), HttpStatus.OK);
         } else {
-            ObjectNode error = jsonUtils.createJson();
-            jsonUtils.putString(error, DESCRIPTION_PARAM, String.format(KEY_NOT_FOUND, key));
+            ObjectNode error = JsonUtils.createJson();
+            JsonUtils.putString(error, DESCRIPTION_PARAM, String.format(KEY_NOT_FOUND, key));
             result = new ResponseEntity<>(error.toString(), HttpStatus.NOT_FOUND);
         }
         return result;

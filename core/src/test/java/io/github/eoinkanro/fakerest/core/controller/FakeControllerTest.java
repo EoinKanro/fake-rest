@@ -1,16 +1,14 @@
 package io.github.eoinkanro.fakerest.core.controller;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.github.eoinkanro.commons.utils.JsonUtils;
 import io.github.eoinkanro.fakerest.core.conf.MappingConfigurationLoader;
 import io.github.eoinkanro.fakerest.core.model.ControllerData;
-import io.github.eoinkanro.fakerest.core.utils.JsonUtils;
-import io.github.eoinkanro.fakerest.core.utils.SystemUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -22,7 +20,6 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 abstract class FakeControllerTest {
@@ -47,12 +44,8 @@ abstract class FakeControllerTest {
     TestControllersFabric testControllersFabric;
     @Autowired
     ControllerData controllerData;
-    @Autowired
-    JsonUtils jsonUtils;
     @MockBean
     MappingConfigurationLoader mappingConfigurationLoader;
-    @SpyBean
-    SystemUtils systemUtils;
 
     ObjectNode JSON_NO_ID;
     ObjectNode JSON_ONE_ID_FIRST;
@@ -62,7 +55,6 @@ abstract class FakeControllerTest {
     ObjectNode JSON_TWO_ID;
     ObjectNode JSON_TWO_ID_BAD;
     ObjectNode JSON_TWO_ID_EMPTY_ID;
-
 
     private static Stream<Arguments> provideAllMethodsDelay(long delayMs) {
         RequestMethod[] requestMethods = RequestMethod.values();
@@ -111,37 +103,37 @@ abstract class FakeControllerTest {
      * Init controller data
      */
     void initData() {
-        JSON_ONE_ID_FIRST = jsonUtils.createJson();
-        jsonUtils.putString(JSON_ONE_ID_FIRST, FIRST_ID_PARAM, FIRST_ID_VALUE);
-        jsonUtils.putString(JSON_ONE_ID_FIRST, DATA_PARAM, FIRST_DATA_VALUE);
+        JSON_ONE_ID_FIRST = JsonUtils.createJson();
+        JsonUtils.putString(JSON_ONE_ID_FIRST, FIRST_ID_PARAM, FIRST_ID_VALUE);
+        JsonUtils.putString(JSON_ONE_ID_FIRST, DATA_PARAM, FIRST_DATA_VALUE);
 
-        JSON_ONE_ID_SECOND = jsonUtils.createJson();
-        jsonUtils.putString(JSON_ONE_ID_SECOND, FIRST_ID_PARAM, SECOND_ID_VALUE);
-        jsonUtils.putString(JSON_ONE_ID_SECOND, DATA_PARAM, SECOND_DATA_VALUE);
+        JSON_ONE_ID_SECOND = JsonUtils.createJson();
+        JsonUtils.putString(JSON_ONE_ID_SECOND, FIRST_ID_PARAM, SECOND_ID_VALUE);
+        JsonUtils.putString(JSON_ONE_ID_SECOND, DATA_PARAM, SECOND_DATA_VALUE);
 
-        JSON_TWO_ID = jsonUtils.createJson();
-        jsonUtils.putString(JSON_TWO_ID, FIRST_ID_PARAM, FIRST_ID_VALUE);
-        jsonUtils.putString(JSON_TWO_ID, SECOND_ID_PARAM, SECOND_ID_VALUE);
-        jsonUtils.putString(JSON_TWO_ID, DATA_PARAM, FIRST_DATA_VALUE);
+        JSON_TWO_ID = JsonUtils.createJson();
+        JsonUtils.putString(JSON_TWO_ID, FIRST_ID_PARAM, FIRST_ID_VALUE);
+        JsonUtils.putString(JSON_TWO_ID, SECOND_ID_PARAM, SECOND_ID_VALUE);
+        JsonUtils.putString(JSON_TWO_ID, DATA_PARAM, FIRST_DATA_VALUE);
 
-        JSON_ONE_ID_FIRST_BAD = jsonUtils.createJson();
-        jsonUtils.putString(JSON_ONE_ID_FIRST_BAD, FIRST_ID_PARAM, BAD_ID_VALUE);
+        JSON_ONE_ID_FIRST_BAD = JsonUtils.createJson();
+        JsonUtils.putString(JSON_ONE_ID_FIRST_BAD, FIRST_ID_PARAM, BAD_ID_VALUE);
 
-        JSON_TWO_ID_BAD = jsonUtils.createJson();
-        jsonUtils.putString(JSON_TWO_ID_BAD, FIRST_ID_PARAM, BAD_ID_VALUE);
-        jsonUtils.putString(JSON_TWO_ID_BAD, SECOND_ID_PARAM, BAD_ID_VALUE);
+        JSON_TWO_ID_BAD = JsonUtils.createJson();
+        JsonUtils.putString(JSON_TWO_ID_BAD, FIRST_ID_PARAM, BAD_ID_VALUE);
+        JsonUtils.putString(JSON_TWO_ID_BAD, SECOND_ID_PARAM, BAD_ID_VALUE);
 
-        JSON_NO_ID = jsonUtils.createJson();
-        jsonUtils.putString(JSON_NO_ID, DATA_PARAM, FIRST_DATA_VALUE);
+        JSON_NO_ID = JsonUtils.createJson();
+        JsonUtils.putString(JSON_NO_ID, DATA_PARAM, FIRST_DATA_VALUE);
 
-        JSON_ONE_ID_EMPTY_ID = jsonUtils.createJson();
-        jsonUtils.putString(JSON_ONE_ID_EMPTY_ID, DATA_PARAM, FIRST_DATA_VALUE);
-        jsonUtils.putString(JSON_ONE_ID_EMPTY_ID, FIRST_ID_PARAM, EMPTY_REQUEST_BODY);
+        JSON_ONE_ID_EMPTY_ID = JsonUtils.createJson();
+        JsonUtils.putString(JSON_ONE_ID_EMPTY_ID, DATA_PARAM, FIRST_DATA_VALUE);
+        JsonUtils.putString(JSON_ONE_ID_EMPTY_ID, FIRST_ID_PARAM, EMPTY_REQUEST_BODY);
 
-        JSON_TWO_ID_EMPTY_ID = jsonUtils.createJson();
-        jsonUtils.putString(JSON_TWO_ID_EMPTY_ID, DATA_PARAM, FIRST_DATA_VALUE);
-        jsonUtils.putString(JSON_TWO_ID_EMPTY_ID, FIRST_ID_PARAM, EMPTY_REQUEST_BODY);
-        jsonUtils.putString(JSON_TWO_ID_EMPTY_ID, SECOND_ID_PARAM, EMPTY_REQUEST_BODY);
+        JSON_TWO_ID_EMPTY_ID = JsonUtils.createJson();
+        JsonUtils.putString(JSON_TWO_ID_EMPTY_ID, DATA_PARAM, FIRST_DATA_VALUE);
+        JsonUtils.putString(JSON_TWO_ID_EMPTY_ID, FIRST_ID_PARAM, EMPTY_REQUEST_BODY);
+        JsonUtils.putString(JSON_TWO_ID_EMPTY_ID, SECOND_ID_PARAM, EMPTY_REQUEST_BODY);
     }
 
     /**
@@ -159,8 +151,8 @@ abstract class FakeControllerTest {
      * @return - json with description error
      */
     ObjectNode createKeyNotFoundError(String key) {
-        ObjectNode result = jsonUtils.createJson();
-        jsonUtils.putString(result, FakeController.DESCRIPTION_PARAM, String.format(FakeController.KEY_NOT_FOUND, key));
+        ObjectNode result = JsonUtils.createJson();
+        JsonUtils.putString(result, FakeController.DESCRIPTION_PARAM, String.format(FakeController.KEY_NOT_FOUND, key));
         return result;
     }
 
@@ -170,8 +162,8 @@ abstract class FakeControllerTest {
      * @return - json with description error
      */
     ObjectNode createBadRequest(String description) {
-        ObjectNode result = jsonUtils.createJson();
-        jsonUtils.putString(result, FakeController.DESCRIPTION_PARAM, description);
+        ObjectNode result = JsonUtils.createJson();
+        JsonUtils.putString(result, FakeController.DESCRIPTION_PARAM, description);
         return result;
     }
 
@@ -230,11 +222,6 @@ abstract class FakeControllerTest {
         assertTrue(System.currentTimeMillis() - now >= delayMs);
 
         verify(fakeController, times(1)).delay();
-        if (delayMs > 0) {
-            verify(systemUtils, times(1)).sleep(delayMs);
-        } else {
-            verify(systemUtils, never()).sleep(anyLong());
-        }
         return response;
     }
 }

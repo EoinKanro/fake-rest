@@ -3,12 +3,11 @@ package io.github.eoinkanro.fakerest.core.controller;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
+import io.github.eoinkanro.commons.utils.JsonUtils;
 import io.github.eoinkanro.fakerest.core.model.ControllerConfig;
 import io.github.eoinkanro.fakerest.core.model.ControllerData;
 import io.github.eoinkanro.fakerest.core.model.GroovyAnswer;
 import io.github.eoinkanro.fakerest.core.utils.HttpUtils;
-import io.github.eoinkanro.fakerest.core.utils.JsonUtils;
-import io.github.eoinkanro.fakerest.core.utils.SystemUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +23,7 @@ public class GroovyController extends FakeController {
     private static final String DEFAULT_GROOVY_IMPORT = """
             import io.github.eoinkanro.fakerest.core.model.GroovyAnswer\s
             import org.springframework.http.HttpStatus\s
-            import io.github.eoinkanro.fakerest.core.utils.JsonUtils\s
+            import io.github.eoinkanro.commons.utils.JsonUtils\s
             import io.github.eoinkanro.fakerest.core.model.ControllerData\s
             import org.springframework.http.HttpHeaders\s
             import com.fasterxml.jackson.databind.node.ObjectNode\s
@@ -33,17 +32,13 @@ public class GroovyController extends FakeController {
     private final GroovyShell groovyShell;
 
     @Builder
-    public GroovyController(ControllerConfig controllerConfig, ControllerData controllerData,  JsonUtils jsonUtils, HttpUtils httpUtils, SystemUtils systemUtils) {
+    public GroovyController(ControllerConfig controllerConfig, ControllerData controllerData, HttpUtils httpUtils) {
         Binding groovyBinding = new Binding();
         groovyShell = new GroovyShell(groovyBinding);
         groovyShell.setVariable("uri", controllerConfig.getUri());
         groovyShell.setVariable("controllerData", controllerData);
-        groovyShell.setVariable("jsonUtils", jsonUtils);
-        groovyShell.setVariable("systemUtils", systemUtils);
         this.controllerConfig = controllerConfig;
-        this.jsonUtils = jsonUtils;
         this.httpUtils = httpUtils;
-        this.systemUtils = systemUtils;
     }
 
     @Override
@@ -64,8 +59,8 @@ public class GroovyController extends FakeController {
             return processGroovyAnswer(groovyAnswer);
         } catch (Exception e) {
             log.error("Controller: something went wrong", e);
-            ObjectNode answer = jsonUtils.createJson();
-            jsonUtils.putString(answer, DESCRIPTION_PARAM, e.getMessage());
+            ObjectNode answer = JsonUtils.createJson();
+            JsonUtils.putString(answer, DESCRIPTION_PARAM, e.getMessage());
             return new ResponseEntity<>(answer.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

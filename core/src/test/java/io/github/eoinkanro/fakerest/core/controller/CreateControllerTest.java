@@ -1,6 +1,7 @@
 package io.github.eoinkanro.fakerest.core.controller;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.github.eoinkanro.commons.utils.JsonUtils;
 import io.github.eoinkanro.fakerest.core.FakeRestApplication;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -219,8 +220,8 @@ class CreateControllerTest extends FakeModifyControllerTest<CreateController> {
         CreateController subj = testControllersFabric.createCollectionOneCreateController(TEST_COLLECTION_URI_ONE_ID, requestMethod, delayMs, true);
         HttpServletRequest request = createRequest(requestMethod, JSON_NO_ID.toString());
         ResponseEntity<String> response = handleResponse(subj, request, delayMs);
-        ObjectNode responseBody = jsonUtils.toObjectNode(response.getBody());
-        jsonUtils.putString(JSON_NO_ID, FIRST_ID_PARAM, jsonUtils.getString(responseBody, FIRST_ID_PARAM));
+        ObjectNode responseBody = JsonUtils.toObjectNode(response.getBody());
+        JsonUtils.putString(JSON_NO_ID, FIRST_ID_PARAM, JsonUtils.getString(responseBody, FIRST_ID_PARAM));
         String key = controllerData.buildKey(JSON_NO_ID, Collections.singletonList(FIRST_ID_PARAM));
         assertEquals(JSON_NO_ID, responseBody);
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -355,9 +356,9 @@ class CreateControllerTest extends FakeModifyControllerTest<CreateController> {
         CreateController subj = testControllersFabric.createCollectionOneCreateController(TEST_COLLECTION_URI_TWO_IDS, requestMethod, delayMs, true);
         HttpServletRequest request = createRequest(requestMethod, JSON_NO_ID.toString());
         ResponseEntity<String> response = handleResponse(subj, request, delayMs);
-        ObjectNode responseBody = jsonUtils.toObjectNode(response.getBody());
-        jsonUtils.putString(JSON_NO_ID, FIRST_ID_PARAM, jsonUtils.getString(responseBody, FIRST_ID_PARAM));
-        jsonUtils.putString(JSON_NO_ID, SECOND_ID_PARAM, jsonUtils.getString(responseBody, SECOND_ID_PARAM));
+        ObjectNode responseBody = JsonUtils.toObjectNode(response.getBody());
+        JsonUtils.putString(JSON_NO_ID, FIRST_ID_PARAM, JsonUtils.getString(responseBody, FIRST_ID_PARAM));
+        JsonUtils.putString(JSON_NO_ID, SECOND_ID_PARAM, JsonUtils.getString(responseBody, SECOND_ID_PARAM));
         String key = controllerData.buildKey(JSON_NO_ID, Arrays.asList(FIRST_ID_PARAM, SECOND_ID_PARAM));
         assertEquals(JSON_NO_ID, responseBody);
         assertEquals(HttpStatus.OK, response.getStatusCode());

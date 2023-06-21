@@ -14,11 +14,7 @@ public class TestControllersFabric {
     @Autowired
     private ControllerData controllerData;
     @Autowired
-    private JsonUtils jsonUtils;
-    @Autowired
     private HttpUtils httpUtils;
-    @Autowired
-    private SystemUtils systemUtils;
     @Autowired
     private RestClient restClient;
 
@@ -84,7 +80,7 @@ public class TestControllersFabric {
     public GroovyController createGroovyController(String uri, RequestMethod method, long delayMs, String groovyScript) {
         ControllerConfig config = createControllerConfig(uri, method, ControllerFunctionMode.READ, null, delayMs,
                 false, groovyScript);
-        return new GroovyController(config, controllerData, jsonUtils, httpUtils, systemUtils);
+        return new GroovyController(config, controllerData, httpUtils);
     }
 
     private ControllerConfig createControllerConfig(String uri, RequestMethod method, ControllerFunctionMode functionMode,
@@ -116,9 +112,7 @@ public class TestControllersFabric {
                 .saveInfoMode(saveInfoMode)
                 .controllerData(controllerData)
                 .controllerConfig(config)
-                .jsonUtils(jsonUtils)
-                .httpUtils(httpUtils)
-                .systemUtils(systemUtils).build();
+                .httpUtils(httpUtils).build();
     }
 
     private DeleteController createDeleteController(ControllerConfig config, ControllerSaveInfoMode saveInfoMode) {
@@ -126,9 +120,7 @@ public class TestControllersFabric {
                 .saveInfoMode(saveInfoMode)
                 .controllerData(controllerData)
                 .controllerConfig(config)
-                .jsonUtils(jsonUtils)
-                .httpUtils(httpUtils)
-                .systemUtils(systemUtils).build();
+                .httpUtils(httpUtils).build();
     }
 
     private CreateController createCreateController(ControllerConfig config, ControllerSaveInfoMode saveInfoMode) {
@@ -136,9 +128,7 @@ public class TestControllersFabric {
                 .saveInfoMode(saveInfoMode)
                 .controllerData(controllerData)
                 .controllerConfig(config)
-                .jsonUtils(jsonUtils)
                 .httpUtils(httpUtils)
-                .systemUtils(systemUtils)
                 .idGenerator(new IdGenerator()).build();
     }
 
@@ -147,9 +137,7 @@ public class TestControllersFabric {
                 .saveInfoMode(saveInfoMode)
                 .controllerData(controllerData)
                 .controllerConfig(config)
-                .jsonUtils(jsonUtils)
-                .httpUtils(httpUtils)
-                .systemUtils(systemUtils).build();
+                .httpUtils(httpUtils).build();
     }
 
 }

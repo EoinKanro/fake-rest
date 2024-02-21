@@ -1,6 +1,6 @@
 package io.github.eoinkanro.fakerest.core.controller;
 
-import io.github.eoinkanro.fakerest.core.FakeRestApplication;
+import io.github.eoinkanro.fakerest.core.FareRestTestApplication;
 import io.github.eoinkanro.fakerest.core.utils.RestClient;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.SneakyThrows;

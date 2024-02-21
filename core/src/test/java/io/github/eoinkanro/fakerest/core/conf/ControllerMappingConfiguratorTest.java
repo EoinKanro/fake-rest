@@ -11,7 +11,7 @@ import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.eoinkanro.commons.utils.JsonUtils;
-import io.github.eoinkanro.fakerest.core.FakeRestApplication;
+import io.github.eoinkanro.fakerest.core.FareRestTestApplication;
 import io.github.eoinkanro.fakerest.core.controller.BaseController;
 import io.github.eoinkanro.fakerest.core.controller.CreateController;
 import io.github.eoinkanro.fakerest.core.controller.DeleteController;

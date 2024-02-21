@@ -1,11 +1,11 @@
 package io.github.eoinkanro.fakerest.ui.panel.config.impl;
 
-import io.github.ivanrosw.fakerest.core.conf.ConfigException;
-import io.github.ivanrosw.fakerest.core.conf.ControllerMappingConfigurator;
-import io.github.ivanrosw.fakerest.core.model.ControllerConfig;
-import io.github.ivanrosw.fakerest.core.model.ControllerFunctionMode;
-import io.github.ivanrosw.fakerest.core.model.GeneratorPattern;
-import io.github.ivanrosw.fakerest.core.utils.HttpUtils;
+import io.github.eoinkanro.fakerest.core.conf.ConfigException;
+import io.github.eoinkanro.fakerest.core.conf.ControllerMappingConfigurator;
+import io.github.eoinkanro.fakerest.core.model.ControllerConfig;
+import io.github.eoinkanro.fakerest.core.model.ControllerFunctionMode;
+import io.github.eoinkanro.fakerest.core.model.GeneratorPattern;
+import io.github.eoinkanro.fakerest.core.utils.HttpUtils;
 import io.github.eoinkanro.fakerest.ui.listener.KeyReleasedListener;
 import io.github.eoinkanro.fakerest.ui.panel.config.ConfigPanel;
 import io.github.eoinkanro.fakerest.ui.panel.table.impl.ControllerConfigScrollableTablePanel;

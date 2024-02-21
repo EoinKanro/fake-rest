@@ -10,6 +10,7 @@ import io.github.eoinkanro.fakerest.core.utils.HttpUtils;
 import io.github.eoinkanro.fakerest.core.utils.IdGenerator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
@@ -29,7 +30,10 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
     private final ControllerData controllerData;
 
     @Autowired
-    public ControllerMappingConfigurator(RequestMappingHandlerMapping handlerMapping, MappingConfiguratorData mappingConfiguratorData, YamlConfigurator yamlConfigurator, ControllerData controllerData) {
+    public ControllerMappingConfigurator(@Qualifier("requestMappingHandlerMapping") RequestMappingHandlerMapping handlerMapping,
+                                         MappingConfiguratorData mappingConfiguratorData,
+                                         YamlConfigurator yamlConfigurator,
+                                         ControllerData controllerData) {
         super(handlerMapping, mappingConfiguratorData, yamlConfigurator);
         this.controllerData = controllerData;
     }

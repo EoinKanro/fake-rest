@@ -1,19 +1,19 @@
 package io.github.eoinkanro.fakerest.ui;
 
+import io.github.eoinkanro.fakerest.core.conf.ControllerMappingConfigurator;
+import io.github.eoinkanro.fakerest.core.conf.MappingConfiguratorData;
+import io.github.eoinkanro.fakerest.core.conf.RouterMappingConfigurator;
+import io.github.eoinkanro.fakerest.core.model.ControllerConfig;
+import io.github.eoinkanro.fakerest.core.model.RouterConfig;
 import io.github.eoinkanro.fakerest.ui.panel.config.impl.ControllerConfigPanel;
 import io.github.eoinkanro.fakerest.ui.panel.config.impl.RouterConfigPanel;
 import io.github.eoinkanro.fakerest.ui.panel.table.impl.ControllerConfigScrollableTablePanel;
 import io.github.eoinkanro.fakerest.ui.panel.table.impl.RouterConfigScrollableTablePanel;
-import io.github.ivanrosw.fakerest.core.conf.ControllerMappingConfigurator;
-import io.github.ivanrosw.fakerest.core.conf.MappingConfiguratorData;
-import io.github.ivanrosw.fakerest.core.conf.RouterMappingConfigurator;
-import io.github.ivanrosw.fakerest.core.model.ControllerConfig;
-import io.github.ivanrosw.fakerest.core.model.RouterConfig;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import javax.swing.*;
 import java.awt.*;
 

@@ -9,7 +9,7 @@ import io.github.eoinkanro.commons.utils.JsonUtils;
 import io.github.eoinkanro.fakerest.core.model.BaseUriConfig;
 import io.github.eoinkanro.fakerest.core.model.ControllerConfig;
 import io.github.eoinkanro.fakerest.core.model.RouterConfig;
-import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.ConfigurableEnvironment;

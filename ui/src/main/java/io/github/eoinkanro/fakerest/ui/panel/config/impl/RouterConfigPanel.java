@@ -1,8 +1,8 @@
 package io.github.eoinkanro.fakerest.ui.panel.config.impl;
 
-import io.github.ivanrosw.fakerest.core.conf.ConfigException;
-import io.github.ivanrosw.fakerest.core.conf.RouterMappingConfigurator;
-import io.github.ivanrosw.fakerest.core.model.RouterConfig;
+import io.github.eoinkanro.fakerest.core.conf.ConfigException;
+import io.github.eoinkanro.fakerest.core.conf.RouterMappingConfigurator;
+import io.github.eoinkanro.fakerest.core.model.RouterConfig;
 import io.github.eoinkanro.fakerest.ui.listener.KeyReleasedListener;
 import io.github.eoinkanro.fakerest.ui.panel.config.ConfigPanel;
 import io.github.eoinkanro.fakerest.ui.panel.table.impl.RouterConfigScrollableTablePanel;

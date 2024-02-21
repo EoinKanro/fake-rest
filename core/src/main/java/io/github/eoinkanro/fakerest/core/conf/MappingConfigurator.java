@@ -2,12 +2,9 @@ package io.github.eoinkanro.fakerest.core.conf;
 
 import io.github.eoinkanro.fakerest.core.controller.BaseController;
 import io.github.eoinkanro.fakerest.core.model.UriConfigHolder;
-import io.github.eoinkanro.fakerest.core.utils.HttpUtils;
 import io.github.eoinkanro.fakerest.core.utils.IdGenerator;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
@@ -23,14 +20,15 @@ public abstract class MappingConfigurator {
 
     protected final IdGenerator idGenerator = new IdGenerator();
 
-    @Autowired
-    @Qualifier("requestMappingHandlerMapping")
-    private RequestMappingHandlerMapping handlerMapping;
-    @Autowired
-    protected MappingConfiguratorData mappingConfiguratorData;
+    private final RequestMappingHandlerMapping handlerMapping;
+    protected final MappingConfiguratorData mappingConfiguratorData;
+    protected final YamlConfigurator yamlConfigurator;
 
-    @Autowired
-    protected YamlConfigurator yamlConfigurator;
+    protected MappingConfigurator(RequestMappingHandlerMapping handlerMapping, MappingConfiguratorData mappingConfiguratorData, YamlConfigurator yamlConfigurator) {
+        this.handlerMapping = handlerMapping;
+        this.mappingConfiguratorData = mappingConfiguratorData;
+        this.yamlConfigurator = yamlConfigurator;
+    }
 
     /**
      * Register and run mappings

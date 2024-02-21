@@ -2,7 +2,7 @@ package io.github.eoinkanro.fakerest.core.controller;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import io.github.eoinkanro.commons.utils.JsonUtils;
-import io.github.eoinkanro.fakerest.core.FakeRestApplication;
+import io.github.eoinkanro.fakerest.core.FareRestTestApplication;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;

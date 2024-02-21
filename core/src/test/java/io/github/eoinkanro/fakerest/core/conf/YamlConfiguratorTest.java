@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import io.github.eoinkanro.fakerest.core.FakeRestApplication;
+import io.github.eoinkanro.fakerest.core.FareRestTestApplication;
 import io.github.eoinkanro.fakerest.core.model.ControllerConfig;
 import io.github.eoinkanro.fakerest.core.model.ControllerFunctionMode;
 import io.github.eoinkanro.fakerest.core.model.RouterConfig;

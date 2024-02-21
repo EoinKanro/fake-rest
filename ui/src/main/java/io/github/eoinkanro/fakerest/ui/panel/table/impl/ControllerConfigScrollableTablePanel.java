@@ -1,6 +1,6 @@
 package io.github.eoinkanro.fakerest.ui.panel.table.impl;
 
-import io.github.ivanrosw.fakerest.core.model.ControllerConfig;
+import io.github.eoinkanro.fakerest.core.model.ControllerConfig;
 import io.github.eoinkanro.fakerest.ui.panel.table.ScrollableTableAbstractPanel;
 import lombok.Setter;
 

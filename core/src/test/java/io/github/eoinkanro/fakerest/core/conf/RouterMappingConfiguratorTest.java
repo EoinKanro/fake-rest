@@ -8,7 +8,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import io.github.eoinkanro.fakerest.core.FakeRestApplication;
+import io.github.eoinkanro.fakerest.core.FareRestTestApplication;
 import io.github.eoinkanro.fakerest.core.controller.BaseController;
 import io.github.eoinkanro.fakerest.core.controller.RouterController;
 import io.github.eoinkanro.fakerest.core.model.RouterConfig;

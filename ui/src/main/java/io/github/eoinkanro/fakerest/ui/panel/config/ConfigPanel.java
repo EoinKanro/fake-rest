@@ -1,6 +1,6 @@
 package io.github.eoinkanro.fakerest.ui.panel.config;
 
-import io.github.ivanrosw.fakerest.core.model.BaseUriConfig;
+import io.github.eoinkanro.fakerest.core.model.BaseUriConfig;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.swing.*;

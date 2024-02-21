@@ -3,6 +3,7 @@ package io.github.eoinkanro.fakerest.core.controller;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.eoinkanro.commons.utils.JsonUtils;
 import io.github.eoinkanro.fakerest.core.model.ControllerSaveInfoMode;
+import io.github.eoinkanro.fakerest.core.utils.HttpUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -32,7 +33,7 @@ public abstract class FakeModifyController extends FakeController {
         ResponseEntity<String> result = null;
         String body = null;
         try {
-            body = httpUtils.readBody(request);
+            body = HttpUtils.readBody(request);
         } catch (Exception e) {
             result = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }

@@ -1,9 +1,7 @@
 package io.github.eoinkanro.fakerest.core.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,8 +13,9 @@ import java.util.Map;
  */
 @Getter
 @Setter
-@AllArgsConstructor
 @ToString
+@SuperBuilder
+@AllArgsConstructor
 public class ControllerConfig extends BaseUriConfig implements Copyable<ControllerConfig> {
 
     private ControllerFunctionMode functionMode;

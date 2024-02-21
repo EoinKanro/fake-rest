@@ -9,7 +9,7 @@ import io.github.eoinkanro.commons.utils.JsonUtils;
 import io.github.eoinkanro.fakerest.core.model.BaseUriConfig;
 import io.github.eoinkanro.fakerest.core.model.ControllerConfig;
 import io.github.eoinkanro.fakerest.core.model.RouterConfig;
-import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -27,10 +27,11 @@ import java.nio.file.Paths;
 
 /**
  * Class works with application.yml file
- * It's can create or delete controllers or routers configurations in file
+ * It can create or delete controllers or routers configurations in file
  */
 @Slf4j
 @Component
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class YamlConfigurator {
 
     private static final String YAML_NAME = "application.yml";
@@ -45,15 +46,9 @@ public class YamlConfigurator {
     private static final String CONTROLLER_PARAM = "controller";
     private static final String ROUTER_PARAM = "router";
 
-    private ObjectMapper mapper;
+    private final ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
 
-    @Autowired
-    private ConfigurableEnvironment env;
-
-    @PostConstruct
-    private void init() {
-        mapper = new ObjectMapper(new YAMLFactory());
-    }
+    private final ConfigurableEnvironment env;
 
     //CONTROLLER
 

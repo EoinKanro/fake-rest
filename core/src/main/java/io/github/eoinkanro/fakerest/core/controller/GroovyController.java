@@ -21,24 +21,25 @@ public class GroovyController extends FakeController {
     private static final String LOG_INFO = "Got request \r\nMethod: [{}] \r\nUri: [{}] \r\nBody: [{}]";
 
     private static final String DEFAULT_GROOVY_IMPORT = """
-            import io.github.eoinkanro.fakerest.core.model.GroovyAnswer\s
-            import org.springframework.http.HttpStatus\s
-            import io.github.eoinkanro.commons.utils.JsonUtils\s
-            import io.github.eoinkanro.fakerest.core.model.ControllerData\s
-            import org.springframework.http.HttpHeaders\s
-            import com.fasterxml.jackson.databind.node.ObjectNode\s
-            """;
+                                                        import io.github.eoinkanro.fakerest.core.model.GroovyAnswer
+                                                        import org.springframework.http.HttpStatus
+                                                        import io.github.eoinkanro.commons.utils.JsonUtils
+                                                        import io.github.eoinkanro.commons.utils.SystemUtils
+                                                        import io.github.eoinkanro.fakerest.core.utils.HttpUtils
+                                                        import io.github.eoinkanro.fakerest.core.model.ControllerData
+                                                        import org.springframework.http.HttpHeaders
+                                                        import com.fasterxml.jackson.databind.node.ObjectNode
+                                                        """;
 
     private final GroovyShell groovyShell;
 
     @Builder
-    public GroovyController(ControllerConfig controllerConfig, ControllerData controllerData, HttpUtils httpUtils) {
+    public GroovyController(ControllerConfig controllerConfig, ControllerData controllerData) {
         Binding groovyBinding = new Binding();
         groovyShell = new GroovyShell(groovyBinding);
         groovyShell.setVariable("uri", controllerConfig.getUri());
         groovyShell.setVariable("controllerData", controllerData);
         this.controllerConfig = controllerConfig;
-        this.httpUtils = httpUtils;
     }
 
     @Override
@@ -46,11 +47,11 @@ public class GroovyController extends FakeController {
         delay();
 
         try {
-            String body = httpUtils.readBody(request);
+            String body = HttpUtils.readBody(request);
             if (log.isTraceEnabled()) log.trace(LOG_INFO, request.getMethod(), request.getRequestURI(), body);
 
             groovyShell.setVariable("body", body);
-            HttpHeaders headers = httpUtils.readHeaders(request);
+            HttpHeaders headers = HttpUtils.readHeaders(request);
             groovyShell.setVariable("headers", headers);
 
             GroovyAnswer groovyAnswer = (GroovyAnswer) groovyShell.evaluate(DEFAULT_GROOVY_IMPORT +

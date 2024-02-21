@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import io.github.eoinkanro.fakerest.core.FakeRestApplication;
+import io.github.eoinkanro.fakerest.core.FareRestTestApplication;
 import io.github.eoinkanro.fakerest.core.model.ControllerConfig;
 import io.github.eoinkanro.fakerest.core.model.ControllerFunctionMode;
 import io.github.eoinkanro.fakerest.core.model.RouterConfig;
@@ -26,8 +26,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+@SpringBootTest(classes = FareRestTestApplication.class)
 @TestPropertySource(properties = {"spring.config.location = classpath:configuration-tests.yml"})
-@SpringBootTest(classes = FakeRestApplication.class)
 class YamlConfiguratorTest {
 
   private static final String TEST_FILE_NAME = "configuration-tests.yml";

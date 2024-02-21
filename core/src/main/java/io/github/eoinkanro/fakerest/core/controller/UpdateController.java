@@ -2,6 +2,7 @@ package io.github.eoinkanro.fakerest.core.controller;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.eoinkanro.commons.utils.JsonUtils;
+import io.github.eoinkanro.fakerest.core.utils.HttpUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -43,7 +44,7 @@ public class UpdateController extends FakeModifyController {
         ObjectNode bodyJson = JsonUtils.toObjectNode(body);
 
         if (bodyJson != null && !bodyJson.isEmpty()) {
-            Map<String, String> ids = httpUtils.getUrlIds(request);
+            Map<String, String> ids = HttpUtils.getUrlIds(request);
             String key = controllerData.buildKey(ids, controllerConfig.getIdParams());
 
             if (controllerData.containsKey(controllerConfig.getUri(), key)) {

@@ -21,7 +21,6 @@ public class RouterController implements BaseController {
     private static final String LOG_INFO = "Got router request \r\nMethod: [{}] \r\nUri: [{}]\r\nTo url:[{}] \r\nBody: [{}] \r\nHeaders: [{}]";
 
     private RouterConfig conf;
-    private HttpUtils httpUtils;
     private RestClient restClient;
 
     @Override
@@ -30,8 +29,8 @@ public class RouterController implements BaseController {
         try {
             HttpMethod method = HttpMethod.valueOf(conf.getMethod().name());
             URI uri = buildUri(request);
-            String body = httpUtils.readBody(request);
-            HttpHeaders headers = httpUtils.readHeaders(request);
+            String body = HttpUtils.readBody(request);
+            HttpHeaders headers = HttpUtils.readHeaders(request);
 
             if (log.isTraceEnabled()) log.trace(LOG_INFO, request.getMethod(), request.getRequestURI(), uri, body, headers);
 

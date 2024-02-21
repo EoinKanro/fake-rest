@@ -14,8 +14,6 @@ public class TestControllersFabric {
     @Autowired
     private ControllerData controllerData;
     @Autowired
-    private HttpUtils httpUtils;
-    @Autowired
     private RestClient restClient;
 
     public ReadController createStaticReadController(String uri, RequestMethod method, String answer, long delayMs) {
@@ -74,13 +72,13 @@ public class TestControllersFabric {
 
     public RouterController createRouterController(String fromUri, String toUri, RequestMethod method) {
         RouterConfig routerConfig = createRouterConfig(fromUri, toUri, method);
-        return new RouterController(routerConfig, httpUtils, restClient);
+        return new RouterController(routerConfig, restClient);
     }
 
     public GroovyController createGroovyController(String uri, RequestMethod method, long delayMs, String groovyScript) {
         ControllerConfig config = createControllerConfig(uri, method, ControllerFunctionMode.READ, null, delayMs,
                 false, groovyScript);
-        return new GroovyController(config, controllerData, httpUtils);
+        return new GroovyController(config, controllerData);
     }
 
     private ControllerConfig createControllerConfig(String uri, RequestMethod method, ControllerFunctionMode functionMode,
@@ -93,7 +91,7 @@ public class TestControllersFabric {
         config.setDelayMs(delayMs);
         config.setGenerateId(generateId);
         config.setGroovyScript(groovyScript);
-        List<String> idParams = httpUtils.getIdParams(uri);
+        List<String> idParams = HttpUtils.getIdParams(uri);
         config.setIdParams(idParams);
         idParams.forEach(id -> config.getGenerateIdPatterns().put(id, GeneratorPattern.SEQUENCE));
         return config;
@@ -112,7 +110,7 @@ public class TestControllersFabric {
                 .saveInfoMode(saveInfoMode)
                 .controllerData(controllerData)
                 .controllerConfig(config)
-                .httpUtils(httpUtils).build();
+                .build();
     }
 
     private DeleteController createDeleteController(ControllerConfig config, ControllerSaveInfoMode saveInfoMode) {
@@ -120,7 +118,7 @@ public class TestControllersFabric {
                 .saveInfoMode(saveInfoMode)
                 .controllerData(controllerData)
                 .controllerConfig(config)
-                .httpUtils(httpUtils).build();
+                .build();
     }
 
     private CreateController createCreateController(ControllerConfig config, ControllerSaveInfoMode saveInfoMode) {
@@ -128,8 +126,8 @@ public class TestControllersFabric {
                 .saveInfoMode(saveInfoMode)
                 .controllerData(controllerData)
                 .controllerConfig(config)
-                .httpUtils(httpUtils)
-                .idGenerator(new IdGenerator()).build();
+                .idGenerator(new IdGenerator())
+                .build();
     }
 
     private UpdateController createUpdateController(ControllerConfig config, ControllerSaveInfoMode saveInfoMode) {
@@ -137,7 +135,7 @@ public class TestControllersFabric {
                 .saveInfoMode(saveInfoMode)
                 .controllerData(controllerData)
                 .controllerConfig(config)
-                .httpUtils(httpUtils).build();
+                .build();
     }
 
 }

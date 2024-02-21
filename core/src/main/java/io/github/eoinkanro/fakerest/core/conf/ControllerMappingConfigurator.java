@@ -6,11 +6,14 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.eoinkanro.commons.utils.JsonUtils;
 import io.github.eoinkanro.fakerest.core.controller.*;
 import io.github.eoinkanro.fakerest.core.model.*;
+import io.github.eoinkanro.fakerest.core.utils.HttpUtils;
 import io.github.eoinkanro.fakerest.core.utils.IdGenerator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,8 +27,16 @@ import java.util.Map;
 @Component
 public class ControllerMappingConfigurator extends MappingConfigurator {
 
+    private final ControllerData controllerData;
+
     @Autowired
-    private ControllerData controllerData;
+    public ControllerMappingConfigurator(@Qualifier("requestMappingHandlerMapping") RequestMappingHandlerMapping handlerMapping,
+                                         MappingConfiguratorData mappingConfiguratorData,
+                                         YamlConfigurator yamlConfigurator,
+                                         ControllerData controllerData) {
+        super(handlerMapping, mappingConfiguratorData, yamlConfigurator);
+        this.controllerData = controllerData;
+    }
 
     /**
      * Method to init and run controller
@@ -36,7 +47,7 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
      */
     public void registerController(ControllerConfig conf) throws ConfigException {
         beforeInitControllerCheckBase(conf);
-        List<String> idParams = httpUtils.getIdParams(conf.getUri());
+        List<String> idParams = HttpUtils.getIdParams(conf.getUri());
         ControllerSaveInfoMode mode = identifyMode(conf, idParams);
         beforeInitControllerCheckMode(conf, mode);
 
@@ -100,7 +111,7 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
         if (urls.contains(conf.getUri()) ||
                 (conf.getFunctionMode() == ControllerFunctionMode.READ &&
                  mode == ControllerSaveInfoMode.COLLECTION &&
-                 urls.contains(httpUtils.getBaseUri(conf.getUri())))) {
+                 urls.contains(HttpUtils.getBaseUri(conf.getUri())))) {
             throw new ConfigException(String.format("Controller: Duplicated urls: %s", conf.getUri()));
         }
     }
@@ -131,7 +142,7 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
         List<String> usedUrls = new ArrayList<>();
 
         if (mode == ControllerSaveInfoMode.COLLECTION) {
-            String baseUri = httpUtils.getBaseUri(conf.getUri());
+            String baseUri = HttpUtils.getBaseUri(conf.getUri());
             RequestMappingInfo getAllMappingInfo = RequestMappingInfo
                     .paths(baseUri)
                     .methods(conf.getMethod())
@@ -141,7 +152,6 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
                     .saveInfoMode(ControllerSaveInfoMode.COLLECTION_ALL)
                     .controllerData(controllerData)
                     .controllerConfig(conf)
-                    .httpUtils(httpUtils)
                     .build();
             requestMappingInfo.put(getAllMappingInfo, readAllController);
             usedUrls.add(baseUri);
@@ -155,7 +165,6 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
                     .saveInfoMode(ControllerSaveInfoMode.COLLECTION_ONE)
                     .controllerData(controllerData)
                     .controllerConfig(conf)
-                    .httpUtils(httpUtils)
                     .build();
             requestMappingInfo.put(readOneMappingInfo, getOneController);
             usedUrls.add(conf.getUri());
@@ -170,7 +179,6 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
                     .saveInfoMode(ControllerSaveInfoMode.STATIC)
                     .controllerData(controllerData)
                     .controllerConfig(conf)
-                    .httpUtils(httpUtils)
                     .build();
             requestMappingInfo.put(readStaticMappingInfo, getStaticController);
             usedUrls.add(conf.getUri());
@@ -191,7 +199,7 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
         IdGenerator idGenerator = new IdGenerator();
 
         if (mode == ControllerSaveInfoMode.COLLECTION) {
-            String baseUri = httpUtils.getBaseUri(conf.getUri());
+            String baseUri = HttpUtils.getBaseUri(conf.getUri());
             RequestMappingInfo createOneInfo = RequestMappingInfo
                     .paths(baseUri)
                     .methods(conf.getMethod())
@@ -201,7 +209,6 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
                     .saveInfoMode(ControllerSaveInfoMode.COLLECTION_ONE)
                     .controllerData(controllerData)
                     .controllerConfig(conf)
-                    .httpUtils(httpUtils)
                     .idGenerator(idGenerator)
                     .build();
             requestMappingInfo.put(createOneInfo, createOneController);
@@ -217,7 +224,6 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
                     .saveInfoMode(ControllerSaveInfoMode.STATIC)
                     .controllerData(controllerData)
                     .controllerConfig(conf)
-                    .httpUtils(httpUtils)
                     .idGenerator(idGenerator)
                     .build();
             requestMappingInfo.put(createStaticInfo, createStaticController);
@@ -247,7 +253,6 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
                     .saveInfoMode(ControllerSaveInfoMode.COLLECTION_ONE)
                     .controllerData(controllerData)
                     .controllerConfig(conf)
-                    .httpUtils(httpUtils)
                     .build();
             requestMappingInfo.put(updateOneInfo, updateOneController);
             usedUrls.add(conf.getUri());
@@ -262,7 +267,6 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
                     .saveInfoMode(ControllerSaveInfoMode.STATIC)
                     .controllerData(controllerData)
                     .controllerConfig(conf)
-                    .httpUtils(httpUtils)
                     .build();
             requestMappingInfo.put(updateStaticInfo, updateStaticController);
             usedUrls.add(conf.getUri());
@@ -291,7 +295,6 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
                     .saveInfoMode(ControllerSaveInfoMode.COLLECTION_ONE)
                     .controllerData(controllerData)
                     .controllerConfig(conf)
-                    .httpUtils(httpUtils)
                     .build();
             requestMappingInfo.put(deleteOneInfo, deleteOneController);
             usedUrls.add(conf.getUri());
@@ -306,7 +309,6 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
                     .saveInfoMode(ControllerSaveInfoMode.STATIC)
                     .controllerData(controllerData)
                     .controllerConfig(conf)
-                    .httpUtils(httpUtils)
                     .build();
             requestMappingInfo.put(deleteStaticInfo, deleteStaticController);
             usedUrls.add(conf.getUri());
@@ -332,7 +334,6 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
         GroovyController groovyController = GroovyController.builder()
                 .controllerData(controllerData)
                 .controllerConfig(conf)
-                .httpUtils(httpUtils)
                 .build();
 
         requestMappingInfo.put(groovyInfo, groovyController);
@@ -350,11 +351,10 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
         if (conf.getAnswer() != null && (conf.getAnswer().contains("{") || conf.getAnswer().contains("["))) {
             JsonNode answer = JsonUtils.toJsonNode(conf.getAnswer());
 
-            if (answer instanceof ArrayNode) {
-                ArrayNode array = (ArrayNode) answer;
-                array.forEach(jsonNode -> addAnswerData(conf, (ObjectNode) jsonNode));
-            } else if (answer instanceof ObjectNode) {
-                addAnswerData(conf, (ObjectNode) answer);
+            if (answer instanceof ArrayNode answerArray) {
+                answerArray.forEach(jsonNode -> addAnswerData(conf, (ObjectNode) jsonNode));
+            } else if (answer instanceof ObjectNode answerObject) {
+                addAnswerData(conf, answerObject);
             } else {
                 log.warn("Cant put data [{}] to collection [{}]. Its not json", answer, conf.getUri());
             }

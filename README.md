@@ -73,8 +73,8 @@ You can use several variables in code:
 - uri - uri of controller
 - headers - headers from request, spring object
 - [controllerData](core/src/main/java/io/github/eoinkanro/fakerest/core/model/ControllerData.java) - collection with data for all collection controllers
-- [jsonUtils](core/src/main/java/io/github/eoinkanro/fakerest/core/utils/JsonUtils.java) - utils to work with json
-- [systemUtils](core/src/main/java/io/github/eoinkanro/fakerest/core/utils/SystemUtils.java) - it has just one method for now - sleep
+- JsonUtils - utils to work with json
+- SystemUtils- it has just one method for now - sleep
 
 Groovy code should return [GroovyAnswer](core/src/main/java/io/github/eoinkanro/fakerest/core/model/GroovyAnswer.java)
 

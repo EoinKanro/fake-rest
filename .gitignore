@@ -36,5 +36,3 @@ build/
 /appbuild/application.yml
 /core/application.yml
 /api/application.yml
-/appbuild/src/
-ui/node/

@@ -3,34 +3,23 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>fakerest</artifactId>
-        <groupId>io.github.eoinkanro</groupId>
-        <version>1.1.1</version>
+        <groupId>io.github.eoinkanro.fakerest</groupId>
+        <artifactId>parent</artifactId>
+        <version>1.2.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>fakerest-appbuild</artifactId>
+    <artifactId>appbuild</artifactId>
 
     <dependencies>
         <dependency>
-            <groupId>io.github.eoinkanro</groupId>
-            <artifactId>fakerest-core</artifactId>
+            <groupId>io.github.eoinkanro.fakerest</groupId>
+            <artifactId>core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>io.github.eoinkanro</groupId>
-            <artifactId>fakerest-api</artifactId>
-            <version>${project.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>io.github.eoinkanro</groupId>
-                    <artifactId>core</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>io.github.eoinkanro</groupId>
-            <artifactId>fakerest-ui</artifactId>
+            <groupId>io.github.eoinkanro.fakerest</groupId>
+            <artifactId>ui</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
@@ -49,10 +38,6 @@
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
                         </exclude>
-                        <exclude>
-                            <groupId>io.github.eoinkanro</groupId>
-                            <artifactId>fakerest-ui</artifactId>
-                        </exclude>
                     </excludes>
                 </configuration>
                 <executions>
@@ -63,32 +48,13 @@
                     </execution>
                 </executions>
             </plugin>
-            <!-- Copy front -->
             <plugin>
-                <artifactId>maven-resources-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>copy-front</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>src/main/resources/public</outputDirectory>
-                            <overwrite>true</overwrite>
-                            <resources>
-                                <resource>
-                                    <directory>${project.parent.basedir}/ui/target/dist</directory>
-                                    <includes>
-                                        <include>static/</include>
-                                        <include>index.html</include>
-                                        <include>favicon.ico</include>
-                                    </includes>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-maven-plugin</artifactId>
+                <version>0.0.8</version>
+                <configuration>
+                    <mainClass>io.github.eoinkanro.fakerest.FakeRestApplication</mainClass>
+                </configuration>
             </plugin>
 
             <!--Jacoco-->

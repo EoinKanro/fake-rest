@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.eoinkanro.commons.utils.JsonUtils;
 import io.github.eoinkanro.fakerest.core.model.ControllerSaveInfoMode;
+import io.github.eoinkanro.fakerest.core.utils.HttpUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -48,7 +49,7 @@ public class ReadController extends FakeController {
     private ResponseEntity<String> handleAll() {
         ResponseEntity<String> result;
         Map<String, ObjectNode> allData = controllerData.getAllData(controllerConfig.getUri());
-        if (allData.size() > 0) {
+        if (!allData.isEmpty()) {
             ArrayNode array = JsonUtils.createArray();
             allData.forEach((key, data) -> array.add(data));
             result = new ResponseEntity<>(array.toString(), HttpStatus.OK);
@@ -67,7 +68,7 @@ public class ReadController extends FakeController {
     private ResponseEntity<String> handleId(HttpServletRequest request) {
         ResponseEntity<String> result;
 
-        Map<String, String> urlIds = httpUtils.getUrlIds(request);
+        Map<String, String> urlIds = HttpUtils.getUrlIds(request);
         String key = controllerData.buildKey(urlIds, controllerConfig.getIdParams());
 
         if (controllerData.containsKey(controllerConfig.getUri(), key)) {

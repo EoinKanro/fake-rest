@@ -4,6 +4,7 @@ import io.github.eoinkanro.fakerest.core.model.ControllerConfig;
 import io.github.eoinkanro.fakerest.core.model.RouterConfig;
 import jakarta.annotation.PostConstruct;
 import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import java.util.List;
 @Slf4j
 @Configuration
 @ConfigurationProperties(prefix = "rest")
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class MappingConfigurationLoader {
 
     @Setter(AccessLevel.PACKAGE)
@@ -26,10 +28,8 @@ public class MappingConfigurationLoader {
     @Setter(AccessLevel.PACKAGE)
     private List<RouterConfig> routers;
 
-    @Autowired
-    private ControllerMappingConfigurator controllersConfigurator;
-    @Autowired
-    private RouterMappingConfigurator routersConfigurator;
+    private final ControllerMappingConfigurator controllersConfigurator;
+    private final RouterMappingConfigurator routersConfigurator;
 
     @PostConstruct
     private void init() throws ConfigException {

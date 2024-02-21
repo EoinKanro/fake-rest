@@ -8,8 +8,10 @@ import io.github.eoinkanro.fakerest.core.model.UriConfigHolder;
 import io.github.eoinkanro.fakerest.core.utils.RestClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,8 +25,16 @@ import java.util.Map;
 @Component
 public class RouterMappingConfigurator extends MappingConfigurator {
 
+    private final RestClient restClient;
+
     @Autowired
-    private RestClient restClient;
+    public RouterMappingConfigurator(@Qualifier("requestMappingHandlerMapping") RequestMappingHandlerMapping handlerMapping,
+                                     MappingConfiguratorData mappingConfiguratorData,
+                                     YamlConfigurator yamlConfigurator,
+                                     RestClient restClient) {
+        super(handlerMapping, mappingConfiguratorData, yamlConfigurator);
+        this.restClient = restClient;
+    }
 
     /**
      * Method to init and run router controller
@@ -43,7 +53,7 @@ public class RouterMappingConfigurator extends MappingConfigurator {
                 .methods(conf.getMethod())
                 .build();
 
-        RouterController routerController = new RouterController(conf, httpUtils, restClient);
+        RouterController routerController = new RouterController(conf, restClient);
         requestMappingInfo.put(routerInfo, routerController);
         usedUrls.add(conf.getUri());
         UriConfigHolder<RouterConfig> configHolder = new UriConfigHolder<>(conf, requestMappingInfo, usedUrls);

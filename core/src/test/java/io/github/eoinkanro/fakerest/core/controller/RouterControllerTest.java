@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
-@SpringBootTest(classes = FakeRestApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = FareRestTestApplication.class)
 class RouterControllerTest extends FakeControllerTest {
 
     private static final String TEST_URL = "http://localhost";
@@ -70,8 +70,10 @@ class RouterControllerTest extends FakeControllerTest {
 
     private String urlWithPort;
 
+    @SneakyThrows
     @BeforeEach
-    void init() throws NoSuchFieldException, IllegalAccessException {
+    void init() {
+        super.init();
         Field restTemplate = restClient.getClass().getDeclaredField("restTemplate");
         restTemplate.setAccessible(true);
         mockServer = MockRestServiceServer.createServer((RestTemplate) restTemplate.get(restClient));

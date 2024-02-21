@@ -6,6 +6,7 @@ import io.github.eoinkanro.fakerest.core.conf.MappingConfigurationLoader;
 import io.github.eoinkanro.fakerest.core.model.ControllerData;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -19,7 +20,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 abstract class FakeControllerTest {
@@ -46,6 +47,7 @@ abstract class FakeControllerTest {
     ControllerData controllerData;
     @MockBean
     MappingConfigurationLoader mappingConfigurationLoader;
+    MockedStatic<SystemUtils> mockedStatic;
 
     ObjectNode JSON_NO_ID;
     ObjectNode JSON_ONE_ID_FIRST;
@@ -55,6 +57,16 @@ abstract class FakeControllerTest {
     ObjectNode JSON_TWO_ID;
     ObjectNode JSON_TWO_ID_BAD;
     ObjectNode JSON_TWO_ID_EMPTY_ID;
+
+    @BeforeEach
+    void init() {
+        this.mockedStatic = Mockito.mockStatic(SystemUtils.class);
+    }
+
+    @AfterEach
+    void end() {
+        this.mockedStatic.close();
+    }
 
     private static Stream<Arguments> provideAllMethodsDelay(long delayMs) {
         RequestMethod[] requestMethods = RequestMethod.values();
@@ -219,9 +231,13 @@ abstract class FakeControllerTest {
 
         long now = System.currentTimeMillis();
         ResponseEntity<String> response = fakeController.handle(request);
-        assertTrue(System.currentTimeMillis() - now >= delayMs);
 
         verify(fakeController, times(1)).delay();
+        if (delayMs > 0) {
+            mockedStatic.verify(times(1), () -> SystemUtils.sleep(delayMs));
+        } else {
+            mockedStatic.verify(times(0), () -> SystemUtils.sleep(anyLong()));
+        }
         return response;
     }
 }

@@ -18,7 +18,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootTest(classes = FakeRestApplication.class)
+@SpringBootTest(classes = FareRestTestApplication.class)
 class ReadControllerTest extends FakeControllerTest {
 
     void staticController_EmptyAnswer(RequestMethod requestMethod, long delayMs) {

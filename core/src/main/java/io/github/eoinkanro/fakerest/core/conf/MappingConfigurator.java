@@ -57,7 +57,7 @@ public abstract class MappingConfigurator {
      * @param configHolder - config holder with initiated request mappings and controllers
      */
     protected void unregisterMapping(UriConfigHolder<?> configHolder) {
-        configHolder.getRequestMappingInfo().keySet().forEach(requestMappingInfo -> handlerMapping.unregisterMapping(requestMappingInfo));
+        configHolder.getRequestMappingInfo().keySet().forEach(handlerMapping::unregisterMapping);
         if (log.isDebugEnabled()) log.debug("Uri [{}] with method [{}] unregistered", configHolder.getConfig().getUri(), configHolder.getConfig().getMethod());
     }
 

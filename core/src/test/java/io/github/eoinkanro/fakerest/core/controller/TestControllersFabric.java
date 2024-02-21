@@ -126,7 +126,8 @@ public class TestControllersFabric {
                 .saveInfoMode(saveInfoMode)
                 .controllerData(controllerData)
                 .controllerConfig(config)
-                .idGenerator(new IdGenerator()).build();
+                .idGenerator(new IdGenerator())
+                .build();
     }
 
     private UpdateController createUpdateController(ControllerConfig config, ControllerSaveInfoMode saveInfoMode) {

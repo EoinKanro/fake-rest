@@ -9,12 +9,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest(classes = FakeRestApplication.class)
+@SpringBootTest(classes = FareRestTestApplication.class)
 class DeleteControllerTest extends FakeModifyControllerTest<DeleteController> {
 
     @Override

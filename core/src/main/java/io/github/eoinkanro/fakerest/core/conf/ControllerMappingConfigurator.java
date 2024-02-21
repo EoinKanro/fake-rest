@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,8 +26,13 @@ import java.util.Map;
 @Component
 public class ControllerMappingConfigurator extends MappingConfigurator {
 
+    private final ControllerData controllerData;
+
     @Autowired
-    private ControllerData controllerData;
+    public ControllerMappingConfigurator(RequestMappingHandlerMapping handlerMapping, MappingConfiguratorData mappingConfiguratorData, YamlConfigurator yamlConfigurator, ControllerData controllerData) {
+        super(handlerMapping, mappingConfiguratorData, yamlConfigurator);
+        this.controllerData = controllerData;
+    }
 
     /**
      * Method to init and run controller
@@ -341,11 +347,10 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
         if (conf.getAnswer() != null && (conf.getAnswer().contains("{") || conf.getAnswer().contains("["))) {
             JsonNode answer = JsonUtils.toJsonNode(conf.getAnswer());
 
-            if (answer instanceof ArrayNode) {
-                ArrayNode array = (ArrayNode) answer;
-                array.forEach(jsonNode -> addAnswerData(conf, (ObjectNode) jsonNode));
-            } else if (answer instanceof ObjectNode) {
-                addAnswerData(conf, (ObjectNode) answer);
+            if (answer instanceof ArrayNode answerArray) {
+                answerArray.forEach(jsonNode -> addAnswerData(conf, (ObjectNode) jsonNode));
+            } else if (answer instanceof ObjectNode answerObject) {
+                addAnswerData(conf, answerObject);
             } else {
                 log.warn("Cant put data [{}] to collection [{}]. Its not json", answer, conf.getUri());
             }

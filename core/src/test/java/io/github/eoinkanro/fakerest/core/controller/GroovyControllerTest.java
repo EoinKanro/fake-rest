@@ -19,7 +19,7 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SpringBootTest(classes = FakeRestApplication.class)
+@SpringBootTest(classes = FareRestTestApplication.class)
 class GroovyControllerTest extends FakeControllerTest {
 
     void sendRequest_UseUri_ReturnUri(RequestMethod method, long delay) {

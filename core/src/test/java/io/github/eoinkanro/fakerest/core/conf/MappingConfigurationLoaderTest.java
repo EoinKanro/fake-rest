@@ -15,7 +15,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest(classes = FakeRestApplication.class)
+@SpringBootTest(classes = FareRestTestApplication.class)
 @TestPropertySource(properties = {"spring.config.location = classpath:configuration-tests.yml"})
 class MappingConfigurationLoaderTest {
 

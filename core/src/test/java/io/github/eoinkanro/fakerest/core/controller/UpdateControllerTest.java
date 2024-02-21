@@ -16,7 +16,7 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
-@SpringBootTest(classes = FakeRestApplication.class)
+@SpringBootTest(classes = FareRestTestApplication.class)
 class UpdateControllerTest extends FakeModifyControllerTest<UpdateController> {
 
     @Override

@@ -2,13 +2,11 @@ package io.github.eoinkanro.fakerest.core.model;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.eoinkanro.commons.utils.JsonUtils;
-import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 /**
  * Bean contains all data for Controllers with mode {@link ControllerSaveInfoMode#COLLECTION}
@@ -23,12 +21,7 @@ public class ControllerData {
     /**
      * Collection with url - controller data
      */
-    private Map<String, Map<String, ObjectNode>> allData;
-
-    @PostConstruct
-    private void init() {
-        allData = new ConcurrentHashMap<>();
-    }
+    private final Map<String, Map<String, ObjectNode>> allData = new ConcurrentHashMap<>();
 
     public Map<String, ObjectNode> getAllData(String url) {
         return getDataCollection(url);
@@ -59,12 +52,12 @@ public class ControllerData {
     }
 
     public String buildKey(ObjectNode data, List<String> idParams) {
-        List<String> ids = idParams.stream().map(param -> JsonUtils.getString(data, param)).collect(Collectors.toList());
+        List<String> ids = idParams.stream().map(param -> JsonUtils.getString(data, param)).toList();
         return String.join(KEY_DELIMITER, ids);
     }
 
     public String buildKey(Map<String, String> data, List<String> idParams) {
-        List<String> ids = idParams.stream().map(data::get).collect(Collectors.toList());
+        List<String> ids = idParams.stream().map(data::get).toList();
         return String.join(KEY_DELIMITER, ids);
     }
 

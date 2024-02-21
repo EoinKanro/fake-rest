@@ -23,7 +23,7 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 
-@SpringBootTest(classes = FakeRestApplication.class)
+@SpringBootTest(classes = FareRestTestApplication.class)
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 class RouterMappingConfiguratorTest extends MappingConfiguratorTest {
 

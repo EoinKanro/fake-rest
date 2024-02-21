@@ -1,6 +1,7 @@
 package io.github.eoinkanro.fakerest.core.model;
 
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
  */
 @Getter
 @Setter
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString

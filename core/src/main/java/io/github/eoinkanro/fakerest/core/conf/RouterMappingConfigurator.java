@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,8 +24,13 @@ import java.util.Map;
 @Component
 public class RouterMappingConfigurator extends MappingConfigurator {
 
+    private final RestClient restClient;
+
     @Autowired
-    private RestClient restClient;
+    public RouterMappingConfigurator(RequestMappingHandlerMapping handlerMapping, MappingConfiguratorData mappingConfiguratorData, YamlConfigurator yamlConfigurator, RestClient restClient) {
+        super(handlerMapping, mappingConfiguratorData, yamlConfigurator);
+        this.restClient = restClient;
+    }
 
     /**
      * Method to init and run router controller

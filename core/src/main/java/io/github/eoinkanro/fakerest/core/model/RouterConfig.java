@@ -1,15 +1,17 @@
 package io.github.eoinkanro.fakerest.core.model;
 
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 /**
  * Config for routers
  */
 @Getter
 @Setter
+@ToString
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 public class RouterConfig extends BaseUriConfig implements Copyable<RouterConfig> {
 
     private String toUrl;

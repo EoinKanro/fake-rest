@@ -1,4 +1,4 @@
-package io.github.ivanrosw.fakerest.ui.utils;
+package io.github.eoinkanro.fakerest.ui.utils;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

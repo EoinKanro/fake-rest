@@ -9,6 +9,7 @@ import io.github.eoinkanro.fakerest.core.utils.HttpUtils;
 import io.github.eoinkanro.fakerest.ui.listener.KeyReleasedListener;
 import io.github.eoinkanro.fakerest.ui.panel.config.ConfigPanel;
 import io.github.eoinkanro.fakerest.ui.panel.table.impl.ControllerConfigScrollableTablePanel;
+import io.github.eoinkanro.fakerest.ui.utils.FrameUtils;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.swing.*;
@@ -92,17 +93,18 @@ public class ControllerConfigPanel extends ConfigPanel<ControllerConfig> {
     protected JButton createDeleteButton() {
         JButton deleteButton = new JButton("Delete");
 
-        deleteButton.addActionListener(event -> {
-            try {
-                controllerMappingConfigurator.unregisterController(config.getId());
-                controllerConfigScrollableTablePanel.removeRow(config);
-
-                createNotificationFrame(NOTIFICATION_DELETED);
-                setConfig(new ControllerConfig());
-            } catch (ConfigException e) {
-                createNotificationFrame(e.getMessage());
-            }
-        });
+        deleteButton.addActionListener(event -> FrameUtils
+                .createConfirmationFrame(CONFIRMATION_NOTIFICATION, () -> {
+                    try {
+                        controllerMappingConfigurator.unregisterController(config.getId());
+                        controllerConfigScrollableTablePanel.removeRow(config);
+                        FrameUtils.createNotificationFrame(NOTIFICATION_DELETED);
+                        setConfig(new ControllerConfig());
+                    } catch (ConfigException e) {
+                        FrameUtils.createNotificationFrame(e.getMessage());
+                    }
+                })
+        );
         return deleteButton;
     }
 
@@ -121,10 +123,10 @@ public class ControllerConfigPanel extends ConfigPanel<ControllerConfig> {
                 controllerMappingConfigurator.registerController(config);
                 controllerConfigScrollableTablePanel.addRow(config);
 
-                createNotificationFrame(isUpdate ? NOTIFICATION_UPDATED : NOTIFICATION_CREATED);
+                FrameUtils.createNotificationFrame(isUpdate ? NOTIFICATION_UPDATED : NOTIFICATION_CREATED);
                 setConfig(new ControllerConfig());
             } catch (ConfigException e) {
-                createNotificationFrame(e.getMessage());
+                FrameUtils.createNotificationFrame(e.getMessage());
             }
         });
         return saveButton;

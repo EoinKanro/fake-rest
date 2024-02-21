@@ -16,6 +16,7 @@ public abstract class ConfigPanel<T extends BaseUriConfig> extends JScrollPane {
     protected static final String NOTIFICATION_DELETED = "Configuration deleted";
     protected static final String NOTIFICATION_CREATED = "Configuration saved";
     protected static final String NOTIFICATION_UPDATED = "Configuration updated";
+    protected static final String CONFIRMATION_NOTIFICATION = "Delete the configuration?";
 
     private final JPanel mainPanel;
 
@@ -65,22 +66,7 @@ public abstract class ConfigPanel<T extends BaseUriConfig> extends JScrollPane {
         deleteButton.setVisible(isVisible);
     }
 
-    protected void createNotificationFrame(String notification) {
-        JFrame frame = new JFrame();
 
-        JPanel panel = new JPanel();
-        panel.setPreferredSize(new Dimension(300, 50));
-        panel.setLayout(new BorderLayout());
-        panel.add(new JLabel(notification), BorderLayout.CENTER);
-
-        JScrollPane scrollPane = new JScrollPane();
-        scrollPane.setViewportView(panel);
-
-        frame.add(scrollPane);
-        frame.pack();
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
-    }
 
     protected JComboBox<RequestMethod> createMethodDropDown() {
         JComboBox<RequestMethod> result = new JComboBox<>();

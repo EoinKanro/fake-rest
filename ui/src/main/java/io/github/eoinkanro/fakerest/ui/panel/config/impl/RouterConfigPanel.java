@@ -6,6 +6,7 @@ import io.github.eoinkanro.fakerest.core.model.RouterConfig;
 import io.github.eoinkanro.fakerest.ui.listener.KeyReleasedListener;
 import io.github.eoinkanro.fakerest.ui.panel.config.ConfigPanel;
 import io.github.eoinkanro.fakerest.ui.panel.table.impl.RouterConfigScrollableTablePanel;
+import io.github.eoinkanro.fakerest.ui.utils.FrameUtils;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.swing.*;
@@ -45,17 +46,19 @@ public class RouterConfigPanel extends ConfigPanel<RouterConfig> {
     protected JButton createDeleteButton() {
         JButton deleteButton = new JButton("Delete");
 
-        deleteButton.addActionListener(event -> {
-            try {
-                routerMappingConfigurator.unregisterRouter(config.getId());
-                routerConfigScrollableTablePanel.removeRow(config);
+        deleteButton.addActionListener(event -> FrameUtils
+                .createConfirmationFrame(CONFIRMATION_NOTIFICATION, () -> {
+                    try {
+                        routerMappingConfigurator.unregisterRouter(config.getId());
+                        routerConfigScrollableTablePanel.removeRow(config);
 
-                createNotificationFrame(NOTIFICATION_DELETED);
-                setConfig(new RouterConfig());
-            } catch (ConfigException e) {
-                createNotificationFrame(e.getMessage());
-            }
-        });
+                        FrameUtils.createNotificationFrame(NOTIFICATION_DELETED);
+                        setConfig(new RouterConfig());
+                    } catch (ConfigException e) {
+                        FrameUtils.createNotificationFrame(e.getMessage());
+                    }
+                })
+        );
         return deleteButton;
     }
 
@@ -74,10 +77,10 @@ public class RouterConfigPanel extends ConfigPanel<RouterConfig> {
                 routerMappingConfigurator.registerRouter(config);
                 routerConfigScrollableTablePanel.addRow(config);
 
-                createNotificationFrame(isUpdate ? NOTIFICATION_UPDATED : NOTIFICATION_CREATED);
+                FrameUtils.createNotificationFrame(isUpdate ? NOTIFICATION_UPDATED : NOTIFICATION_CREATED);
                 setConfig(new RouterConfig());
             } catch (ConfigException e) {
-                createNotificationFrame(e.getMessage());
+                FrameUtils.createNotificationFrame(e.getMessage());
             }
         });
         return saveButton;

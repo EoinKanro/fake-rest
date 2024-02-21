@@ -4,7 +4,6 @@ import io.github.eoinkanro.commons.utils.SystemUtils;
 import io.github.eoinkanro.fakerest.core.model.ControllerData;
 import io.github.eoinkanro.fakerest.core.model.ControllerSaveInfoMode;
 import io.github.eoinkanro.fakerest.core.model.ControllerConfig;
-import io.github.eoinkanro.fakerest.core.utils.HttpUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;

@@ -235,12 +235,11 @@ abstract class FakeControllerTest {
         ResponseEntity<String> response = fakeController.handle(request);
 
         verify(fakeController, times(1)).delay();
-        //TODO
-//        if (delayMs > 0) {
-//            mockedStatic.verify(times(1), () -> SystemUtils.sleep(delayMs));
-//        } else {
-//            mockedStatic.verify(times(0), () -> SystemUtils.sleep(anyLong()));
-//        }
+        if (delayMs > 0) {
+            mockedStatic.verify(() -> SystemUtils.sleep(delayMs), times(1));
+        } else {
+            mockedStatic.verify(() -> SystemUtils.sleep(anyLong()), times(0));
+        }
         return response;
     }
 }

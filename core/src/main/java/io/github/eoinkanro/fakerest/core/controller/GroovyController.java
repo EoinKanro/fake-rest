@@ -21,12 +21,12 @@ public class GroovyController extends FakeController {
     private static final String LOG_INFO = "Got request \r\nMethod: [{}] \r\nUri: [{}] \r\nBody: [{}]";
 
     private static final String DEFAULT_GROOVY_IMPORT = """
-                                                        import io.github.ivanrosw.fakerest.core.model.GroovyAnswer
+                                                        import io.github.eoinkanro.fakerest.core.model.GroovyAnswer
                                                         import org.springframework.http.HttpStatus
-                                                        import io.github.ivanrosw.fakerest.core.utils.JsonUtils
-                                                        import io.github.ivanrosw.fakerest.core.utils.HttpUtils
-                                                        import io.github.ivanrosw.fakerest.core.utils.SystemUtils
-                                                        import io.github.ivanrosw.fakerest.core.model.ControllerData
+                                                        import io.github.eoinkanro.commons.utils.JsonUtils
+                                                        import io.github.eoinkanro.commons.utils.SystemUtils
+                                                        import io.github.eoinkanro.fakerest.core.utils.HttpUtils
+                                                        import io.github.eoinkanro.fakerest.core.model.ControllerData
                                                         import org.springframework.http.HttpHeaders
                                                         import com.fasterxml.jackson.databind.node.ObjectNode
                                                         """;

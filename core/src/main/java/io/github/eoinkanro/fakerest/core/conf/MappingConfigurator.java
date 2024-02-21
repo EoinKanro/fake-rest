@@ -30,8 +30,6 @@ public abstract class MappingConfigurator {
     protected MappingConfiguratorData mappingConfiguratorData;
 
     @Autowired
-    protected HttpUtils httpUtils;
-    @Autowired
     protected YamlConfigurator yamlConfigurator;
 
     /**

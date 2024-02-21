@@ -2,6 +2,7 @@ package io.github.eoinkanro.fakerest.core.controller;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.eoinkanro.commons.utils.JsonUtils;
+import io.github.eoinkanro.fakerest.core.utils.HttpUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -20,7 +21,7 @@ public class DeleteController extends FakeModifyController {
     protected ResponseEntity<String> handleOne(HttpServletRequest request, String body) {
         ResponseEntity<String> result;
 
-        String key = controllerData.buildKey(httpUtils.getUrlIds(request), controllerConfig.getIdParams());
+        String key = controllerData.buildKey(HttpUtils.getUrlIds(request), controllerConfig.getIdParams());
         if (controllerData.containsKey(controllerConfig.getUri(), key)) {
             ObjectNode data = controllerData.getData(controllerConfig.getUri(), key);
             controllerData.deleteData(controllerConfig.getUri(), key);

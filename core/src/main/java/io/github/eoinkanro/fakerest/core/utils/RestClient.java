@@ -1,6 +1,5 @@
 package io.github.eoinkanro.fakerest.core.utils;
 
-import jakarta.annotation.PostConstruct;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpStatusCodeException;
@@ -12,12 +11,7 @@ import java.net.URI;
 @Component
 public class RestClient {
 
-    private RestTemplate restTemplate;
-
-    @PostConstruct
-    private void init() {
-        restTemplate = new RestTemplate();
-    }
+    private final RestTemplate restTemplate = new RestTemplate();
 
     public ResponseEntity<String> execute(HttpMethod method, URI url, HttpHeaders headers, String body) {
         ResponseEntity<String> result;

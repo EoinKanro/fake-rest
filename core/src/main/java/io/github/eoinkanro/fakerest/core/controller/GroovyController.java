@@ -32,13 +32,12 @@ public class GroovyController extends FakeController {
     private final GroovyShell groovyShell;
 
     @Builder
-    public GroovyController(ControllerConfig controllerConfig, ControllerData controllerData, HttpUtils httpUtils) {
+    public GroovyController(ControllerConfig controllerConfig, ControllerData controllerData) {
         Binding groovyBinding = new Binding();
         groovyShell = new GroovyShell(groovyBinding);
         groovyShell.setVariable("uri", controllerConfig.getUri());
         groovyShell.setVariable("controllerData", controllerData);
         this.controllerConfig = controllerConfig;
-        this.httpUtils = httpUtils;
     }
 
     @Override
@@ -46,11 +45,11 @@ public class GroovyController extends FakeController {
         delay();
 
         try {
-            String body = httpUtils.readBody(request);
+            String body = HttpUtils.readBody(request);
             if (log.isTraceEnabled()) log.trace(LOG_INFO, request.getMethod(), request.getRequestURI(), body);
 
             groovyShell.setVariable("body", body);
-            HttpHeaders headers = httpUtils.readHeaders(request);
+            HttpHeaders headers = HttpUtils.readHeaders(request);
             groovyShell.setVariable("headers", headers);
 
             GroovyAnswer groovyAnswer = (GroovyAnswer) groovyShell.evaluate(DEFAULT_GROOVY_IMPORT +

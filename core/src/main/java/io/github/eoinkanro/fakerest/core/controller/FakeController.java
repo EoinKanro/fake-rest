@@ -28,8 +28,6 @@ public abstract class FakeController implements BaseController {
     protected ControllerData controllerData;
     protected ControllerConfig controllerConfig;
 
-    protected HttpUtils httpUtils;
-
     protected void delay() {
         if (controllerConfig.getDelayMs() > 0) {
             SystemUtils.sleep(controllerConfig.getDelayMs());

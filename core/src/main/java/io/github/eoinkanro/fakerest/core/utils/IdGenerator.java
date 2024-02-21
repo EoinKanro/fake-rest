@@ -7,11 +7,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class IdGenerator {
 
-    private AtomicInteger atomicInteger;
-
-    public IdGenerator() {
-        atomicInteger = new AtomicInteger();
-    }
+    private final AtomicInteger atomicInteger = new AtomicInteger();
 
     public String generateId(GeneratorPattern pattern) {
         String result;

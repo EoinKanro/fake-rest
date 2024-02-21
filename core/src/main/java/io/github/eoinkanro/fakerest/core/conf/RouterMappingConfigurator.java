@@ -43,7 +43,7 @@ public class RouterMappingConfigurator extends MappingConfigurator {
                 .methods(conf.getMethod())
                 .build();
 
-        RouterController routerController = new RouterController(conf, httpUtils, restClient);
+        RouterController routerController = new RouterController(conf, restClient);
         requestMappingInfo.put(routerInfo, routerController);
         usedUrls.add(conf.getUri());
         UriConfigHolder<RouterConfig> configHolder = new UriConfigHolder<>(conf, requestMappingInfo, usedUrls);

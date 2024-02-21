@@ -27,16 +27,16 @@ public class RouterConfigPanel extends ConfigPanel<RouterConfig> {
 
         this.toUrlText = createToUrlText();
 
-        mainPanel.add(new JLabel("Method"));
-        mainPanel.add(methodDropDown);
+        addToMainPanel(new JLabel("Method"));
+        addToMainPanel(methodDropDown);
 
-        mainPanel.add(new JLabel("From Uri"));
-        mainPanel.add(uriText);
+        addToMainPanel(new JLabel("From Uri"));
+        addToMainPanel(uriText);
 
-        mainPanel.add(new JLabel("To Url"));
-        mainPanel.add(toUrlText);
+        addToMainPanel(new JLabel("To Url"));
+        addToMainPanel(toUrlText);
 
-        mainPanel.add(saveButton);
+        addToMainPanel(saveButton);
 
         setConfig(new RouterConfig());
     }

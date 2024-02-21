@@ -9,13 +9,15 @@ import java.util.Arrays;
 
 public abstract class ConfigPanel<T extends BaseUriConfig> extends JScrollPane {
 
+    protected static final int WIDTH = 500;
+
     protected static final String EMPTY_STRING = "";
 
     protected static final String NOTIFICATION_DELETED = "Configuration deleted";
     protected static final String NOTIFICATION_CREATED = "Configuration saved";
     protected static final String NOTIFICATION_UPDATED = "Configuration updated";
 
-    protected final JPanel mainPanel;
+    private final JPanel mainPanel;
 
     private final JLabel header;
     private final JButton deleteButton;
@@ -31,7 +33,7 @@ public abstract class ConfigPanel<T extends BaseUriConfig> extends JScrollPane {
         this.mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         setViewportView(this.mainPanel);
-        setPreferredSize(new Dimension(500, 0));
+        setPreferredSize(new Dimension(WIDTH, 0));
 
         //Top line
         this.header = new JLabel();
@@ -41,8 +43,9 @@ public abstract class ConfigPanel<T extends BaseUriConfig> extends JScrollPane {
         topPanel.setLayout(new BorderLayout());
         topPanel.add(header, BorderLayout.LINE_START);
         topPanel.add(deleteButton, BorderLayout.LINE_END);
+        topPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 20));
 
-        mainPanel.add(topPanel);
+        addToMainPanel(topPanel);
 
         //Elements to set after init
         this.methodDropDown = createMethodDropDown();
@@ -88,6 +91,11 @@ public abstract class ConfigPanel<T extends BaseUriConfig> extends JScrollPane {
         );
 
         return result;
+    }
+
+    protected void addToMainPanel(JComponent component) {
+        component.setAlignmentX(Component.LEFT_ALIGNMENT);
+        mainPanel.add(component);
     }
 
     protected abstract String getNewHeader();

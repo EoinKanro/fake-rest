@@ -56,25 +56,25 @@ public class ControllerConfigPanel extends ConfigPanel<ControllerConfig> {
 
         generatedIdTablePane.setPreferredSize(new Dimension(500, 200));
 
-        mainPanel.add(new JLabel("Method"));
-        mainPanel.add(methodDropDown);
+        addToMainPanel(new JLabel("Method"));
+        addToMainPanel(methodDropDown);
 
-        mainPanel.add(new JLabel("Function mode"));
-        mainPanel.add(functionDropDown);
+        addToMainPanel(new JLabel("Function mode"));
+        addToMainPanel(functionDropDown);
 
-        mainPanel.add(new JLabel("Uri"));
-        mainPanel.add(uriText);
+        addToMainPanel(new JLabel("Uri"));
+        addToMainPanel(uriText);
 
-        mainPanel.add(generatedIdCheckbox);
-        mainPanel.add(generatedIdTablePane);
+        addToMainPanel(generatedIdCheckbox);
+        addToMainPanel(generatedIdTablePane);
 
-        mainPanel.add(answerInitGroovyHeader);
-        mainPanel.add(answerInitGroovyText);
+        addToMainPanel(answerInitGroovyHeader);
+        addToMainPanel(answerInitGroovyText);
 
-        mainPanel.add(new JLabel("Delay ms"));
-        mainPanel.add(delayMsField);
+        addToMainPanel(new JLabel("Delay ms"));
+        addToMainPanel(delayMsField);
 
-        mainPanel.add(saveButton);
+        addToMainPanel(saveButton);
         setConfig(new ControllerConfig());
     }
 

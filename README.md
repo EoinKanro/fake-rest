@@ -5,7 +5,7 @@ Fake-Rest is service to mock REST controllers for testing your projects
 ### Getting started
 
 Requirements for build
-- Java 8+
+- Java 17+
 
 Build project
 ```
@@ -72,11 +72,11 @@ You can use several variables in code:
 - body - request body
 - uri - uri of controller
 - headers - headers from request, spring object
-- [controllerData](core/src/main/java/io/github/ivanrosw/fakerest/core/model/ControllerData.java) - collection with data for all collection controllers
-- [jsonUtils](core/src/main/java/io/github/ivanrosw/fakerest/core/utils/JsonUtils.java) - utils to work with json
-- [systemUtils](core/src/main/java/io/github/ivanrosw/fakerest/core/utils/SystemUtils.java) - it has just one method for now - sleep
+- [controllerData](core/src/main/java/io/github/eoinkanro/fakerest/core/model/ControllerData.java) - collection with data for all collection controllers
+- JsonUtils - utils to work with json
+- SystemUtils- it has just one method for now - sleep
 
-Groovy code should return [GroovyAnswer](core/src/main/java/io/github/ivanrosw/fakerest/core/model/GroovyAnswer.java)
+Groovy code should return [GroovyAnswer](core/src/main/java/io/github/eoinkanro/fakerest/core/model/GroovyAnswer.java)
 
 You don't need to write "import..." of GroovyAnswer, HttpStatus, JsonUtils, ControllerData, HttpHeaders, ObjectNode. It will be appended automatically.
 But imports are necessary if you want to import something else.

@@ -3,57 +3,20 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>fakerest</artifactId>
-        <groupId>io.github.ivanrosw.fakerest</groupId>
-        <version>1.1.1</version>
+        <groupId>io.github.eoinkanro.fakerest</groupId>
+        <artifactId>parent</artifactId>
+        <version>1.2.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>ui</artifactId>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>com.github.eirslett</groupId>
-                <artifactId>frontend-maven-plugin</artifactId>
-                <version>1.12.1</version>
-                <executions>
-                    <!-- Install our node and npm version to run npm/node scripts-->
-                    <execution>
-                        <id>install-node-and-npm</id>
-                        <goals>
-                            <goal>install-node-and-npm</goal>
-                        </goals>
-                        <configuration>
-                            <nodeVersion>v16.14.2</nodeVersion>
-                        </configuration>
-                    </execution>
-                    <!-- Install all project dependencies -->
-                    <execution>
-                        <id>npm-install</id>
-                        <goals>
-                            <goal>npm</goal>
-                        </goals>
-                        <!-- optional: default phase is "generate-resources" -->
-                        <phase>generate-resources</phase>
-                        <!-- Optional configuration which provides for running any npm command -->
-                        <configuration>
-                            <arguments>install</arguments>
-                        </configuration>
-                    </execution>
-                    <!-- Build and minify static files -->
-                    <execution>
-                        <id>npm-run-build</id>
-                        <goals>
-                            <goal>npm</goal>
-                        </goals>
-                        <configuration>
-                            <arguments>run build</arguments>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
+    <dependencies>
+        <dependency>
+            <groupId>io.github.eoinkanro.fakerest</groupId>
+            <artifactId>core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 
 </project>

@@ -2,7 +2,7 @@ logging:
   level:
     root: INFO
     org.springframework: INFO
-    io.github.ivanrosw.fakerest: INFO
+    io.github.eoinkanro.fakerest: INFO
 
 server:
   port: 8450

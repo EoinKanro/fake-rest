@@ -32,11 +32,7 @@ abstract class MappingConfiguratorTest {
   @Autowired
   protected MappingConfiguratorData mappingConfiguratorData;
 
-  protected static String[] allUris;
-
-  static {
-    allUris = new String[]{TEST_STATIC_URI, TEST_COLLECTION_URI};
-  }
+  protected static final String[] allUris = new String[]{TEST_STATIC_URI, TEST_COLLECTION_URI};
 
   protected static Stream<RequestMethod> provideAllMethods() {
     return Stream.of(RequestMethod.values());

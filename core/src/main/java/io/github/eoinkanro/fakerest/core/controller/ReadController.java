@@ -49,7 +49,7 @@ public class ReadController extends FakeController {
     private ResponseEntity<String> handleAll() {
         ResponseEntity<String> result;
         Map<String, ObjectNode> allData = controllerData.getAllData(controllerConfig.getUri());
-        if (allData.size() > 0) {
+        if (!allData.isEmpty()) {
             ArrayNode array = JsonUtils.createArray();
             allData.forEach((key, data) -> array.add(data));
             result = new ResponseEntity<>(array.toString(), HttpStatus.OK);

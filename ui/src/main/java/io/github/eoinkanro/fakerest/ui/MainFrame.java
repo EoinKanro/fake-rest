@@ -27,7 +27,7 @@ public class MainFrame extends JFrame {
 
     @PostConstruct
     public void init() {
-        setPreferredSize(new Dimension(900, 500));
+        setPreferredSize(new Dimension(940, 500));
 
         ControllerConfigScrollableTablePanel controllersTablePanel = new ControllerConfigScrollableTablePanel(mappingConfiguratorData.getAllControllersCopy().toArray(new ControllerConfig[0]));
         controllersTablePanel.setPreferredSize(new Dimension(400, 250));
@@ -78,6 +78,7 @@ public class MainFrame extends JFrame {
             controllerConfigPanel.setConfig(mappingConfiguratorData.getControllerCopy(id));
 
             controllerConfigPanel.setVisible(true);
+            controllerConfigPanel.getVerticalScrollBar().setValue(0);
             routerConfigPanel.setVisible(false);
             controllerAndRouterConfigScrollPanel.revalidate();
             controllerAndRouterConfigScrollPanel.getVerticalScrollBar().setValue(0);
@@ -94,6 +95,7 @@ public class MainFrame extends JFrame {
             routerConfigPanel.setConfig(mappingConfiguratorData.getRouterCopy(id));
 
             routerConfigPanel.setVisible(true);
+            routerConfigPanel.getVerticalScrollBar().setValue(0);
             controllerConfigPanel.setVisible(false);
             controllerAndRouterConfigScrollPanel.revalidate();
             controllerAndRouterConfigScrollPanel.getVerticalScrollBar().setValue(0);

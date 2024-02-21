@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.NumberFormatter;
+import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.text.NumberFormat;
 import java.util.*;
@@ -52,6 +53,8 @@ public class ControllerConfigPanel extends ConfigPanel<ControllerConfig> {
         this.answerInitGroovyHeader = new JLabel(ANSWER_HEADER);
         this.answerInitGroovyText = createAnswerInitDataGroovyText();
         this.delayMsField = createDelayMsField();
+
+        generatedIdTablePane.setPreferredSize(new Dimension(500, 200));
 
         mainPanel.add(new JLabel("Method"));
         mainPanel.add(methodDropDown);
@@ -209,7 +212,14 @@ public class ControllerConfigPanel extends ConfigPanel<ControllerConfig> {
         functionDropDown.setSelectedItem(config.getFunctionMode());
         uriText.setText(config.getUri() == null ? EMPTY_STRING : config.getUri());
         generatedIdCheckbox.setSelected(config.isGenerateId());
-        updateGeneratedId(config.getGenerateIdPatterns());
+
+        if (!config.getIdParams().isEmpty()) {
+            if (config.getGenerateIdPatterns().isEmpty()) {
+                updateGeneratedId(config.getIdParams());
+            } else {
+                updateGeneratedId(config.getGenerateIdPatterns());
+            }
+        }
         answerInitGroovyText.setText(config.getFunctionMode() == ControllerFunctionMode.GROOVY ?
                 config.getGroovyScript() : config.getAnswer());
         delayMsField.setValue(config.getDelayMs());

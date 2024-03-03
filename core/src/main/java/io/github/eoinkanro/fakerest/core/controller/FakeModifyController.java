@@ -2,15 +2,15 @@ package io.github.eoinkanro.fakerest.core.controller;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.eoinkanro.commons.utils.JsonUtils;
-import io.github.eoinkanro.fakerest.core.model.ControllerSaveInfoMode;
+import io.github.eoinkanro.fakerest.core.model.ControllerResponse;
+import io.github.eoinkanro.fakerest.core.model.enums.ControllerSaveInfoMode;
 import io.github.eoinkanro.fakerest.core.utils.HttpUtils;
-import jakarta.servlet.http.HttpServletRequest;
+import io.undertow.server.HttpServerExchange;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 /**
  * Base class for CUD controllers that can modify data in collection
@@ -27,17 +27,19 @@ public abstract class FakeModifyController extends FakeController {
     protected static final String MISSING_IDS = "some ids are missing";
 
     @Override
-    public final ResponseEntity<String> handle(HttpServletRequest request) {
+    public final ControllerResponse handle(HttpServerExchange request) {
         delay();
 
-        ResponseEntity<String> result = null;
+        ControllerResponse result = null;
         String body = null;
         try {
             body = HttpUtils.readBody(request);
+            log.trace(LOG_INFO, request.getRequestMethod(), request.getRequestURI(), body);
         } catch (Exception e) {
-            result = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            result = ControllerResponse.builder()
+                    .status(HttpServletResponse.SC_INTERNAL_SERVER_ERROR)
+                    .build();
         }
-        if (log.isTraceEnabled()) log.trace(LOG_INFO, request.getMethod(), request.getRequestURI(), body);
 
         if (result == null) {
             result = processRequest(request, body);
@@ -52,8 +54,8 @@ public abstract class FakeModifyController extends FakeController {
      * @param body - body from request
      * @return - response
      */
-    private ResponseEntity<String> processRequest(HttpServletRequest request, String body) {
-        ResponseEntity<String> result;
+    private ControllerResponse processRequest(HttpServerExchange request, String body) {
+        ControllerResponse result;
         if (saveInfoMode == ControllerSaveInfoMode.COLLECTION_ONE) {
             result = handleOne(request, body);
         } else {
@@ -68,16 +70,25 @@ public abstract class FakeModifyController extends FakeController {
      * @param body - body from request
      * @return - response
      */
-    protected ResponseEntity<String> returnAnswerOrBody(String body) {
-        ResponseEntity<String> result;
-        if (controllerConfig.getAnswer() != null) {
-            result = new ResponseEntity<>(controllerConfig.getAnswer(), HttpStatus.OK);
+    protected ControllerResponse returnAnswerOrBody(String body) {
+        ControllerResponse result;
+        if (controllerConfig.getAnswer() != null && !controllerConfig.getAnswer().isBlank()) {
+            result = ControllerResponse.builder()
+                    .status(HttpServletResponse.SC_OK)
+                    .body(controllerConfig.getAnswer())
+                    .build();
         }else if (body != null && !body.isEmpty()) {
-            result = new ResponseEntity<>(body, HttpStatus.OK);
+            result = ControllerResponse.builder()
+                    .status(HttpServletResponse.SC_OK)
+                    .body(body)
+                    .build();
         } else {
             ObjectNode badRequest = JsonUtils.createJson();
             JsonUtils.putString(badRequest, DESCRIPTION_PARAM, NULL_BODY_OR_ANSWER);
-            result = new ResponseEntity<>(badRequest.toString(), HttpStatus.BAD_REQUEST);
+            result = ControllerResponse.builder()
+                    .status(HttpServletResponse.SC_BAD_REQUEST)
+                    .body(badRequest.toString())
+                    .build();
         }
         return result;
     }
@@ -89,5 +100,6 @@ public abstract class FakeModifyController extends FakeController {
      * @param body - body from request
      * @return - response
      */
-    protected abstract ResponseEntity<String> handleOne(HttpServletRequest request, String body);
+    protected abstract ControllerResponse handleOne(HttpServerExchange request, String body);
+
 }

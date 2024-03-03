@@ -1,16 +1,16 @@
 package io.github.eoinkanro.fakerest.ui.panel.config.impl;
 
 import io.github.eoinkanro.fakerest.core.conf.ConfigException;
-import io.github.eoinkanro.fakerest.core.conf.ControllerMappingConfigurator;
-import io.github.eoinkanro.fakerest.core.model.ControllerConfig;
-import io.github.eoinkanro.fakerest.core.model.ControllerFunctionMode;
-import io.github.eoinkanro.fakerest.core.model.GeneratorPattern;
+import io.github.eoinkanro.fakerest.core.conf.server.controller.ControllerMappingConfigurator;
+import io.github.eoinkanro.fakerest.core.model.conf.ControllerConfig;
+import io.github.eoinkanro.fakerest.core.model.enums.ControllerFunctionMode;
+import io.github.eoinkanro.fakerest.core.model.enums.GeneratorPattern;
+import io.github.eoinkanro.fakerest.core.model.enums.HttpMethod;
 import io.github.eoinkanro.fakerest.core.utils.HttpUtils;
 import io.github.eoinkanro.fakerest.ui.listener.KeyReleasedListener;
 import io.github.eoinkanro.fakerest.ui.panel.config.ConfigPanel;
 import io.github.eoinkanro.fakerest.ui.panel.table.impl.ControllerConfigScrollableTablePanel;
 import io.github.eoinkanro.fakerest.ui.utils.FrameUtils;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -229,7 +229,7 @@ public class ControllerConfigPanel extends ConfigPanel<ControllerConfig> {
 
     private void validateAndUpdateConfigBeforeSet(ControllerConfig config) {
         if (config.getMethod() == null) {
-            config.setMethod(RequestMethod.GET);
+            config.setMethod(HttpMethod.GET);
         }
         if (config.getFunctionMode() == null) {
             config.setFunctionMode(ControllerFunctionMode.CREATE);

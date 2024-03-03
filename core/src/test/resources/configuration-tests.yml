@@ -1,10 +1,16 @@
 ---
 rest:
   controllers:
-    - uri: '/test/'
-      method: GET
-      functionMode: READ
+  - uri: "/test/"
+    method: "GET"
+    functionMode: "READ"
+    answer: null
+    delayMs: 0
+    idParams: []
+    generateId: false
+    generateIdPatterns: {}
+    groovyScript: null
   routers:
-    - uri: '/test'
-      toUrl: '/test/'
-      method: GET
+  - uri: "/test"
+    method: "GET"
+    toUrl: "/test/"

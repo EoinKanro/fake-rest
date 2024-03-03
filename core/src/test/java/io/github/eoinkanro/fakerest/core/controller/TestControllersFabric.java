@@ -1,87 +1,90 @@
 package io.github.eoinkanro.fakerest.core.controller;
 
-import io.github.eoinkanro.fakerest.core.model.*;
+import io.github.eoinkanro.fakerest.core.conf.server.controller.ControllerData;
+import io.github.eoinkanro.fakerest.core.model.conf.ControllerConfig;
+import io.github.eoinkanro.fakerest.core.model.conf.RouterConfig;
+import io.github.eoinkanro.fakerest.core.model.enums.ControllerFunctionMode;
+import io.github.eoinkanro.fakerest.core.model.enums.ControllerSaveInfoMode;
+import io.github.eoinkanro.fakerest.core.model.enums.GeneratorPattern;
+import io.github.eoinkanro.fakerest.core.model.enums.HttpMethod;
 import io.github.eoinkanro.fakerest.core.utils.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RequestMethod;
+import jakarta.inject.Inject;
+import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
-@Component
+@RequiredArgsConstructor(onConstructor_ = {@Inject})
 public class TestControllersFabric {
 
-    @Autowired
-    private ControllerData controllerData;
-    @Autowired
-    private RestClient restClient;
+    private final ControllerData controllerData;
+    private final RestClient restClient;
 
-    public ReadController createStaticReadController(String uri, RequestMethod method, String answer, long delayMs) {
+    public ReadController createStaticReadController(String uri, HttpMethod method, String answer, long delayMs) {
         ControllerConfig config = createControllerConfig(uri, method, ControllerFunctionMode.READ, answer, delayMs,
                 false, null);
         return createReadController(config, ControllerSaveInfoMode.STATIC);
     }
 
-    public ReadController createCollectionAllReadController(String uri, RequestMethod method, long delayMs) {
+    public ReadController createCollectionAllReadController(String uri, HttpMethod method, long delayMs) {
         ControllerConfig config = createControllerConfig(uri, method, ControllerFunctionMode.READ, null, delayMs,
                 false, null);
         return createReadController(config, ControllerSaveInfoMode.COLLECTION_ALL);
     }
 
-    public ReadController createCollectionOneReadController(String uri, RequestMethod method, long delayMs) {
+    public ReadController createCollectionOneReadController(String uri, HttpMethod method, long delayMs) {
         ControllerConfig config = createControllerConfig(uri, method, ControllerFunctionMode.READ, null, delayMs,
                 false, null);
         return createReadController(config, ControllerSaveInfoMode.COLLECTION_ONE);
     }
 
-    public DeleteController createStaticDeleteController(String uri, RequestMethod method, String answer, long delayMs) {
+    public DeleteController createStaticDeleteController(String uri, HttpMethod method, String answer, long delayMs) {
         ControllerConfig config = createControllerConfig(uri, method, ControllerFunctionMode.DELETE, answer, delayMs,
                 false, null);
         return createDeleteController(config, ControllerSaveInfoMode.STATIC);
     }
 
-    public DeleteController createCollectionOneDeleteController(String uri, RequestMethod method, long delayMs) {
+    public DeleteController createCollectionOneDeleteController(String uri, HttpMethod method, long delayMs) {
         ControllerConfig config = createControllerConfig(uri, method, ControllerFunctionMode.DELETE, null, delayMs,
                 false, null);
         return createDeleteController(config, ControllerSaveInfoMode.COLLECTION_ONE);
     }
 
-    public CreateController createStaticCreateController(String uri, RequestMethod method, String answer, long delayMs) {
+    public CreateController createStaticCreateController(String uri, HttpMethod method, String answer, long delayMs) {
         ControllerConfig config = createControllerConfig(uri, method, ControllerFunctionMode.READ, answer, delayMs,
                 false, null);
         return createCreateController(config, ControllerSaveInfoMode.STATIC);
     }
 
-    public CreateController createCollectionOneCreateController(String uri, RequestMethod method, long delayMs, boolean generateId) {
+    public CreateController createCollectionOneCreateController(String uri, HttpMethod method, long delayMs, boolean generateId) {
         ControllerConfig config = createControllerConfig(uri, method, ControllerFunctionMode.READ, null, delayMs,
                 generateId, null);
         return createCreateController(config, ControllerSaveInfoMode.COLLECTION_ONE);
     }
 
-    public UpdateController createStaticUpdateController(String uri, RequestMethod method, String answer, long delayMs) {
+    public UpdateController createStaticUpdateController(String uri, HttpMethod method, String answer, long delayMs) {
         ControllerConfig config = createControllerConfig(uri, method, ControllerFunctionMode.READ, answer, delayMs,
                 false, null);
         return createUpdateController(config, ControllerSaveInfoMode.STATIC);
     }
 
-    public UpdateController createCollectionOneUpdateController(String uri, RequestMethod method, long delayMs) {
+    public UpdateController createCollectionOneUpdateController(String uri, HttpMethod method, long delayMs) {
         ControllerConfig config = createControllerConfig(uri, method, ControllerFunctionMode.READ, null, delayMs,
                 false, null);
         return createUpdateController(config, ControllerSaveInfoMode.COLLECTION_ONE);
     }
 
-    public RouterController createRouterController(String fromUri, String toUri, RequestMethod method) {
+    public RouterController createRouterController(String fromUri, String toUri, HttpMethod method) {
         RouterConfig routerConfig = createRouterConfig(fromUri, toUri, method);
         return new RouterController(routerConfig, restClient);
     }
 
-    public GroovyController createGroovyController(String uri, RequestMethod method, long delayMs, String groovyScript) {
+    public GroovyController createGroovyController(String uri, HttpMethod method, long delayMs, String groovyScript) {
         ControllerConfig config = createControllerConfig(uri, method, ControllerFunctionMode.READ, null, delayMs,
                 false, groovyScript);
         return new GroovyController(config, controllerData);
     }
 
-    private ControllerConfig createControllerConfig(String uri, RequestMethod method, ControllerFunctionMode functionMode,
+    private ControllerConfig createControllerConfig(String uri, HttpMethod method, ControllerFunctionMode functionMode,
                                                     String answer, long delayMs, boolean generateId, String groovyScript) {
         ControllerConfig config = new ControllerConfig();
         config.setUri(uri);
@@ -97,7 +100,7 @@ public class TestControllersFabric {
         return config;
     }
 
-    private RouterConfig createRouterConfig(String uri, String toUrl, RequestMethod method) {
+    private RouterConfig createRouterConfig(String uri, String toUrl, HttpMethod method) {
         RouterConfig config = new RouterConfig();
         config.setUri(uri);
         config.setToUrl(toUrl);

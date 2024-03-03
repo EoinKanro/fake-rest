@@ -1,14 +1,11 @@
-package io.github.eoinkanro.fakerest.core.conf;
+package io.github.eoinkanro.fakerest.core.conf.server;
 
-import io.github.eoinkanro.fakerest.core.model.ControllerConfig;
-import io.github.eoinkanro.fakerest.core.model.RouterConfig;
-import io.github.eoinkanro.fakerest.core.model.UriConfigHolder;
-import jakarta.annotation.PostConstruct;
-import lombok.AccessLevel;
+import io.github.eoinkanro.fakerest.core.model.conf.ControllerConfig;
+import io.github.eoinkanro.fakerest.core.model.conf.RouterConfig;
+import io.github.eoinkanro.fakerest.core.model.conf.UriConfigHolder;
+import io.github.eoinkanro.fakerest.core.model.enums.HttpMethod;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.*;
 
@@ -16,32 +13,24 @@ import java.util.*;
  * It contains all information about active controllers and routers
  */
 @Slf4j
-@Component
-@Getter(AccessLevel.PACKAGE)
-public class MappingConfiguratorData {
+@Getter
+public class MappingConfigurationsInfo {
 
     /**
      * Collection with active uris
      * Method - List of active uris
      */
-    private Map<RequestMethod, List<String>> methodsUrls;
+    private final Map<HttpMethod, List<String>> methodsUrls = new EnumMap<>(HttpMethod.class);
     /**
      * Collection with active controllers configs
      * Config id - controller config
      */
-    private Map<String, UriConfigHolder<ControllerConfig>> controllers;
+    private final Map<String, UriConfigHolder<ControllerConfig>> controllers = new HashMap<>();
     /**
      * Collection with active routers configs
      * Config id - controller config
      */
-    private Map<String, UriConfigHolder<RouterConfig>> routers;
-
-    @PostConstruct
-    private void init() {
-        methodsUrls = new EnumMap<>(RequestMethod.class);
-        controllers = new HashMap<>();
-        routers = new HashMap<>();
-    }
+    private final Map<String, UriConfigHolder<RouterConfig>> routers = new HashMap<>();
 
     /**
      * Get copy of all controller's configs
@@ -83,5 +72,26 @@ public class MappingConfiguratorData {
      */
     public RouterConfig getRouterCopy(String id) {
         return routers.containsKey(id) ? routers.get(id).getConfig().copy() : null;
+    }
+
+    /**
+     * Log active methods ands uris
+     */
+    public void printUrls() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("\n");
+        builder.append("**** Configured URLs ****\n");
+
+        methodsUrls.forEach((method, urls) -> {
+            builder.append(method);
+            builder.append(":\n");
+            urls.forEach(url -> {
+                builder.append("    ");
+                builder.append(url);
+                builder.append("\n");
+            });
+        });
+
+        log.info(builder.toString());
     }
 }

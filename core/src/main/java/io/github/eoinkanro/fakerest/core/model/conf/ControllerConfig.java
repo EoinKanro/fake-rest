@@ -1,5 +1,8 @@
-package io.github.eoinkanro.fakerest.core.model;
+package io.github.eoinkanro.fakerest.core.model.conf;
 
+import io.github.eoinkanro.fakerest.core.model.Copyable;
+import io.github.eoinkanro.fakerest.core.model.enums.ControllerFunctionMode;
+import io.github.eoinkanro.fakerest.core.model.enums.GeneratorPattern;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -19,17 +22,11 @@ import java.util.Map;
 public class ControllerConfig extends BaseUriConfig implements Copyable<ControllerConfig> {
 
     private ControllerFunctionMode functionMode;
-
     private String answer;
-
     private long delayMs;
-
     private List<String> idParams;
-
     private boolean generateId;
-
     private Map<String, GeneratorPattern> generateIdPatterns;
-
     private String groovyScript;
 
     public ControllerConfig() {

@@ -1,4 +1,4 @@
-package io.github.eoinkanro.fakerest.core.model;
+package io.github.eoinkanro.fakerest.core.model.enums;
 
 public enum ControllerSaveInfoMode {
     COLLECTION,                 // Tech mode for identify _ALL or _ONE

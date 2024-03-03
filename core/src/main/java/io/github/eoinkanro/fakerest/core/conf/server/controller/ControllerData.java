@@ -1,8 +1,8 @@
-package io.github.eoinkanro.fakerest.core.model;
+package io.github.eoinkanro.fakerest.core.conf.server.controller;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.eoinkanro.commons.utils.JsonUtils;
-import org.springframework.stereotype.Component;
+import io.github.eoinkanro.fakerest.core.model.enums.ControllerSaveInfoMode;
 
 import java.util.List;
 import java.util.Map;
@@ -12,8 +12,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * Bean contains all data for Controllers with mode {@link ControllerSaveInfoMode#COLLECTION}
  * And methods to work with data
  */
-
-@Component
 public class ControllerData {
 
     private static final String KEY_DELIMITER = ":::";

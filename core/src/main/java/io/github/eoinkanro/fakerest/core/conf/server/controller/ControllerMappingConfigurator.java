@@ -1,19 +1,24 @@
-package io.github.eoinkanro.fakerest.core.conf;
+package io.github.eoinkanro.fakerest.core.conf.server.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.eoinkanro.commons.utils.JsonUtils;
+import io.github.eoinkanro.fakerest.core.conf.ConfigException;
+import io.github.eoinkanro.fakerest.core.conf.server.MappingConfigurationsInfo;
+import io.github.eoinkanro.fakerest.core.conf.file.YamlConfigurator;
+import io.github.eoinkanro.fakerest.core.conf.server.UndertowServer;
 import io.github.eoinkanro.fakerest.core.controller.*;
-import io.github.eoinkanro.fakerest.core.model.*;
+import io.github.eoinkanro.fakerest.core.model.conf.BaseUriConfig;
+import io.github.eoinkanro.fakerest.core.model.conf.ControllerConfig;
+import io.github.eoinkanro.fakerest.core.model.conf.UriConfigHolder;
+import io.github.eoinkanro.fakerest.core.model.enums.ControllerFunctionMode;
+import io.github.eoinkanro.fakerest.core.model.enums.ControllerSaveInfoMode;
+import io.github.eoinkanro.fakerest.core.model.enums.GeneratorPattern;
 import io.github.eoinkanro.fakerest.core.utils.HttpUtils;
 import io.github.eoinkanro.fakerest.core.utils.IdGenerator;
+import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
-import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,19 +29,17 @@ import java.util.Map;
  * Configurator that register and unregister controllers
  */
 @Slf4j
-@Component
-public class ControllerMappingConfigurator extends MappingConfigurator {
+public class ControllerMappingConfigurator extends AbstractMappingConfigurator {
 
     private final ControllerData controllerData;
 
-    @Autowired
-    public ControllerMappingConfigurator(@Qualifier("requestMappingHandlerMapping") RequestMappingHandlerMapping handlerMapping,
-                                         MappingConfiguratorData mappingConfiguratorData,
-                                         YamlConfigurator yamlConfigurator,
-                                         ControllerData controllerData) {
-        super(handlerMapping, mappingConfiguratorData, yamlConfigurator);
+    @Inject
+    public ControllerMappingConfigurator(MappingConfigurationsInfo mappingConfigurationsInfo, YamlConfigurator yamlConfigurator,
+                                         UndertowServer server, ControllerData controllerData) {
+        super(mappingConfigurationsInfo, yamlConfigurator, server);
         this.controllerData = controllerData;
     }
+
 
     /**
      * Method to init and run controller
@@ -68,7 +71,7 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
         if (mode == ControllerSaveInfoMode.COLLECTION) loadCollectionAnswerData(conf);
 
         addUrls(configHolder);
-        mappingConfiguratorData.getControllers().put(conf.getId(), configHolder);
+        mappingConfigurationsInfo.getControllers().put(conf.getId(), configHolder);
         if (!yamlConfigurator.isControllerExist(conf) && !yamlConfigurator.addController(conf)) {
             log.error("Cant save config to yaml. Method: [{}],  Urls:{}", conf.getMethod(), configHolder.getUsedUrls());
             unregisterController(conf.getId());
@@ -107,9 +110,9 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
      * @throws ConfigException - if config don't contain all necessary info or url already registered
      */
     private void beforeInitControllerCheckMode(ControllerConfig conf, ControllerSaveInfoMode mode) throws ConfigException {
-        List<String> urls = mappingConfiguratorData.getMethodsUrls().computeIfAbsent(conf.getMethod(), key -> new ArrayList<>());
+        List<String> urls = mappingConfigurationsInfo.getMethodsUrls().computeIfAbsent(conf.getMethod(), key -> new ArrayList<>());
         if (urls.contains(conf.getUri()) ||
-                (conf.getFunctionMode() == ControllerFunctionMode.READ &&
+                ((conf.getFunctionMode() == ControllerFunctionMode.READ || conf.getFunctionMode() == ControllerFunctionMode.CREATE) &&
                  mode == ControllerSaveInfoMode.COLLECTION &&
                  urls.contains(HttpUtils.getBaseUri(conf.getUri())))) {
             throw new ConfigException(String.format("Controller: Duplicated urls: %s", conf.getUri()));
@@ -138,14 +141,14 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
      * @return - config holder that haven't ran yet
      */
     private UriConfigHolder<ControllerConfig> createReadControllerHolder(ControllerConfig conf, ControllerSaveInfoMode mode) {
-        Map<RequestMappingInfo, BaseController> requestMappingInfo = new HashMap<>();
+        Map<BaseUriConfig, BaseController> requestMappingInfo = new HashMap<>();
         List<String> usedUrls = new ArrayList<>();
 
         if (mode == ControllerSaveInfoMode.COLLECTION) {
             String baseUri = HttpUtils.getBaseUri(conf.getUri());
-            RequestMappingInfo getAllMappingInfo = RequestMappingInfo
-                    .paths(baseUri)
-                    .methods(conf.getMethod())
+            BaseUriConfig getAllMappingInfo = BaseUriConfig.builder()
+                    .uri(baseUri)
+                    .method(conf.getMethod())
                     .build();
 
             FakeController readAllController = ReadController.builder()
@@ -156,9 +159,9 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
             requestMappingInfo.put(getAllMappingInfo, readAllController);
             usedUrls.add(baseUri);
 
-            RequestMappingInfo readOneMappingInfo = RequestMappingInfo
-                    .paths(conf.getUri())
-                    .methods(conf.getMethod())
+            BaseUriConfig readOneMappingInfo = BaseUriConfig.builder()
+                    .uri(conf.getUri())
+                    .method(conf.getMethod())
                     .build();
 
             FakeController getOneController = ReadController.builder()
@@ -170,9 +173,9 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
             usedUrls.add(conf.getUri());
 
         } else {
-            RequestMappingInfo readStaticMappingInfo = RequestMappingInfo
-                    .paths(conf.getUri())
-                    .methods(conf.getMethod())
+            BaseUriConfig readStaticMappingInfo = BaseUriConfig.builder()
+                    .uri(conf.getUri())
+                    .method(conf.getMethod())
                     .build();
 
             FakeController getStaticController =  ReadController.builder()
@@ -194,15 +197,15 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
      * @return - config holder that haven't ran yet
      */
     private UriConfigHolder<ControllerConfig> createCreateControllerHolder(ControllerConfig conf, ControllerSaveInfoMode mode) {
-        Map<RequestMappingInfo, BaseController> requestMappingInfo = new HashMap<>();
+        Map<BaseUriConfig, BaseController> requestMappingInfo = new HashMap<>();
         List<String> usedUrls = new ArrayList<>();
         IdGenerator idGenerator = new IdGenerator();
 
         if (mode == ControllerSaveInfoMode.COLLECTION) {
             String baseUri = HttpUtils.getBaseUri(conf.getUri());
-            RequestMappingInfo createOneInfo = RequestMappingInfo
-                    .paths(baseUri)
-                    .methods(conf.getMethod())
+            BaseUriConfig createOneInfo = BaseUriConfig.builder()
+                    .uri(baseUri)
+                    .method(conf.getMethod())
                     .build();
 
             FakeController createOneController = CreateController.builder()
@@ -215,9 +218,9 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
             usedUrls.add(baseUri);
 
         } else {
-            RequestMappingInfo createStaticInfo = RequestMappingInfo
-                    .paths(conf.getUri())
-                    .methods(conf.getMethod())
+            BaseUriConfig createStaticInfo = BaseUriConfig.builder()
+                    .uri(conf.getUri())
+                    .method(conf.getMethod())
                     .build();
 
             FakeController createStaticController = CreateController.builder()
@@ -240,13 +243,13 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
      * @return - config holder that haven't ran yet
      */
     private UriConfigHolder<ControllerConfig> createUpdateControllerHolder(ControllerConfig conf, ControllerSaveInfoMode mode) {
-        Map<RequestMappingInfo, BaseController> requestMappingInfo = new HashMap<>();
+        Map<BaseUriConfig, BaseController> requestMappingInfo = new HashMap<>();
         List<String> usedUrls = new ArrayList<>();
 
         if (mode == ControllerSaveInfoMode.COLLECTION) {
-            RequestMappingInfo updateOneInfo = RequestMappingInfo
-                    .paths(conf.getUri())
-                    .methods(conf.getMethod())
+            BaseUriConfig updateOneInfo = BaseUriConfig.builder()
+                    .uri(conf.getUri())
+                    .method(conf.getMethod())
                     .build();
 
             FakeController updateOneController = UpdateController.builder()
@@ -258,9 +261,9 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
             usedUrls.add(conf.getUri());
 
         } else {
-            RequestMappingInfo updateStaticInfo = RequestMappingInfo
-                    .paths(conf.getUri())
-                    .methods(conf.getMethod())
+            BaseUriConfig updateStaticInfo = BaseUriConfig.builder()
+                    .uri(conf.getUri())
+                    .method(conf.getMethod())
                     .build();
 
             FakeController updateStaticController = UpdateController.builder()
@@ -282,13 +285,13 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
      * @return - config holder that haven't ran yet
      */
     private UriConfigHolder<ControllerConfig> createDeleteControllerHolder(ControllerConfig conf, ControllerSaveInfoMode mode) {
-        Map<RequestMappingInfo, BaseController> requestMappingInfo = new HashMap<>();
+        Map<BaseUriConfig, BaseController> requestMappingInfo = new HashMap<>();
         List<String> usedUrls = new ArrayList<>();
 
         if (mode == ControllerSaveInfoMode.COLLECTION) {
-            RequestMappingInfo deleteOneInfo = RequestMappingInfo
-                    .paths(conf.getUri())
-                    .methods(conf.getMethod())
+            BaseUriConfig deleteOneInfo = BaseUriConfig.builder()
+                    .uri(conf.getUri())
+                    .method(conf.getMethod())
                     .build();
 
             FakeController deleteOneController = DeleteController.builder()
@@ -300,9 +303,9 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
             usedUrls.add(conf.getUri());
 
         } else {
-            RequestMappingInfo deleteStaticInfo = RequestMappingInfo
-                    .paths(conf.getUri())
-                    .methods(conf.getMethod())
+            BaseUriConfig deleteStaticInfo = BaseUriConfig.builder()
+                    .uri(conf.getUri())
+                    .method(conf.getMethod())
                     .build();
 
             FakeController deleteStaticController = DeleteController.builder()
@@ -323,12 +326,12 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
      * @return - config holder that haven't ran yet
      */
     private UriConfigHolder<ControllerConfig> createGroovyControllerHolder(ControllerConfig conf) {
-        Map<RequestMappingInfo, BaseController> requestMappingInfo = new HashMap<>();
+        Map<BaseUriConfig, BaseController> requestMappingInfo = new HashMap<>();
         List<String> usedUrls = new ArrayList<>();
 
-        RequestMappingInfo groovyInfo = RequestMappingInfo
-                .paths(conf.getUri())
-                .methods(conf.getMethod())
+        BaseUriConfig groovyInfo = BaseUriConfig.builder()
+                .uri(conf.getUri())
+                .method(conf.getMethod())
                 .build();
 
         GroovyController groovyController = GroovyController.builder()
@@ -380,10 +383,10 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
      * @throws ConfigException - if configuration with id not exist
      */
     public void unregisterController(String id) throws ConfigException {
-        if (!mappingConfiguratorData.getControllers().containsKey(id)) {
+        if (!mappingConfigurationsInfo.getControllers().containsKey(id)) {
             throw new ConfigException(String.format("Controller with id [%s] not exist", id));
         }
-        UriConfigHolder<ControllerConfig> configHolder = mappingConfiguratorData.getControllers().get(id);
+        UriConfigHolder<ControllerConfig> configHolder = mappingConfigurationsInfo.getControllers().get(id);
         ControllerConfig conf = configHolder.getConfig();
 
         if (yamlConfigurator.isControllerExist(conf)) {
@@ -391,9 +394,9 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
         }
 
         unregisterMapping(configHolder);
-        List<String> urls = mappingConfiguratorData.getMethodsUrls().get(conf.getMethod());
+        List<String> urls = mappingConfigurationsInfo.getMethodsUrls().get(conf.getMethod());
         urls.removeAll(configHolder.getUsedUrls());
-        mappingConfiguratorData.getControllers().remove(id);
+        mappingConfigurationsInfo.getControllers().remove(id);
 
         deleteControllerData(conf);
         log.info("Unregistered controllers. Method: [{}], Urls: {}", configHolder.getConfig().getMethod(), configHolder.getUsedUrls());
@@ -409,7 +412,7 @@ public class ControllerMappingConfigurator extends MappingConfigurator {
         if (mode == ControllerSaveInfoMode.COLLECTION) {
             boolean isFound = false;
 
-            for(UriConfigHolder<ControllerConfig> configHolder : mappingConfiguratorData.getControllers().values()) {
+            for(UriConfigHolder<ControllerConfig> configHolder : mappingConfigurationsInfo.getControllers().values()) {
                 if (!configHolder.getConfig().getId().equals(conf.getId()) &&
                      configHolder.getConfig().getUri().equals(conf.getUri())) {
                     isFound = true;

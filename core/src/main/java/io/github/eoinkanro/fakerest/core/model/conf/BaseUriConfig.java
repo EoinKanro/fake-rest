@@ -1,8 +1,8 @@
-package io.github.eoinkanro.fakerest.core.model;
+package io.github.eoinkanro.fakerest.core.model.conf;
 
+import io.github.eoinkanro.fakerest.core.model.enums.HttpMethod;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
  * Base config for controllers and routers
@@ -13,11 +13,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public abstract class BaseUriConfig {
+public class BaseUriConfig {
 
     private String id;
-
     private String uri;
+    private HttpMethod method;
 
-    private RequestMethod method;
 }

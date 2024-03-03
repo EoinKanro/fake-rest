@@ -1,4 +1,4 @@
-package io.github.eoinkanro.fakerest.core.conf;
+package io.github.eoinkanro.fakerest.core.conf.file;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -6,35 +6,23 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import io.github.eoinkanro.commons.utils.JsonUtils;
-import io.github.eoinkanro.fakerest.core.model.BaseUriConfig;
-import io.github.eoinkanro.fakerest.core.model.ControllerConfig;
-import io.github.eoinkanro.fakerest.core.model.RouterConfig;
-import lombok.RequiredArgsConstructor;
+import io.github.eoinkanro.fakerest.core.model.conf.BaseUriConfig;
+import io.github.eoinkanro.fakerest.core.model.conf.ControllerConfig;
+import io.github.eoinkanro.fakerest.core.model.conf.RouterConfig;
+import io.github.eoinkanro.fakerest.core.utils.DefaultPropertiesUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.MutablePropertySources;
-import org.springframework.core.env.PropertySource;
-import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Paths;
 
 /**
  * Class works with application.yml file
  * It can create or delete controllers or routers configurations in file
  */
 @Slf4j
-@Component
-@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class YamlConfigurator {
-
-    private static final String YAML_NAME = "application.yml";
 
     private static final String REST_PARAM = "rest";
     private static final String CONTROLLERS_PARAM = "controllers";
@@ -48,7 +36,8 @@ public class YamlConfigurator {
 
     private final ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
 
-    private final ConfigurableEnvironment env;
+    private File configFile = null;
+
 
     //CONTROLLER
 
@@ -58,7 +47,7 @@ public class YamlConfigurator {
      * @param conf - controller config
      * @return - config added
      */
-    boolean addController(ControllerConfig conf) {
+    public boolean addController(ControllerConfig conf) {
         return addConfig(conf, CONTROLLERS_PARAM);
     }
 
@@ -67,7 +56,7 @@ public class YamlConfigurator {
      *
      * @param conf - controller config
      */
-    void deleteController(ControllerConfig conf) {
+    public void deleteController(ControllerConfig conf) {
         deleteConfig(conf, CONTROLLERS_PARAM);
     }
 
@@ -77,7 +66,7 @@ public class YamlConfigurator {
      * @param conf - controller config
      * @return - is config exist
      */
-    boolean isControllerExist(ControllerConfig conf) {
+    public boolean isControllerExist(ControllerConfig conf) {
         return isConfigExist(conf, CONTROLLERS_PARAM);
     }
 
@@ -89,7 +78,7 @@ public class YamlConfigurator {
      * @param conf - router config
      * @return - config added
      */
-    boolean addRouter(RouterConfig conf) {
+    public boolean addRouter(RouterConfig conf) {
         return addConfig(conf, ROUTERS_PARAM);
     }
 
@@ -98,7 +87,7 @@ public class YamlConfigurator {
      *
      * @param conf - router config
      */
-    void deleteRouter(RouterConfig conf) {
+    public void deleteRouter(RouterConfig conf) {
         deleteConfig(conf, ROUTERS_PARAM);
     }
 
@@ -108,7 +97,7 @@ public class YamlConfigurator {
      * @param conf - router config
      * @return - is config exist
      */
-    boolean isRouterExist(RouterConfig conf) {
+    public boolean isRouterExist(RouterConfig conf) {
         return isConfigExist(conf, ROUTERS_PARAM);
     }
 
@@ -129,6 +118,7 @@ public class YamlConfigurator {
             jsonConf.remove(ID_PARAM);
             configs.add(jsonConf);
             writeConfig(yaml);
+
             log.info("Added {} to config. Method: {}, uri: {}", conf instanceof ControllerConfig ? CONTROLLER_PARAM : ROUTER_PARAM,
                     conf.getMethod(),
                     conf.getUri());
@@ -200,6 +190,24 @@ public class YamlConfigurator {
         return result;
     }
 
+    public ArrayNode getControllers() {
+        return getControllersOrRouters(CONTROLLERS_PARAM);
+    }
+
+    public ArrayNode getRouters() {
+        return getControllersOrRouters(ROUTERS_PARAM);
+    }
+
+    private ArrayNode getControllersOrRouters(String key) {
+        try {
+            ObjectNode yaml = getConfig();
+            return getControllersOrRouters(yaml, key);
+        } catch (Exception e) {
+            log.error("Can't load config", e);
+            return JsonUtils.createArray();
+        }
+    }
+
     /**
      * Get array of configurations from config file
      *
@@ -259,62 +267,45 @@ public class YamlConfigurator {
      * Read configuration file
      *
      * @return - configuration file
-     * @throws IOException - exception from {@link #getYamlPath()}
      */
-    private File getConfigFile() throws IOException {
-        String yamlPath = getYamlPath();
-        log.info("Getting file {}", yamlPath);
-        return new File(yamlPath);
+    private File getConfigFile() {
+        log.info("Getting config file {}", DefaultPropertiesUtils.getConfigFileName());
+        if (configFile == null) {
+            File projectDir = new File(URLDecoder.decode(System.getProperty("user.dir"), StandardCharsets.UTF_8));
+            configFile = getFile(DefaultPropertiesUtils.getConfigFileName(), projectDir.listFiles());
+        }
+
+        if (configFile != null) {
+            log.info("Got {}", configFile.getAbsolutePath());
+        } else {
+            log.info("Can't get config file");
+        }
+        return configFile;
     }
 
-    /**
-     * Get path to configuration file
-     *
-     * @return - path to configuration file
-     * @throws UnsupportedEncodingException - if can't decode string
-     */
-    private String getYamlPath() {
-        String projectPath = System.getProperty("user.dir");
-        String decodedPath = URLDecoder.decode(projectPath, StandardCharsets.UTF_8);
-        MutablePropertySources propertySources = env.getPropertySources();
+    private File getFile(String fileName, File[] files) {
+        if (files == null || fileName == null) {
+            return null;
+        }
 
-        String result = null;
-        for (PropertySource<?> source : propertySources) {
-            String sourceName = source.getName();
-            if (sourceName.contains("Config resource '")) {
-                result = getYamlPath(decodedPath, sourceName);
-                if (result != null) {
-                    break;
-                }
+        for (File file : files) {
+            if (file.getName().equals(fileName)) {
+                return file;
             }
         }
 
-        return result == null ? decodedPath + File.separator + YAML_NAME : result;
-    }
-
-    /**
-     * Get path to loaded configuration file
-     *
-     * @param projectFolder - full path to project folder
-     * @param sourceName - spring source name of loaded configuration
-     * @return - path to configuration file or null
-     */
-    private String getYamlPath(String projectFolder, String sourceName) {
-        String result = null;
-        String filePath = sourceName.substring(sourceName.indexOf("[") + 1, sourceName.indexOf("]"));
-
-        if (sourceName.contains("classpath")) {
-            URL classPath = getClass().getClassLoader().getResource(filePath);
-            if (classPath != null) filePath = new File(classPath.getFile()).getAbsolutePath();
-        }
-
-        if (!Paths.get(filePath).isAbsolute()) {
-            filePath = projectFolder + File.separator + filePath;
-        }
-
-        File file = new File(filePath);
-        if (file.exists() && file.canWrite()) {
-            result = filePath;
+        File result = null;
+        for (File file : files) {
+            if (file.isDirectory()) {
+                result = getFile(fileName, file.listFiles());
+            }
+            if (result != null) {
+                if (!result.canRead() || !result.canWrite()) {
+                    result = null;
+                } else {
+                    break;
+                }
+            }
         }
         return result;
     }

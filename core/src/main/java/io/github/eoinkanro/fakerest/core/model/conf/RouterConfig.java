@@ -1,5 +1,6 @@
-package io.github.eoinkanro.fakerest.core.model;
+package io.github.eoinkanro.fakerest.core.model.conf;
 
+import io.github.eoinkanro.fakerest.core.model.Copyable;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 

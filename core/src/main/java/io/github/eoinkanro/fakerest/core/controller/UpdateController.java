@@ -2,13 +2,13 @@ package io.github.eoinkanro.fakerest.core.controller;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.eoinkanro.commons.utils.JsonUtils;
+import io.github.eoinkanro.fakerest.core.model.ControllerResponse;
 import io.github.eoinkanro.fakerest.core.utils.HttpUtils;
-import jakarta.servlet.http.HttpServletRequest;
+import io.undertow.server.HttpServerExchange;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 import java.util.Map;
 
@@ -20,14 +20,17 @@ import java.util.Map;
 public class UpdateController extends FakeModifyController {
 
     @Override
-    protected ResponseEntity<String> handleOne(HttpServletRequest request, String body) {
-        ResponseEntity<String> result;
+    protected ControllerResponse handleOne(HttpServerExchange request, String body) {
+        ControllerResponse result;
         if (body != null && !body.isEmpty()) {
             result = updateOne(request, body);
         } else {
             ObjectNode error = JsonUtils.createJson();
             JsonUtils.putString(error, DESCRIPTION_PARAM, NULL_BODY);
-            result = new ResponseEntity<>(error.toString(), HttpStatus.BAD_REQUEST);
+            result = ControllerResponse.builder()
+                    .status(HttpServletResponse.SC_BAD_REQUEST)
+                    .body(error.toString())
+                    .build();
         }
         return result;
     }
@@ -39,28 +42,37 @@ public class UpdateController extends FakeModifyController {
      * @param body - body from request
      * @return - response
      */
-    private ResponseEntity<String> updateOne(HttpServletRequest request, String body) {
-        ResponseEntity<String> result;
+    private ControllerResponse updateOne(HttpServerExchange request, String body) {
+        ControllerResponse result;
         ObjectNode bodyJson = JsonUtils.toObjectNode(body);
 
         if (bodyJson != null && !bodyJson.isEmpty()) {
-            Map<String, String> ids = HttpUtils.getUrlIds(request);
+            Map<String, String> ids = HttpUtils.getUrlIds(request, controllerConfig.getIdParams());
             String key = controllerData.buildKey(ids, controllerConfig.getIdParams());
 
             if (controllerData.containsKey(controllerConfig.getUri(), key)) {
                 ids.forEach((id, value) -> JsonUtils.putString(bodyJson, id, value));
 
                 controllerData.putData(controllerConfig.getUri(), key, bodyJson);
-                result = new ResponseEntity<>(bodyJson.toString(), HttpStatus.OK);
+                result = ControllerResponse.builder()
+                        .status(HttpServletResponse.SC_OK)
+                        .body(bodyJson.toString())
+                        .build();
             } else {
                 ObjectNode error = JsonUtils.createJson();
                 JsonUtils.putString(error, DESCRIPTION_PARAM, String.format(KEY_NOT_FOUND, key));
-                result = new ResponseEntity<>(error.toString(), HttpStatus.BAD_REQUEST);
+                result = ControllerResponse.builder()
+                        .status(HttpServletResponse.SC_BAD_REQUEST)
+                        .body(error.toString())
+                        .build();
             }
         } else {
             ObjectNode error = JsonUtils.createJson();
             JsonUtils.putString(error, DESCRIPTION_PARAM, String.format(DATA_NOT_JSON, body));
-            result = new ResponseEntity<>(error.toString(), HttpStatus.BAD_REQUEST);
+            result = ControllerResponse.builder()
+                    .status(HttpServletResponse.SC_BAD_REQUEST)
+                    .body(error.toString())
+                    .build();
         }
         return result;
     }

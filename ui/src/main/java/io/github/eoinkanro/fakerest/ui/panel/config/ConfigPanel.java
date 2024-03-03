@@ -1,7 +1,7 @@
 package io.github.eoinkanro.fakerest.ui.panel.config;
 
-import io.github.eoinkanro.fakerest.core.model.BaseUriConfig;
-import org.springframework.web.bind.annotation.RequestMethod;
+import io.github.eoinkanro.fakerest.core.model.conf.BaseUriConfig;
+import io.github.eoinkanro.fakerest.core.model.enums.HttpMethod;
 
 import javax.swing.*;
 import java.awt.*;
@@ -23,7 +23,7 @@ public abstract class ConfigPanel<T extends BaseUriConfig> extends JScrollPane {
     private final JLabel header;
     private final JButton deleteButton;
 
-    protected final JComboBox<RequestMethod> methodDropDown;
+    protected final JComboBox<HttpMethod> methodDropDown;
     protected final JTextArea uriText;
     protected final JButton saveButton;
 
@@ -68,12 +68,12 @@ public abstract class ConfigPanel<T extends BaseUriConfig> extends JScrollPane {
 
 
 
-    protected JComboBox<RequestMethod> createMethodDropDown() {
-        JComboBox<RequestMethod> result = new JComboBox<>();
-        Arrays.stream(RequestMethod.values()).forEach(result::addItem);
+    protected JComboBox<HttpMethod> createMethodDropDown() {
+        JComboBox<HttpMethod> result = new JComboBox<>();
+        Arrays.stream(HttpMethod.values()).forEach(result::addItem);
 
         result.addActionListener(e -> config
-                .setMethod((RequestMethod) result.getSelectedItem())
+                .setMethod((HttpMethod) result.getSelectedItem())
         );
 
         return result;

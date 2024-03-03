@@ -1,17 +1,18 @@
-package io.github.eoinkanro.fakerest.core.conf;
+package io.github.eoinkanro.fakerest.core.conf.server.controller;
 
+import io.github.eoinkanro.fakerest.core.conf.ConfigException;
+import io.github.eoinkanro.fakerest.core.conf.server.MappingConfigurationsInfo;
+import io.github.eoinkanro.fakerest.core.conf.file.YamlConfigurator;
+import io.github.eoinkanro.fakerest.core.conf.server.UndertowServer;
 import io.github.eoinkanro.fakerest.core.controller.BaseController;
 import io.github.eoinkanro.fakerest.core.controller.RouterController;
-import io.github.eoinkanro.fakerest.core.model.GeneratorPattern;
-import io.github.eoinkanro.fakerest.core.model.RouterConfig;
-import io.github.eoinkanro.fakerest.core.model.UriConfigHolder;
+import io.github.eoinkanro.fakerest.core.model.conf.BaseUriConfig;
+import io.github.eoinkanro.fakerest.core.model.enums.GeneratorPattern;
+import io.github.eoinkanro.fakerest.core.model.conf.RouterConfig;
+import io.github.eoinkanro.fakerest.core.model.conf.UriConfigHolder;
 import io.github.eoinkanro.fakerest.core.utils.RestClient;
+import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
-import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,17 +23,14 @@ import java.util.Map;
  * Configurator that register and unregister routers
  */
 @Slf4j
-@Component
-public class RouterMappingConfigurator extends MappingConfigurator {
+public class RouterMappingConfigurator extends AbstractMappingConfigurator {
 
     private final RestClient restClient;
 
-    @Autowired
-    public RouterMappingConfigurator(@Qualifier("requestMappingHandlerMapping") RequestMappingHandlerMapping handlerMapping,
-                                     MappingConfiguratorData mappingConfiguratorData,
-                                     YamlConfigurator yamlConfigurator,
-                                     RestClient restClient) {
-        super(handlerMapping, mappingConfiguratorData, yamlConfigurator);
+    @Inject
+    public RouterMappingConfigurator(MappingConfigurationsInfo mappingConfigurationsInfo, YamlConfigurator yamlConfigurator,
+                                     UndertowServer server, RestClient restClient) {
+        super(mappingConfigurationsInfo, yamlConfigurator, server);
         this.restClient = restClient;
     }
 
@@ -46,11 +44,11 @@ public class RouterMappingConfigurator extends MappingConfigurator {
     public void registerRouter(RouterConfig conf) throws ConfigException {
         beforeInitRouterCheck(conf);
 
-        Map<RequestMappingInfo, BaseController> requestMappingInfo = new HashMap<>();
+        Map<BaseUriConfig, BaseController> requestMappingInfo = new HashMap<>();
         List<String> usedUrls = new ArrayList<>();
-        RequestMappingInfo routerInfo = RequestMappingInfo
-                .paths(conf.getUri())
-                .methods(conf.getMethod())
+        BaseUriConfig routerInfo = BaseUriConfig.builder()
+                .uri(conf.getUri())
+                .method(conf.getMethod())
                 .build();
 
         RouterController routerController = new RouterController(conf, restClient);
@@ -62,7 +60,7 @@ public class RouterMappingConfigurator extends MappingConfigurator {
         addUrls(configHolder);
 
         conf.setId(idGenerator.generateId(GeneratorPattern.SEQUENCE));
-        mappingConfiguratorData.getRouters().put(conf.getId(), configHolder);
+        mappingConfigurationsInfo.getRouters().put(conf.getId(), configHolder);
 
         if (!yamlConfigurator.isRouterExist(conf) && !yamlConfigurator.addRouter(conf)) {
             log.error("Cant save config to yaml. Method: [{}],  Urls:{}", conf.getMethod(), configHolder.getUsedUrls());
@@ -92,7 +90,7 @@ public class RouterMappingConfigurator extends MappingConfigurator {
             conf.setToUrl(conf.getToUrl().replace("\\", "/"));
         }
 
-        List<String> urls = mappingConfiguratorData.getMethodsUrls().computeIfAbsent(conf.getMethod(), key -> new ArrayList<>());
+        List<String> urls = mappingConfigurationsInfo.getMethodsUrls().computeIfAbsent(conf.getMethod(), key -> new ArrayList<>());
         if (urls.contains(conf.getUri())) {
             throw new ConfigException(String.format("Router: Duplicated urls: %s", conf.getUri()));
         }
@@ -106,19 +104,19 @@ public class RouterMappingConfigurator extends MappingConfigurator {
      * @throws ConfigException - if configuration with id not exist
      */
     public void unregisterRouter(String id) throws ConfigException {
-        if (!mappingConfiguratorData.getRouters().containsKey(id)) {
+        if (!mappingConfigurationsInfo.getRouters().containsKey(id)) {
             throw new ConfigException(String.format("Router with id [%s] not exist", id));
         }
-        UriConfigHolder<RouterConfig> configHolder = mappingConfiguratorData.getRouters().get(id);
+        UriConfigHolder<RouterConfig> configHolder = mappingConfigurationsInfo.getRouters().get(id);
 
         if (yamlConfigurator.isRouterExist(configHolder.getConfig())) {
             yamlConfigurator.deleteRouter(configHolder.getConfig());
         }
 
         unregisterMapping(configHolder);
-        List<String> urls = mappingConfiguratorData.getMethodsUrls().get(configHolder.getConfig().getMethod());
+        List<String> urls = mappingConfigurationsInfo.getMethodsUrls().get(configHolder.getConfig().getMethod());
         urls.removeAll(configHolder.getUsedUrls());
-        mappingConfiguratorData.getRouters().remove(id);
+        mappingConfigurationsInfo.getRouters().remove(id);
         log.info("Unregistered router. Method: [{}], Urls: {}", configHolder.getConfig().getMethod(), configHolder.getUsedUrls());
     }
 }

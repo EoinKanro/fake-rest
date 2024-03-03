@@ -2,13 +2,13 @@ package io.github.eoinkanro.fakerest.core.controller;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.eoinkanro.commons.utils.JsonUtils;
+import io.github.eoinkanro.fakerest.core.model.ControllerResponse;
 import io.github.eoinkanro.fakerest.core.utils.HttpUtils;
-import jakarta.servlet.http.HttpServletRequest;
+import io.undertow.server.HttpServerExchange;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 /**
  * Controller that can delete data from collection
@@ -18,19 +18,25 @@ import org.springframework.http.ResponseEntity;
 public class DeleteController extends FakeModifyController {
 
     @Override
-    protected ResponseEntity<String> handleOne(HttpServletRequest request, String body) {
-        ResponseEntity<String> result;
+    protected ControllerResponse handleOne(HttpServerExchange request, String body) {
+        ControllerResponse result;
 
-        String key = controllerData.buildKey(HttpUtils.getUrlIds(request), controllerConfig.getIdParams());
+        String key = controllerData.buildKey(HttpUtils.getUrlIds(request, controllerConfig.getIdParams()), controllerConfig.getIdParams());
         if (controllerData.containsKey(controllerConfig.getUri(), key)) {
             ObjectNode data = controllerData.getData(controllerConfig.getUri(), key);
             controllerData.deleteData(controllerConfig.getUri(), key);
 
-            result = new ResponseEntity<>(data.toString(), HttpStatus.OK);
+            result = ControllerResponse.builder()
+                    .status(HttpServletResponse.SC_OK)
+                    .body(data.toString())
+                    .build();
         } else {
             ObjectNode error = JsonUtils.createJson();
             JsonUtils.putString(error, DESCRIPTION_PARAM, String.format(KEY_NOT_FOUND, key));
-            result = new ResponseEntity<>(error.toString(), HttpStatus.BAD_REQUEST);
+            result = ControllerResponse.builder()
+                    .status(HttpServletResponse.SC_BAD_REQUEST)
+                    .body(error.toString())
+                    .build();
         }
 
         return result;

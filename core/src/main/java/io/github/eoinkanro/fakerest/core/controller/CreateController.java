@@ -2,14 +2,14 @@ package io.github.eoinkanro.fakerest.core.controller;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.eoinkanro.commons.utils.JsonUtils;
-import io.github.eoinkanro.fakerest.core.model.GeneratorPattern;
+import io.github.eoinkanro.fakerest.core.model.ControllerResponse;
+import io.github.eoinkanro.fakerest.core.model.enums.GeneratorPattern;
 import io.github.eoinkanro.fakerest.core.utils.IdGenerator;
-import jakarta.servlet.http.HttpServletRequest;
+import io.undertow.server.HttpServerExchange;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 import java.util.Map;
 
@@ -23,14 +23,17 @@ public class CreateController extends FakeModifyController {
     private IdGenerator idGenerator;
 
     @Override
-    protected ResponseEntity<String> handleOne(HttpServletRequest request, String body) {
-        ResponseEntity<String> result;
+    protected ControllerResponse handleOne(HttpServerExchange request, String body) {
+        ControllerResponse result;
         if (body != null && !body.isEmpty()) {
             result = saveOne(body);
         } else {
             ObjectNode error = JsonUtils.createJson();
             JsonUtils.putString(error, DESCRIPTION_PARAM, NULL_BODY);
-            result = new ResponseEntity<>(error.toString(), HttpStatus.BAD_REQUEST);
+            result = ControllerResponse.builder()
+                    .status(HttpServletResponse.SC_BAD_REQUEST)
+                    .body(error.toString())
+                    .build();
         }
         return result;
     }
@@ -41,8 +44,8 @@ public class CreateController extends FakeModifyController {
      * @param body - request body
      * @return - response
      */
-    private ResponseEntity<String> saveOne(String body) {
-        ResponseEntity<String> result = null;
+    private ControllerResponse saveOne(String body) {
+        ControllerResponse result = null;
         ObjectNode bodyJson = JsonUtils.toObjectNode(body);
 
         if (bodyJson != null && !bodyJson.isEmpty()) {
@@ -51,7 +54,10 @@ public class CreateController extends FakeModifyController {
             } else if (!checkIds(bodyJson)){
                 ObjectNode error = JsonUtils.createJson();
                 JsonUtils.putString(error, DESCRIPTION_PARAM, MISSING_IDS);
-                result = new ResponseEntity<>(error.toString(), HttpStatus.BAD_REQUEST);
+                result = ControllerResponse.builder()
+                        .status(HttpServletResponse.SC_BAD_REQUEST)
+                        .body(error.toString())
+                        .build();
             }
 
             if (result == null) {
@@ -60,7 +66,10 @@ public class CreateController extends FakeModifyController {
         } else {
             ObjectNode error = JsonUtils.createJson();
             JsonUtils.putString(error, DESCRIPTION_PARAM, String.format(DATA_NOT_JSON, body));
-            result = new ResponseEntity<>(error.toString(), HttpStatus.BAD_REQUEST);
+            result = ControllerResponse.builder()
+                    .status(HttpServletResponse.SC_BAD_REQUEST)
+                    .body(error.toString())
+                    .build();
         }
         return result;
     }
@@ -71,17 +80,23 @@ public class CreateController extends FakeModifyController {
      * @param body - request body
      * @return - response
      */
-    private ResponseEntity<String> saveOne(ObjectNode body) {
-        ResponseEntity<String> result;
+    private ControllerResponse saveOne(ObjectNode body) {
+        ControllerResponse result;
         String key = controllerData.buildKey(body, controllerConfig.getIdParams());
 
         if (!controllerData.containsKey(controllerConfig.getUri(), key)) {
             controllerData.putData(controllerConfig.getUri(), key, body);
-            result = new ResponseEntity<>(body.toString(), HttpStatus.OK);
+            result = ControllerResponse.builder()
+                    .status(HttpServletResponse.SC_OK)
+                    .body(body.toString())
+                    .build();
         } else {
             ObjectNode error = JsonUtils.createJson();
             JsonUtils.putString(error, DESCRIPTION_PARAM, String.format(KEY_ALREADY_EXIST, key));
-            result = new ResponseEntity<>(error.toString(), HttpStatus.BAD_REQUEST);
+            result = ControllerResponse.builder()
+                    .status(HttpServletResponse.SC_BAD_REQUEST)
+                    .body(error.toString())
+                    .build();
         }
         return result;
     }

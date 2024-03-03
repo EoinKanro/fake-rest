@@ -1,6 +1,6 @@
 package io.github.eoinkanro.fakerest.core.utils;
 
-import io.github.eoinkanro.fakerest.core.model.GeneratorPattern;
+import io.github.eoinkanro.fakerest.core.model.enums.GeneratorPattern;
 
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;

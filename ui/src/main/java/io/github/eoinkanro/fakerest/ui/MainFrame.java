@@ -1,38 +1,41 @@
 package io.github.eoinkanro.fakerest.ui;
 
-import io.github.eoinkanro.fakerest.core.conf.ControllerMappingConfigurator;
-import io.github.eoinkanro.fakerest.core.conf.MappingConfiguratorData;
-import io.github.eoinkanro.fakerest.core.conf.RouterMappingConfigurator;
-import io.github.eoinkanro.fakerest.core.model.ControllerConfig;
-import io.github.eoinkanro.fakerest.core.model.RouterConfig;
+import io.github.eoinkanro.fakerest.core.conf.server.controller.ControllerMappingConfigurator;
+import io.github.eoinkanro.fakerest.core.conf.server.MappingConfigurationsInfo;
+import io.github.eoinkanro.fakerest.core.conf.server.controller.RouterMappingConfigurator;
+import io.github.eoinkanro.fakerest.core.model.conf.ControllerConfig;
+import io.github.eoinkanro.fakerest.core.model.conf.RouterConfig;
 import io.github.eoinkanro.fakerest.ui.panel.config.impl.ControllerConfigPanel;
 import io.github.eoinkanro.fakerest.ui.panel.config.impl.RouterConfigPanel;
 import io.github.eoinkanro.fakerest.ui.panel.table.impl.ControllerConfigScrollableTablePanel;
 import io.github.eoinkanro.fakerest.ui.panel.table.impl.RouterConfigScrollableTablePanel;
-import jakarta.annotation.PostConstruct;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import jakarta.inject.Inject;
 
 import javax.swing.*;
 import java.awt.*;
 
-@Component
-@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class MainFrame extends JFrame {
 
-    private final transient MappingConfiguratorData mappingConfiguratorData;
+    private final transient MappingConfigurationsInfo mappingConfigurationsInfo;
     private final transient ControllerMappingConfigurator controllerMappingConfigurator;
     private final transient RouterMappingConfigurator routerMappingConfigurator;
 
-    @PostConstruct
+    @Inject
+    public MainFrame(MappingConfigurationsInfo mappingConfigurationsInfo, ControllerMappingConfigurator controllerMappingConfigurator, RouterMappingConfigurator routerMappingConfigurator) {
+        this.mappingConfigurationsInfo = mappingConfigurationsInfo;
+        this.controllerMappingConfigurator = controllerMappingConfigurator;
+        this.routerMappingConfigurator = routerMappingConfigurator;
+
+        init();
+    }
+
     public void init() {
         setPreferredSize(new Dimension(940, 500));
 
-        ControllerConfigScrollableTablePanel controllersTablePanel = new ControllerConfigScrollableTablePanel(mappingConfiguratorData.getAllControllersCopy().toArray(new ControllerConfig[0]));
+        ControllerConfigScrollableTablePanel controllersTablePanel = new ControllerConfigScrollableTablePanel(mappingConfigurationsInfo.getAllControllersCopy().toArray(new ControllerConfig[0]));
         controllersTablePanel.setPreferredSize(new Dimension(400, 250));
 
-        RouterConfigScrollableTablePanel routersTablePanel = new RouterConfigScrollableTablePanel(mappingConfiguratorData.getAllRoutersCopy().toArray(new RouterConfig[0]));
+        RouterConfigScrollableTablePanel routersTablePanel = new RouterConfigScrollableTablePanel(mappingConfigurationsInfo.getAllRoutersCopy().toArray(new RouterConfig[0]));
         routersTablePanel.setPreferredSize(new Dimension(400, 250));
 
         JPanel controllersAndRouterTables = new JPanel();
@@ -75,7 +78,7 @@ public class MainFrame extends JFrame {
 
         controllersTablePanel.setRowSelectedAction(() -> {
             String id = controllersTablePanel.getId(controllersTablePanel.getTable().getSelectedRow());
-            controllerConfigPanel.setConfig(mappingConfiguratorData.getControllerCopy(id));
+            controllerConfigPanel.setConfig(mappingConfigurationsInfo.getControllerCopy(id));
 
             controllerConfigPanel.setVisible(true);
             controllerConfigPanel.getVerticalScrollBar().setValue(0);
@@ -92,7 +95,7 @@ public class MainFrame extends JFrame {
         routersTablePanel.setAddButtonAction(() -> routerConfigPanel.setConfig(new RouterConfig()));
         routersTablePanel.setRowSelectedAction(() -> {
             String id = routersTablePanel.getId(routersTablePanel.getTable().getSelectedRow());
-            routerConfigPanel.setConfig(mappingConfiguratorData.getRouterCopy(id));
+            routerConfigPanel.setConfig(mappingConfigurationsInfo.getRouterCopy(id));
 
             routerConfigPanel.setVisible(true);
             routerConfigPanel.getVerticalScrollBar().setValue(0);

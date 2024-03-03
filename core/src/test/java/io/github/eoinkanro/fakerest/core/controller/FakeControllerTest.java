@@ -3,23 +3,28 @@ package io.github.eoinkanro.fakerest.core.controller;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.eoinkanro.commons.utils.JsonUtils;
 import io.github.eoinkanro.commons.utils.SystemUtils;
-import io.github.eoinkanro.fakerest.core.conf.MappingConfigurationLoader;
-import io.github.eoinkanro.fakerest.core.model.ControllerData;
-import jakarta.servlet.http.HttpServletRequest;
+import io.github.eoinkanro.fakerest.core.conf.server.controller.ControllerData;
+import io.github.eoinkanro.fakerest.core.model.ControllerResponse;
+import io.github.eoinkanro.fakerest.core.model.enums.HttpMethod;
+import io.github.eoinkanro.fakerest.core.utils.HttpUtils;
+import io.undertow.server.HttpServerExchange;
+import io.undertow.util.HeaderMap;
+import io.undertow.util.HttpString;
+import io.undertow.util.PathTemplateMatch;
+import lombok.SneakyThrows;
+import org.apache.tools.ant.filters.StringInputStream;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.provider.Arguments;
+import org.mockito.InjectMocks;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.ResponseEntity;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.servlet.HandlerMapping;
+import org.mockito.Spy;
 
+import java.io.BufferedInputStream;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -43,12 +48,10 @@ abstract class FakeControllerTest {
     static final String FIRST_DATA_VALUE ="data-value";
     static final String SECOND_DATA_VALUE ="data-value2";
 
-    @Autowired
+    @InjectMocks
     TestControllersFabric testControllersFabric;
-    @Autowired
+    @Spy
     ControllerData controllerData;
-    @MockBean
-    MappingConfigurationLoader mappingConfigurationLoader;
     MockedStatic<SystemUtils> mockedStatic;
 
     ObjectNode JSON_NO_ID;
@@ -71,7 +74,7 @@ abstract class FakeControllerTest {
     }
 
     private static Stream<Arguments> provideAllMethodsDelay(long delayMs) {
-        RequestMethod[] requestMethods = RequestMethod.values();
+        HttpMethod[] requestMethods = HttpMethod.values();
         Arguments[] arguments = new Arguments[requestMethods.length];
         for (int i = 0; i < arguments.length; i++) {
             arguments[i] = Arguments.of(requestMethods[i], delayMs);
@@ -93,8 +96,8 @@ abstract class FakeControllerTest {
         return provideAllMethodsDelay(DELAY_MS);
     }
 
-    static Stream<RequestMethod> provideAllMethods() {
-        return Stream.of(RequestMethod.values());
+    static Stream<HttpMethod> provideAllMethods() {
+        return Stream.of(HttpMethod.values());
     }
 
     /**
@@ -181,41 +184,48 @@ abstract class FakeControllerTest {
         return result;
     }
 
-    HttpServletRequest createRequest(RequestMethod method, String body) {
+    HttpServerExchange createRequest(HttpMethod method, String body) {
         return createRequest(method, body, null, null);
     }
 
-    HttpServletRequest createRequestWithUriVariables(RequestMethod method, String body, Map<String, String> uriVariables) {
-        return createRequest(method, body, null, uriVariables);
+    HttpServerExchange createRequestWithUriVariables(HttpMethod method, String body, String requestUri) {
+        return createRequest(method, body, null, requestUri);
     }
 
-    HttpServletRequest createRequestWithHeaders(RequestMethod method, String body, Map<String, String> headers) {
+    HttpServerExchange createRequestWithHeaders(HttpMethod method, String body, Map<String, String> headers) {
         return createRequest(method, body, headers, null);
     }
 
     /**
      * Create http request to send to controller
      *
-     * @param method - request method
-     * @param body - body of request
-     * @param headers - http headers
-     * @param uriVariables - uri variables with id. example: id - id-value
      * @return - http request
      */
-    private HttpServletRequest createRequest(RequestMethod method, String body, Map<String, String> headers, Map<String, String> uriVariables) {
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setMethod(method.name());
+    //TODO
+    @SneakyThrows
+    private HttpServerExchange createRequest(HttpMethod method, String body, Map<String, String> headers, String requestUri) {
+        HttpServerExchange request = mock(HttpServerExchange.class);
+        lenient().when(request.getRequestMethod()).thenReturn(new HttpString(method.name()));
         if (body != null) {
-            request.setContent(body.getBytes());
+            lenient().when(request.getInputStream()).thenReturn(new BufferedInputStream(new StringInputStream(body)));
         }
+
         if (headers != null) {
+            HeaderMap headerMap = new HeaderMap();
+
             for (Map.Entry<String, String> entry : headers.entrySet()) {
-                request.addHeader(entry.getKey(), entry.getValue());
+                headerMap.add(new HttpString(entry.getKey()), entry.getValue());
             }
+            lenient().when(request.getRequestHeaders()).thenReturn(headerMap);
         }
-        if (uriVariables != null) {
-            request.setAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, uriVariables);
+        lenient().when(request.getRequestURI()).thenReturn(requestUri);
+
+        if (requestUri != null) {
+            lenient().when(request.getAttachment(PathTemplateMatch.ATTACHMENT_KEY)).thenReturn(new PathTemplateMatch(requestUri, getIdValues(requestUri)));
         }
+        lenient().when(request.getHostPort()).thenReturn(8080);
+        lenient().when(request.getRequestScheme()).thenReturn("http");
+        lenient().when(request.getHostName()).thenReturn("localhost");
 
         return request;
     }
@@ -228,10 +238,10 @@ abstract class FakeControllerTest {
      * @param delayMs - delay time
      * @return - response
      */
-    ResponseEntity<String> handleResponse(FakeController fakeController, HttpServletRequest request, long delayMs) {
+    ControllerResponse handleResponse(FakeController fakeController, HttpServerExchange request, long delayMs) {
         fakeController = Mockito.spy(fakeController);
 
-        ResponseEntity<String> response = fakeController.handle(request);
+        ControllerResponse response = fakeController.handle(request);
 
         verify(fakeController, times(1)).delay();
         if (delayMs > 0) {
@@ -240,5 +250,33 @@ abstract class FakeControllerTest {
             mockedStatic.verify(() -> SystemUtils.sleep(anyLong()), times(0));
         }
         return response;
+    }
+
+    String createRequestUri(String... args) {
+        StringBuilder builder = new StringBuilder();
+        Arrays.stream(args).forEach(arg -> {
+            builder.append(arg);
+            builder.append(HttpUtils.URI_DELIMITER);
+        });
+        return builder.toString();
+    }
+
+    Map<String, String> getIdValues(String uri) {
+        String[] splitUri = uri.split(HttpUtils.URI_DELIMITER);
+        if (splitUri.length % 2 > 0) {
+            throw new RuntimeException("Bad uri " + uri);
+        }
+
+        Map<String, String> result = new HashMap<>();
+
+        String key = null;
+        for (int i = 0; i < splitUri.length; i++) {
+            if (i % 2 == 0) {
+                key = splitUri[i];
+            } else {
+                result.put(key, splitUri[i]);
+            }
+        }
+        return result;
     }
 }

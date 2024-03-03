@@ -1,13 +1,13 @@
 package io.github.eoinkanro.fakerest.ui.panel.config.impl;
 
 import io.github.eoinkanro.fakerest.core.conf.ConfigException;
-import io.github.eoinkanro.fakerest.core.conf.RouterMappingConfigurator;
-import io.github.eoinkanro.fakerest.core.model.RouterConfig;
+import io.github.eoinkanro.fakerest.core.conf.server.controller.RouterMappingConfigurator;
+import io.github.eoinkanro.fakerest.core.model.conf.RouterConfig;
+import io.github.eoinkanro.fakerest.core.model.enums.HttpMethod;
 import io.github.eoinkanro.fakerest.ui.listener.KeyReleasedListener;
 import io.github.eoinkanro.fakerest.ui.panel.config.ConfigPanel;
 import io.github.eoinkanro.fakerest.ui.panel.table.impl.RouterConfigScrollableTablePanel;
 import io.github.eoinkanro.fakerest.ui.utils.FrameUtils;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.swing.*;
 
@@ -120,7 +120,7 @@ public class RouterConfigPanel extends ConfigPanel<RouterConfig> {
 
     private void validateAndUpdateConfigBeforeSet(RouterConfig config) {
         if (config.getMethod() == null) {
-            config.setMethod(RequestMethod.GET);
+            config.setMethod(HttpMethod.GET);
         }
     }
 

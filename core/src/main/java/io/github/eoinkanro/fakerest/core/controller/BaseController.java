@@ -1,7 +1,7 @@
 package io.github.eoinkanro.fakerest.core.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.http.ResponseEntity;
+import io.github.eoinkanro.fakerest.core.model.ControllerResponse;
+import io.undertow.server.HttpServerExchange;
 
 /**
  * Base interface for all controllers
@@ -14,5 +14,5 @@ public interface BaseController {
      * @param request - request to controller
      * @return - response
      */
-    ResponseEntity<String> handle(HttpServletRequest request);
+    ControllerResponse handle(HttpServerExchange request);
 }

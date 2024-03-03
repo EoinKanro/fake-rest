@@ -1,27 +1,30 @@
 package io.github.eoinkanro.fakerest.core.utils;
 
-import jakarta.servlet.http.HttpServletRequest;
+import io.undertow.server.HttpServerExchange;
+import io.undertow.util.HeaderValues;
+import io.undertow.util.PathTemplateMatch;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.springframework.http.HttpHeaders;
-import org.springframework.web.servlet.HandlerMapping;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Map;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class HttpUtils {
 
     private static final String URL_ID_PATTERN = "(?<=\\{)[\\w]*(?=\\})";
+    public static final String URI_DELIMITER = "/";
 
-    public static Map<String, String> getUrlIds(HttpServletRequest request) {
-        return (Map<String, String>) request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
+    public static Map<String, String> getUrlIds(HttpServerExchange request, List<String> idNames) {
+        Map<String, String> result = new HashMap<>();
+        PathTemplateMatch pathMatch = request.getAttachment(PathTemplateMatch.ATTACHMENT_KEY);
+        idNames.forEach(id -> result.put(id, pathMatch.getParameters().get(id)));
+        return result;
     }
 
     public static List<String> getIdParams(String url) {
@@ -40,23 +43,34 @@ public class HttpUtils {
         return uri.substring(0, uri.indexOf("{"));
     }
 
-    public static String readBody(HttpServletRequest request) throws IOException {
-        return request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
+    public static String readBody(HttpServerExchange request) throws IOException {
+        var inputStream = request.getInputStream();
+        if (inputStream == null) {
+            return null;
+        }
+
+        StringBuilder requestBody = new StringBuilder();
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                requestBody.append(line);
+            }
+        }
+        return requestBody.toString();
     }
 
-    public static HttpHeaders readHeaders(HttpServletRequest request) {
-        HttpHeaders httpHeaders = new HttpHeaders();
+    public static Map<String, List<String>> readHeaders(HttpServerExchange request) {
+        Map<String, List<String>> httpHeaders = new HashMap<>();
 
-        Enumeration<String> headersNames = request.getHeaderNames();
+        Iterable<HeaderValues> headersNames = request.getRequestHeaders();
         if (headersNames != null) {
-            while (headersNames.hasMoreElements()) {
-                String headerName = headersNames.nextElement();
+            for (HeaderValues headerValues : headersNames) {
+                String header = headerValues.getHeaderName().toString();
 
-                Enumeration<String> headerValues = request.getHeaders(headerName);
-                while (headerValues.hasMoreElements()) {
-                    String headerValue = headerValues.nextElement();
-                    httpHeaders.add(headerName, headerValue);
-                }
+                headerValues.forEach(value -> {
+                    List<String> values = httpHeaders.computeIfAbsent(header, key -> new ArrayList<>());
+                    values.add(value);
+                });
             }
         }
 

@@ -1,4 +1,4 @@
-package io.github.eoinkanro.fakerest.core.model;
+package io.github.eoinkanro.fakerest.core.model.enums;
 
 /**
  * Pattern mode to generate ids

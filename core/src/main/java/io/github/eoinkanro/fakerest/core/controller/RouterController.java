@@ -1,15 +1,19 @@
 package io.github.eoinkanro.fakerest.core.controller;
 
-import io.github.eoinkanro.fakerest.core.model.RouterConfig;
+import io.github.eoinkanro.fakerest.core.model.ControllerResponse;
+import io.github.eoinkanro.fakerest.core.model.enums.HttpMethod;
+import io.github.eoinkanro.fakerest.core.model.conf.RouterConfig;
 import io.github.eoinkanro.fakerest.core.utils.HttpUtils;
 import io.github.eoinkanro.fakerest.core.utils.RestClient;
-import jakarta.servlet.http.HttpServletRequest;
+import io.undertow.server.HttpServerExchange;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Controller that can route requests
@@ -24,21 +28,23 @@ public class RouterController implements BaseController {
     private RestClient restClient;
 
     @Override
-    public ResponseEntity<String> handle(HttpServletRequest request) {
-        ResponseEntity<String> result;
+    public ControllerResponse handle(HttpServerExchange request) {
+        ControllerResponse result;
         try {
-            HttpMethod method = HttpMethod.valueOf(conf.getMethod().name());
+            HttpMethod method = conf.getMethod();
             URI uri = buildUri(request);
             String body = HttpUtils.readBody(request);
-            HttpHeaders headers = HttpUtils.readHeaders(request);
+            Map<String, List<String>> headers = HttpUtils.readHeaders(request);
 
-            if (log.isTraceEnabled()) log.trace(LOG_INFO, request.getMethod(), request.getRequestURI(), uri, body, headers);
+            log.trace(LOG_INFO, request.getRequestMethod(), request.getRequestURI(), uri, body, headers);
 
             result = restClient.execute(method, uri, headers, body);
 
         } catch (Exception e) {
             log.error("Error while redirecting from [{}] to [{}]", conf.getUri(), conf.getToUrl(), e);
-            result = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            result = ControllerResponse.builder()
+                    .status(HttpServletResponse.SC_INTERNAL_SERVER_ERROR)
+                    .build();
         }
         return result;
     }
@@ -50,12 +56,12 @@ public class RouterController implements BaseController {
      * @return - uri to route
      * @throws URISyntaxException - if something goes wrong with URI
      */
-    private URI buildUri(HttpServletRequest request) throws URISyntaxException {
+    private URI buildUri(HttpServerExchange request) throws URISyntaxException {
         URI result;
         if (conf.getToUrl().contains("://")) {
             result = new URI(conf.getToUrl());
         } else {
-            String url = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
+            String url = request.getRequestScheme() + "://" + request.getHostName() + ":" + request.getHostPort();
             if (conf.getToUrl().charAt(0) == '/') {
                 url = url + conf.getToUrl();
             } else {

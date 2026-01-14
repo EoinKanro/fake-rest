@@ -7,7 +7,18 @@ repositories {
 }
 
 dependencies {
+    //DI
+    implementation("io.avaje:avaje-inject:$avajeVersion")
+    annotationProcessor("io.avaje:avaje-inject-generator:$avajeVersion")
 
+    //http server
+    implementation("io.javalin:javalin:$javalinVersion")
+
+    compileOnly("org.projectlombok:lombok:$lombokVersion")
+    annotationProcessor("org.projectlombok:lombok:$lombokVersion")
+
+    testCompileOnly("org.projectlombok:lombok:$lombokVersion")
+    testAnnotationProcessor("org.projectlombok:lombok:$lombokVersion")
 }
 
 test {

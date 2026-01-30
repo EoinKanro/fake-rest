@@ -6,6 +6,7 @@ import io.github.eoinkanro.fakerest.core.conf.impl.GroovyHttpHandlerConfig;
 import io.github.eoinkanro.fakerest.core.conf.impl.RouterHttpHandlerConfig;
 import io.github.eoinkanro.fakerest.core.conf.impl.StaticHttpHandlerConfig;
 import io.github.eoinkanro.fakerest.core.handler.HttpHandler;
+import io.github.eoinkanro.fakerest.core.handler.HttpHandlerDataRegistry;
 import io.github.eoinkanro.fakerest.core.handler.HttpHandlerFactory;
 import io.github.eoinkanro.fakerest.core.handler.HttpHandlerRegistry;
 import io.github.eoinkanro.fakerest.core.model.HttpResponse;
@@ -17,7 +18,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class HttpHandlerFactoryImpl implements HttpHandlerFactory {
 
-    private final HttpHandlerRegistry registry;
+    private final HttpHandlerRegistry handlerRegistry;
+    private final HttpHandlerDataRegistry dataRegistry;
 
     @Override
     public HttpHandler create(AbstractHttpHandlerConfig config) {
@@ -38,11 +40,11 @@ public class HttpHandlerFactoryImpl implements HttpHandlerFactory {
     }
 
     private GroovyHttpHandler createGroovyHttpHandler(GroovyHttpHandlerConfig config) {
-        return new GroovyHttpHandler(config);
+        return new GroovyHttpHandler(config, dataRegistry);
     }
 
     private RouterHttpHandler createRouterHttpHandler(RouterHttpHandlerConfig config) {
-        return new RouterHttpHandler(config, registry);
+        return new RouterHttpHandler(config, handlerRegistry);
     }
 
 }

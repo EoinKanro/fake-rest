@@ -4,10 +4,8 @@ package io.github.eoinkanro.fakerest.core;
 import io.github.eoinkanro.fakerest.core.conf.impl.GroovyHttpHandlerConfig;
 import io.github.eoinkanro.fakerest.core.conf.impl.RouterHttpHandlerConfig;
 import io.github.eoinkanro.fakerest.core.conf.impl.StaticHttpHandlerConfig;
-import io.github.eoinkanro.fakerest.core.handler.HttpHandler;
-import io.github.eoinkanro.fakerest.core.handler.HttpHandlerFactory;
-import io.github.eoinkanro.fakerest.core.handler.HttpHandlerRegistry;
-import io.github.eoinkanro.fakerest.core.handler.RegisterException;
+import io.github.eoinkanro.fakerest.core.handler.*;
+import io.github.eoinkanro.fakerest.core.handler.impl.HttpHandlerDataRegistryImpl;
 import io.github.eoinkanro.fakerest.core.handler.impl.HttpHandlerFactoryImpl;
 import io.github.eoinkanro.fakerest.core.handler.impl.HttpHandlerRegistryImpl;
 import io.github.eoinkanro.fakerest.core.model.HttpMethod;
@@ -17,7 +15,8 @@ public class FakeRest {
 
     public static void main(String[] args) throws RegisterException {
         HttpHandlerRegistry registry = new HttpHandlerRegistryImpl();
-        HttpHandlerFactory factory = new HttpHandlerFactoryImpl(registry);
+        HttpHandlerDataRegistry dataRegistry = new HttpHandlerDataRegistryImpl();
+        HttpHandlerFactory factory = new HttpHandlerFactoryImpl(registry, dataRegistry);
 
         JavalinServer server = new JavalinServer(registry);
         server.init();
@@ -59,6 +58,21 @@ public class FakeRest {
 
         HttpHandler groovyVariablesHandler = factory.create(groovyVariablesConfig);
         registry.register(groovyVariablesHandler);
+
+        GroovyHttpHandlerConfig groovyJsonConfig = GroovyHttpHandlerConfig.builder()
+            .path("/groovy/json")
+            .method(HttpMethod.GET)
+            .groovyCode("""
+                    ObjectNode json = jsonMapper.createObjectNode()
+                    json.put("key",123)
+                    
+                    dataRegistry.put("123",json)
+                    return new HttpResponse(200, dataRegistry.get("123").toString())
+                    """)
+            .build();
+
+        HttpHandler groovyJsonHandler = factory.create(groovyJsonConfig);
+        registry.register(groovyJsonHandler);
 
         RouterHttpHandlerConfig routerConfig = RouterHttpHandlerConfig.builder()
             .path("/route")

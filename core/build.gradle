@@ -23,6 +23,9 @@ dependencies {
 
     //groovy shell
     implementation("org.apache.groovy:groovy:$groovyVersion")
+
+    //json
+    implementation("tools.jackson.core:jackson-databind:$jacksonVersion")
 }
 
 test {

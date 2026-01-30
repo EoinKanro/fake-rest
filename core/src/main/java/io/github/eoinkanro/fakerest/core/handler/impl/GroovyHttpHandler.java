@@ -26,9 +26,6 @@ public class GroovyHttpHandler implements HttpHandler {
         Binding groovyBinding = new Binding();
         this.groovyShell = new GroovyShell(groovyBinding);
         this.script = DEFAULT_GROOVY_IMPORT + "\r\n" + config.getGroovyCode();
-        //todo add variables like controllerData or something
-//        groovyShell.setVariable("uri", controllerConfig.getUri());
-//        groovyShell.setVariable("controllerData", controllerData);
     }
 
     @Override

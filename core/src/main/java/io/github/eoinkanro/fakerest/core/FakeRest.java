@@ -32,6 +32,16 @@ public class FakeRest {
         HttpHandler staticHandler = factory.create(staticCOnfig);
         registry.register(staticHandler);
 
+        StaticHttpHandlerConfig staticNullConfig = StaticHttpHandlerConfig.builder()
+            .path("/static/null")
+            .method(HttpMethod.GET)
+            .responseBody(null)
+            .responseCode(606)
+            .build();
+
+        HttpHandler staticNullHandler = factory.create(staticNullConfig);
+        registry.register(staticNullHandler);
+
         GroovyHttpHandlerConfig groovyConfig = GroovyHttpHandlerConfig.builder()
             .path("/groovy")
             .method(HttpMethod.GET)

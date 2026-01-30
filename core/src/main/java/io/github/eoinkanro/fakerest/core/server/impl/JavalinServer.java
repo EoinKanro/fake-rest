@@ -59,9 +59,12 @@ public class JavalinServer implements HttpServer {
                 .build()
             );
 
-            //todo what if null? error?
-            context.status(response.getCode())
-                .result(response.getBody());
+            context.status(response.getCode());
+            if (response.getBody() == null) {
+                context.result();
+            } else {
+                context.result(response.getBody());
+            }
         } catch (Exception e) {
             context.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .result("Application error");

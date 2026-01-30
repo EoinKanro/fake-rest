@@ -13,6 +13,7 @@ import io.javalin.http.HttpStatus;
 import jakarta.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 
+//todo logs
 @Singleton
 @Component
 @RequiredArgsConstructor

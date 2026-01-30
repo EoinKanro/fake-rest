@@ -1,6 +1,7 @@
 package io.github.eoinkanro.fakerest.core;
 
 
+import io.github.eoinkanro.fakerest.core.conf.impl.GroovyHttpHandlerConfig;
 import io.github.eoinkanro.fakerest.core.conf.impl.StaticHttpHandlerConfig;
 import io.github.eoinkanro.fakerest.core.handler.HttpHandler;
 import io.github.eoinkanro.fakerest.core.handler.HttpHandlerFactory;
@@ -20,14 +21,23 @@ public class FakeRest {
         JavalinServer server = new JavalinServer(registry);
         server.init();
 
-        StaticHttpHandlerConfig config = StaticHttpHandlerConfig.builder()
-            .path("/test")
+        StaticHttpHandlerConfig staticCOnfig = StaticHttpHandlerConfig.builder()
+            .path("/static")
             .method(HttpMethod.GET)
-            .responseBody("Test body")
+            .responseBody("Hello from static")
             .responseCode(201)
             .build();
 
-        HttpHandler handler = factory.create(config);
-        registry.register(handler);
+        HttpHandler staticHandler = factory.create(staticCOnfig);
+        registry.register(staticHandler);
+
+        GroovyHttpHandlerConfig groovyConfig = GroovyHttpHandlerConfig.builder()
+            .path("/groovy")
+            .method(HttpMethod.GET)
+            .groovyCode("return new HttpResponse(500, \"Hello from groovy\");")
+            .build();
+
+        HttpHandler groovyHandler = factory.create(groovyConfig);
+        registry.register(groovyHandler);
     }
 }

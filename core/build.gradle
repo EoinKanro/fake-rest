@@ -20,6 +20,9 @@ dependencies {
     //DI
     implementation("io.avaje:avaje-inject:$avajeVersion")
     annotationProcessor("io.avaje:avaje-inject-generator:$avajeVersion")
+
+    //groovy shell
+    implementation("org.apache.groovy:groovy:$groovyVersion")
 }
 
 test {

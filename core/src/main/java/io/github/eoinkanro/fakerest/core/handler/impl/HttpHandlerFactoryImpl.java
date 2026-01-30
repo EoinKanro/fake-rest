@@ -3,6 +3,7 @@ package io.github.eoinkanro.fakerest.core.handler.impl;
 import io.avaje.inject.Component;
 import io.github.eoinkanro.fakerest.core.conf.AbstractHttpHandlerConfig;
 import io.github.eoinkanro.fakerest.core.conf.impl.GroovyHttpHandlerConfig;
+import io.github.eoinkanro.fakerest.core.conf.impl.RouterHttpHandlerConfig;
 import io.github.eoinkanro.fakerest.core.conf.impl.StaticHttpHandlerConfig;
 import io.github.eoinkanro.fakerest.core.handler.HttpHandler;
 import io.github.eoinkanro.fakerest.core.handler.HttpHandlerFactory;
@@ -23,6 +24,7 @@ public class HttpHandlerFactoryImpl implements HttpHandlerFactory {
         return switch (config.getType()) {
             case STATIC -> createStaticHttphandler((StaticHttpHandlerConfig) config);
             case GROOVY -> createGroovyHttpHandler((GroovyHttpHandlerConfig) config);
+            case ROUTER -> createRouterHttpHandler((RouterHttpHandlerConfig) config);
         };
     }
 
@@ -37,6 +39,10 @@ public class HttpHandlerFactoryImpl implements HttpHandlerFactory {
 
     private GroovyHttpHandler createGroovyHttpHandler(GroovyHttpHandlerConfig config) {
         return new GroovyHttpHandler(config);
+    }
+
+    private RouterHttpHandler createRouterHttpHandler(RouterHttpHandlerConfig config) {
+        return new RouterHttpHandler(config, registry);
     }
 
 }

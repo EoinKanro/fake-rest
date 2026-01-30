@@ -2,6 +2,7 @@ package io.github.eoinkanro.fakerest.core;
 
 
 import io.github.eoinkanro.fakerest.core.conf.impl.GroovyHttpHandlerConfig;
+import io.github.eoinkanro.fakerest.core.conf.impl.RouterHttpHandlerConfig;
 import io.github.eoinkanro.fakerest.core.conf.impl.StaticHttpHandlerConfig;
 import io.github.eoinkanro.fakerest.core.handler.HttpHandler;
 import io.github.eoinkanro.fakerest.core.handler.HttpHandlerFactory;
@@ -39,5 +40,14 @@ public class FakeRest {
 
         HttpHandler groovyHandler = factory.create(groovyConfig);
         registry.register(groovyHandler);
+
+        RouterHttpHandlerConfig routerConfig = RouterHttpHandlerConfig.builder()
+            .path("/route")
+            .method(HttpMethod.GET)
+            .routerPath("/static")
+            .build();
+
+        HttpHandler routerHandler = factory.create(routerConfig);
+        registry.register(routerHandler);
     }
 }

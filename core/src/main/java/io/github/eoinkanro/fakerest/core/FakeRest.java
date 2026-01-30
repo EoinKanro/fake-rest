@@ -51,6 +51,15 @@ public class FakeRest {
         HttpHandler groovyHandler = factory.create(groovyConfig);
         registry.register(groovyHandler);
 
+        GroovyHttpHandlerConfig groovyVariablesConfig = GroovyHttpHandlerConfig.builder()
+            .path("/groovy/variables")
+            .method(HttpMethod.GET)
+            .groovyCode("return new HttpResponse(500, request.getVariables().get(\"key\"));")
+            .build();
+
+        HttpHandler groovyVariablesHandler = factory.create(groovyVariablesConfig);
+        registry.register(groovyVariablesHandler);
+
         RouterHttpHandlerConfig routerConfig = RouterHttpHandlerConfig.builder()
             .path("/route")
             .method(HttpMethod.GET)

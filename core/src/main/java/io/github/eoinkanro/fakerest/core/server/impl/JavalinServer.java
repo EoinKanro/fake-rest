@@ -13,6 +13,9 @@ import io.javalin.http.HttpStatus;
 import jakarta.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 
+import java.util.HashMap;
+import java.util.Map;
+
 //todo logs
 @Singleton
 @Component
@@ -52,12 +55,18 @@ public class JavalinServer implements HttpServer {
                 return;
             }
 
-            //todo request variables
-            HttpResponse response = handler.process(
-                HttpRequest.builder()
+            Map<String, String> variables = new HashMap<>();
+            context.queryParamMap().forEach((key, values) -> {
+                String value = String.join(", ", values);
+                variables.put(key, value);
+            });
+
+            HttpRequest request = HttpRequest.builder()
                 .body(context.body())
-                .build()
-            );
+                .build();
+            request.getVariables().putAll(variables);
+
+            HttpResponse response = handler.process(request);
 
             context.status(response.getCode());
             if (response.getBody() == null) {

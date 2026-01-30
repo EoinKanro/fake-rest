@@ -1,23 +1,33 @@
 package io.github.eoinkanro.fakerest.core;
 
 
-import io.github.eoinkanro.fakerest.core.server.HttpMethod;
-import io.github.eoinkanro.fakerest.core.server.HttpResponse;
+import io.github.eoinkanro.fakerest.core.conf.impl.StaticHttpHandlerConfig;
+import io.github.eoinkanro.fakerest.core.handler.HttpHandler;
+import io.github.eoinkanro.fakerest.core.handler.HttpHandlerFactory;
+import io.github.eoinkanro.fakerest.core.handler.HttpHandlerRegistry;
+import io.github.eoinkanro.fakerest.core.handler.RegisterException;
+import io.github.eoinkanro.fakerest.core.handler.impl.HttpHandlerFactoryImpl;
+import io.github.eoinkanro.fakerest.core.handler.impl.HttpHandlerRegistryImpl;
+import io.github.eoinkanro.fakerest.core.model.HttpMethod;
 import io.github.eoinkanro.fakerest.core.server.impl.JavalinServer;
-import io.github.eoinkanro.fakerest.core.server.impl.StaticHttpHandler;
-import io.javalin.http.HttpStatus;
 
 public class FakeRest {
 
-    public static void main(String[] args) {
-        JavalinServer server = new JavalinServer();
+    public static void main(String[] args) throws RegisterException {
+        HttpHandlerRegistry registry = new HttpHandlerRegistryImpl();
+        HttpHandlerFactory factory = new HttpHandlerFactoryImpl(registry);
+
+        JavalinServer server = new JavalinServer(registry);
         server.init();
 
-        server.register(HttpMethod.GET, "/test", new StaticHttpHandler(
-            HttpResponse.builder()
-                .status(HttpStatus.OK.getCode())
-                .body("TESTTEST")
-                .build()
-        ));
+        StaticHttpHandlerConfig config = StaticHttpHandlerConfig.builder()
+            .path("/test")
+            .method(HttpMethod.GET)
+            .responseBody("Test body")
+            .responseCode(201)
+            .build();
+
+        HttpHandler handler = factory.create(config);
+        registry.register(handler);
     }
 }

@@ -1,4 +1,4 @@
-package io.github.eoinkanro.fakerest.core.server;
+package io.github.eoinkanro.fakerest.core.model;
 
 public enum HttpMethod {
 
@@ -8,6 +8,6 @@ public enum HttpMethod {
     DELETE,
     HEAD,
     OPTIONS,
-    PATCH;
+    PATCH
 
 }

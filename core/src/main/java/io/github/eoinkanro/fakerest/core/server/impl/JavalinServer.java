@@ -1,24 +1,29 @@
 package io.github.eoinkanro.fakerest.core.server.impl;
 
 import io.avaje.inject.Component;
+import io.github.eoinkanro.fakerest.core.handler.HttpHandlerRegistry;
+import io.github.eoinkanro.fakerest.core.model.HttpMethod;
+import io.github.eoinkanro.fakerest.core.handler.HttpHandler;
+import io.github.eoinkanro.fakerest.core.model.HttpRequest;
+import io.github.eoinkanro.fakerest.core.model.HttpResponse;
 import io.github.eoinkanro.fakerest.core.server.*;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
 import jakarta.inject.Singleton;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import lombok.RequiredArgsConstructor;
 
 @Singleton
 @Component
+@RequiredArgsConstructor
 public class JavalinServer implements HttpServer {
 
     private static final String BASE_PATH_VARIABLE = "entrance";
     private static final String BASE_PATH = "/<" + BASE_PATH_VARIABLE + ">";
 
-    private final Map<HttpMethod, Map<String, HttpHandler>> handlers = new ConcurrentHashMap<>();
+    private final HttpHandlerRegistry registry;
 
+    //todo close server
     private Javalin server;
 
     @Override
@@ -31,6 +36,7 @@ public class JavalinServer implements HttpServer {
             .head(BASE_PATH, ctx -> process(HttpMethod.HEAD, ctx))
             .options(BASE_PATH, ctx -> process(HttpMethod.OPTIONS, ctx))
             .patch(BASE_PATH, ctx -> process(HttpMethod.PATCH, ctx))
+            //todo port
             .start(8080);
     }
 
@@ -38,10 +44,7 @@ public class JavalinServer implements HttpServer {
         try {
             String path = "/" + context.pathParam(BASE_PATH_VARIABLE);
 
-            Map<String, HttpHandler> methodHandlers = handlers.computeIfAbsent(method, __ -> new ConcurrentHashMap<>());
-            //todo groovy handler
-            HttpHandler handler = methodHandlers.get(path);
-
+            HttpHandler handler = registry.find(method, path);
             if (handler == null) {
                 context.status(HttpStatus.NOT_FOUND)
                     .result("There is no handlers with path: " + path);
@@ -49,28 +52,19 @@ public class JavalinServer implements HttpServer {
             }
 
             //todo request variables
-            HttpResponse response = handler.process(HttpRequest.builder()
+            HttpResponse response = handler.process(
+                HttpRequest.builder()
                 .body(context.body())
-                .build());
+                .build()
+            );
 
-            context.status(response.getStatus())
+            //todo what if null? error?
+            context.status(response.getCode())
                 .result(response.getBody());
         } catch (Exception e) {
             context.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .result("Application error");
         }
-    }
-
-    @Override
-    public void register(HttpMethod method, String path, HttpHandler handler) {
-        Map<String, HttpHandler> methodHandlers = handlers.computeIfAbsent(method, __ -> new ConcurrentHashMap<>());
-
-        if (methodHandlers.containsKey(path)) {
-            //todo exception
-            throw new RuntimeException();
-        }
-
-        methodHandlers.put(path, handler);
     }
 
 }

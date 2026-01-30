@@ -1,4 +1,4 @@
-package io.github.eoinkanro.fakerest.core.server;
+package io.github.eoinkanro.fakerest.core.model;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -7,7 +7,7 @@ import lombok.Getter;
 @Builder
 public class HttpResponse {
 
-    private int status;
+    private int code;
     private String body;
 
 }

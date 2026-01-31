@@ -1,6 +1,11 @@
 package io.github.eoinkanro.fakerest.core;
 
 
+import io.github.eoinkanro.fakerest.core.conf.Config;
+import io.github.eoinkanro.fakerest.core.conf.ConfigLoader;
+import io.github.eoinkanro.fakerest.core.conf.LoadConfigException;
+import io.github.eoinkanro.fakerest.core.conf.SaveConfigException;
+import io.github.eoinkanro.fakerest.core.conf.impl.FileConfigLoader;
 import io.github.eoinkanro.fakerest.core.conf.impl.GroovyHttpHandlerConfig;
 import io.github.eoinkanro.fakerest.core.conf.impl.RouterHttpHandlerConfig;
 import io.github.eoinkanro.fakerest.core.conf.impl.StaticHttpHandlerConfig;
@@ -11,9 +16,11 @@ import io.github.eoinkanro.fakerest.core.handler.impl.HttpHandlerRegistryImpl;
 import io.github.eoinkanro.fakerest.core.model.HttpMethod;
 import io.github.eoinkanro.fakerest.core.server.impl.JavalinServer;
 
+import java.util.Set;
+
 public class FakeRest {
 
-    public static void main(String[] args) throws RegisterException {
+    public static void main(String[] args) throws RegisterException, SaveConfigException, LoadConfigException {
         HttpHandlerRegistry registry = new HttpHandlerRegistryImpl();
         HttpHandlerDataRegistry dataRegistry = new HttpHandlerDataRegistryImpl();
         HttpHandlerFactory factory = new HttpHandlerFactoryImpl(registry, dataRegistry);
@@ -82,5 +89,21 @@ public class FakeRest {
 
         HttpHandler routerHandler = factory.create(routerConfig);
         registry.register(routerHandler);
+
+        ConfigLoader configLoader = new FileConfigLoader();
+        Config config = Config.builder()
+            .port(1010)
+            .handlers(Set.of(
+                staticCOnfig,
+                staticNullConfig,
+                groovyConfig,
+                groovyVariablesConfig,
+                groovyJsonConfig
+            ))
+            .build();
+
+        configLoader.save(config);
+        config = configLoader.load();
+        System.out.println(config);
     }
 }

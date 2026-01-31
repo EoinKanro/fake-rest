@@ -1,19 +1,21 @@
 package io.github.eoinkanro.fakerest.core.conf;
 
 import io.github.eoinkanro.fakerest.core.model.HttpMethod;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NonNull;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 @Getter
 @SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
 public abstract class AbstractHttpHandlerConfig {
 
-    @NonNull
-    private final String path;
-    @NonNull
-    private final HttpMethod method;
+    private String path;
+    private HttpMethod method;
 
     public abstract HttpHandlerType getType();
 
 }
+

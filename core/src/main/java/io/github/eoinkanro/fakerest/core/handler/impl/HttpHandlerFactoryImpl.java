@@ -6,7 +6,7 @@ import io.github.eoinkanro.fakerest.core.conf.impl.GroovyHttpHandlerConfig;
 import io.github.eoinkanro.fakerest.core.conf.impl.RouterHttpHandlerConfig;
 import io.github.eoinkanro.fakerest.core.conf.impl.StaticHttpHandlerConfig;
 import io.github.eoinkanro.fakerest.core.handler.HttpHandler;
-import io.github.eoinkanro.fakerest.core.handler.HttpHandlerDataRegistry;
+import io.github.eoinkanro.fakerest.core.handler.HttpHandlerDataRepository;
 import io.github.eoinkanro.fakerest.core.handler.HttpHandlerFactory;
 import io.github.eoinkanro.fakerest.core.handler.HttpHandlerRegistry;
 import io.github.eoinkanro.fakerest.core.model.HttpResponse;
@@ -19,7 +19,7 @@ import lombok.RequiredArgsConstructor;
 public class HttpHandlerFactoryImpl implements HttpHandlerFactory {
 
     private final HttpHandlerRegistry handlerRegistry;
-    private final HttpHandlerDataRegistry dataRegistry;
+    private final HttpHandlerDataRepository dataRepository;
 
     @Override
     public HttpHandler create(AbstractHttpHandlerConfig config) {
@@ -40,7 +40,7 @@ public class HttpHandlerFactoryImpl implements HttpHandlerFactory {
     }
 
     private GroovyHttpHandler createGroovyHttpHandler(GroovyHttpHandlerConfig config) {
-        return new GroovyHttpHandler(config, dataRegistry);
+        return new GroovyHttpHandler(config, dataRepository);
     }
 
     private RouterHttpHandler createRouterHttpHandler(RouterHttpHandlerConfig config) {

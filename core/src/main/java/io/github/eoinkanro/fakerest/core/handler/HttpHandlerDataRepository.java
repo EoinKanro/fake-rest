@@ -2,7 +2,7 @@ package io.github.eoinkanro.fakerest.core.handler;
 
 import tools.jackson.core.TreeNode;
 
-public interface HttpHandlerDataRegistry {
+public interface HttpHandlerDataRepository {
 
     TreeNode get(String key);
 

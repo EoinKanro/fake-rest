@@ -2,10 +2,6 @@ plugins {
     id 'java'
 }
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
     //http server
     implementation("io.javalin:javalin:$javalinVersion")

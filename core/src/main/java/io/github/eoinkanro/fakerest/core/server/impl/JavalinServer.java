@@ -30,12 +30,11 @@ public class JavalinServer implements HttpServer {
     private final ConfigLoader configLoader;
     private final HttpHandlerRegistry registry;
 
-    //todo close server
     private Javalin server;
 
     @Override
     public void init() {
-        int port = 8080;
+        int port = 8081;
         try {
             Config config = configLoader.load();
             if (config != null) {
@@ -90,6 +89,11 @@ public class JavalinServer implements HttpServer {
             context.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .result("Application error");
         }
+    }
+
+    @Override
+    public void close() {
+        server.stop();
     }
 
 }

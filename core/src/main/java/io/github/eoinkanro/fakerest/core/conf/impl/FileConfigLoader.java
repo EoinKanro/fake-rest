@@ -2,6 +2,8 @@ package io.github.eoinkanro.fakerest.core.conf.impl;
 
 import io.avaje.inject.Component;
 import io.github.eoinkanro.fakerest.core.conf.*;
+import io.github.eoinkanro.fakerest.core.handler.HttpHandlerFactory;
+import io.github.eoinkanro.fakerest.core.handler.HttpHandlerRegistry;
 import jakarta.inject.Singleton;
 import tools.jackson.databind.SerializationFeature;
 import tools.jackson.databind.json.JsonMapper;
@@ -11,12 +13,14 @@ import java.nio.file.Path;
 
 @Singleton
 @Component
-public class FileConfigLoader implements ConfigLoader {
+public class FileConfigLoader extends ConfigLoader {
 
     private final Path configPath;
     private final JsonMapper mapper;
 
-    public FileConfigLoader() {
+    public FileConfigLoader(HttpHandlerRegistry registry, HttpHandlerFactory factory) {
+        super(registry, factory);
+
         this.configPath = Path.of(
             System.getProperty("user.dir"),
             "config.json");

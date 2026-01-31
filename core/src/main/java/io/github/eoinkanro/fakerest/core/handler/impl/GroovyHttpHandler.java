@@ -4,7 +4,7 @@ import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
 import io.github.eoinkanro.fakerest.core.conf.impl.GroovyHttpHandlerConfig;
 import io.github.eoinkanro.fakerest.core.handler.HttpHandler;
-import io.github.eoinkanro.fakerest.core.handler.HttpHandlerDataRegistry;
+import io.github.eoinkanro.fakerest.core.handler.HttpHandlerDataRepository;
 import io.github.eoinkanro.fakerest.core.model.HttpRequest;
 import io.github.eoinkanro.fakerest.core.model.HttpResponse;
 import lombok.Getter;
@@ -15,7 +15,7 @@ public class GroovyHttpHandler implements HttpHandler {
     private static final String DEFAULT_GROOVY_IMPORT = """
                                                         import io.github.eoinkanro.fakerest.core.model.HttpResponse
                                                         import io.github.eoinkanro.fakerest.core.model.HttpRequest
-                                                        import io.github.eoinkanro.fakerest.core.handler.HttpHandlerDataRegistry
+                                                        import io.github.eoinkanro.fakerest.core.handler.HttpHandlerDataRepository
                                                         import tools.jackson.databind.node.ObjectNode
                                                         import tools.jackson.databind.node.ArrayNode
                                                         import tools.jackson.databind.json.JsonMapper
@@ -26,14 +26,14 @@ public class GroovyHttpHandler implements HttpHandler {
     private final GroovyShell groovyShell;
     private final String script;
 
-    public GroovyHttpHandler(GroovyHttpHandlerConfig config, HttpHandlerDataRegistry dataRegistry) {
+    public GroovyHttpHandler(GroovyHttpHandlerConfig config, HttpHandlerDataRepository dataRepository) {
         this.config = config;
 
         JsonMapper jsonMapper = JsonMapper.builder().build();
 
         Binding groovyBinding = new Binding();
         this.groovyShell = new GroovyShell(groovyBinding);
-        this.groovyShell.setVariable("dataRegistry", dataRegistry);
+        this.groovyShell.setVariable("dataRepository", dataRepository);
         this.groovyShell.setVariable("jsonMapper", jsonMapper);
 
         this.script = DEFAULT_GROOVY_IMPORT + "\r\n" + config.getGroovyCode();

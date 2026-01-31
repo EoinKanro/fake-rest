@@ -92,7 +92,7 @@ public class FakeRest {
         registry.register(routerHandler);
 
         Config config = Config.builder()
-            .port(1010)
+            .port(8080)
             .handlers(Set.of(
                 staticCOnfig,
                 staticNullConfig,

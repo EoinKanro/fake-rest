@@ -2,6 +2,7 @@
 gradle
 gradlew
 gradlew.bat
+config.json
 
 ### STS ###
 .apt_generated

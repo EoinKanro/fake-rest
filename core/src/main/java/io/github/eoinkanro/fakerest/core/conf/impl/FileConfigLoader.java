@@ -3,6 +3,7 @@ package io.github.eoinkanro.fakerest.core.conf.impl;
 import io.avaje.inject.Component;
 import io.github.eoinkanro.fakerest.core.conf.*;
 import jakarta.inject.Singleton;
+import tools.jackson.databind.SerializationFeature;
 import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.databind.module.SimpleModule;
 
@@ -23,6 +24,7 @@ public class FileConfigLoader implements ConfigLoader {
         SimpleModule module = new SimpleModule();
         module.addDeserializer(AbstractHttpHandlerConfig.class, new HttpHandlerDeserializer());
         this.mapper = JsonMapper.builder()
+            .enable(SerializationFeature.INDENT_OUTPUT)
             .addModule(module)
             .build();
     }

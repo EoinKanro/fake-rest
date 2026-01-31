@@ -1,6 +1,5 @@
 package io.github.eoinkanro.fakerest.core.handler.impl;
 
-import io.avaje.inject.Component;
 import io.github.eoinkanro.fakerest.core.handler.HttpHandlerDataRepository;
 import jakarta.inject.Singleton;
 import tools.jackson.core.TreeNode;
@@ -9,7 +8,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Singleton
-@Component
 public class HttpHandlerDataRepositoryImpl implements HttpHandlerDataRepository {
 
     private final Map<String, TreeNode> data = new ConcurrentHashMap<>();

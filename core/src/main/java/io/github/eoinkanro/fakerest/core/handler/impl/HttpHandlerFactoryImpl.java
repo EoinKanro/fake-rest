@@ -1,6 +1,5 @@
 package io.github.eoinkanro.fakerest.core.handler.impl;
 
-import io.avaje.inject.Component;
 import io.github.eoinkanro.fakerest.core.conf.AbstractHttpHandlerConfig;
 import io.github.eoinkanro.fakerest.core.conf.impl.GroovyHttpHandlerConfig;
 import io.github.eoinkanro.fakerest.core.conf.impl.RouterHttpHandlerConfig;
@@ -14,7 +13,6 @@ import jakarta.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 
 @Singleton
-@Component
 @RequiredArgsConstructor
 public class HttpHandlerFactoryImpl implements HttpHandlerFactory {
 

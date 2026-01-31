@@ -1,6 +1,5 @@
 package io.github.eoinkanro.fakerest.core.handler.impl;
 
-import io.avaje.inject.Component;
 import io.github.eoinkanro.fakerest.core.conf.AbstractHttpHandlerConfig;
 import io.github.eoinkanro.fakerest.core.handler.HttpHandler;
 import io.github.eoinkanro.fakerest.core.handler.HttpHandlerRegistry;
@@ -12,7 +11,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Singleton
-@Component
 public class HttpHandlerRegistryImpl implements HttpHandlerRegistry {
 
     private final Map<HttpMethod, Map<String, HttpHandler>> activeHandlers = new ConcurrentHashMap<>();

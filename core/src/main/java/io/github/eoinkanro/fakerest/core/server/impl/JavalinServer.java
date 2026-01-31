@@ -1,6 +1,5 @@
 package io.github.eoinkanro.fakerest.core.server.impl;
 
-import io.avaje.inject.Component;
 import io.github.eoinkanro.fakerest.core.conf.Config;
 import io.github.eoinkanro.fakerest.core.conf.ConfigLoader;
 import io.github.eoinkanro.fakerest.core.handler.HttpHandlerRegistry;
@@ -20,7 +19,6 @@ import java.util.Map;
 
 //todo logs
 @Singleton
-@Component
 @RequiredArgsConstructor
 public class JavalinServer implements HttpServer {
 

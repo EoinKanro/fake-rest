@@ -1,6 +1,8 @@
 package io.github.eoinkanro.fakerest.core.server.impl;
 
 import io.avaje.inject.Component;
+import io.github.eoinkanro.fakerest.core.conf.Config;
+import io.github.eoinkanro.fakerest.core.conf.ConfigLoader;
 import io.github.eoinkanro.fakerest.core.handler.HttpHandlerRegistry;
 import io.github.eoinkanro.fakerest.core.model.HttpMethod;
 import io.github.eoinkanro.fakerest.core.handler.HttpHandler;
@@ -25,6 +27,7 @@ public class JavalinServer implements HttpServer {
     private static final String BASE_PATH_VARIABLE = "entrance";
     private static final String BASE_PATH = "/<" + BASE_PATH_VARIABLE + ">";
 
+    private final ConfigLoader configLoader;
     private final HttpHandlerRegistry registry;
 
     //todo close server
@@ -32,6 +35,16 @@ public class JavalinServer implements HttpServer {
 
     @Override
     public void init() {
+        int port = 8080;
+        try {
+            Config config = configLoader.load();
+            if (config != null) {
+                port = config.getPort();
+            }
+        } catch (Exception e) {
+            //todo log
+        }
+
         server = Javalin.create()
             .get(BASE_PATH, ctx -> process(HttpMethod.GET, ctx))
             .post(BASE_PATH, ctx -> process(HttpMethod.POST, ctx))
@@ -40,8 +53,7 @@ public class JavalinServer implements HttpServer {
             .head(BASE_PATH, ctx -> process(HttpMethod.HEAD, ctx))
             .options(BASE_PATH, ctx -> process(HttpMethod.OPTIONS, ctx))
             .patch(BASE_PATH, ctx -> process(HttpMethod.PATCH, ctx))
-            //todo port
-            .start(8080);
+            .start(port);
     }
 
     private void process(HttpMethod method, Context context) {

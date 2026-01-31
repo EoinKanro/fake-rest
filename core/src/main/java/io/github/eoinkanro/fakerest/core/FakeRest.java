@@ -21,11 +21,12 @@ import java.util.Set;
 public class FakeRest {
 
     public static void main(String[] args) throws RegisterException, SaveConfigException, LoadConfigException {
+        ConfigLoader configLoader = new FileConfigLoader();
         HttpHandlerRegistry registry = new HttpHandlerRegistryImpl();
         HttpHandlerDataRegistry dataRegistry = new HttpHandlerDataRegistryImpl();
         HttpHandlerFactory factory = new HttpHandlerFactoryImpl(registry, dataRegistry);
 
-        JavalinServer server = new JavalinServer(registry);
+        JavalinServer server = new JavalinServer(configLoader, registry);
         server.init();
 
         StaticHttpHandlerConfig staticCOnfig = StaticHttpHandlerConfig.builder()
@@ -90,7 +91,6 @@ public class FakeRest {
         HttpHandler routerHandler = factory.create(routerConfig);
         registry.register(routerHandler);
 
-        ConfigLoader configLoader = new FileConfigLoader();
         Config config = Config.builder()
             .port(1010)
             .handlers(Set.of(

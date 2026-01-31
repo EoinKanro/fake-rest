@@ -12,7 +12,7 @@ import java.util.Set;
 public class Config {
 
     @Builder.Default
-    private int port = 8080;
+    private int port = 8081;
 
     private Set<AbstractHttpHandlerConfig> handlers;
 

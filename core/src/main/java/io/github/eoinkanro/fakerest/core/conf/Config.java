@@ -12,7 +12,10 @@ import java.util.Set;
 public class Config {
 
     @Builder.Default
-    private int port = 8081;
+    private int mockPort = 8081;
+
+    @Builder.Default
+    private int uiPort = 8080;
 
     private Set<AbstractHttpHandlerConfig> handlers;
 

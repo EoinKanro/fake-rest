@@ -36,7 +36,7 @@ public class JavalinServer implements HttpServer {
         try {
             Config config = configLoader.load();
             if (config != null) {
-                port = config.getPort();
+                port = config.getMockPort();
             }
         } catch (Exception e) {
             //todo log

@@ -1,4 +1,4 @@
-allprojects {
+subprojects {
     group = project.group
     version = project.version
 

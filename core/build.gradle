@@ -1,5 +1,5 @@
 plugins {
-    id 'java'
+    id "java"
 }
 
 dependencies {
@@ -22,6 +22,13 @@ dependencies {
 
     //json
     implementation("tools.jackson.core:jackson-databind:$jacksonVersion")
+
+    //test
+    testImplementation(platform("org.junit:junit-bom:$junitVersion"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testImplementation("org.mockito:mockito-core:$mockitoVersion")
+    testImplementation("org.mockito:mockito-junit-jupiter:$mockitoVersion")
 }
 
 test {

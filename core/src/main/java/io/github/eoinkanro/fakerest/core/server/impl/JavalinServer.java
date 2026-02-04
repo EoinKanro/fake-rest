@@ -32,13 +32,11 @@ public class JavalinServer implements HttpServer {
 
     @Override
     public void init() {
-        int port = 8081;
+        Config config;
         try {
-            Config config = configLoader.load();
-            if (config != null) {
-                port = config.getMockPort();
-            }
+            config = configLoader.loadOrGetCached();
         } catch (Exception e) {
+            config = Config.builder().build();
             //todo log
         }
 
@@ -50,7 +48,7 @@ public class JavalinServer implements HttpServer {
             .head(BASE_PATH, ctx -> process(HttpMethod.HEAD, ctx))
             .options(BASE_PATH, ctx -> process(HttpMethod.OPTIONS, ctx))
             .patch(BASE_PATH, ctx -> process(HttpMethod.PATCH, ctx))
-            .start(port);
+            .start(config.getMockPort());
     }
 
     private void process(HttpMethod method, Context context) {

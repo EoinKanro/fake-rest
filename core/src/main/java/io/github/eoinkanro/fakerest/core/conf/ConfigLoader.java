@@ -14,7 +14,7 @@ public abstract class ConfigLoader implements Initializable {
     @Override
     public void init() {
         try {
-            Config config = load();
+            Config config = loadOrGetCached();
             if (config == null || config.getHandlers() == null) {
                 return;
             }
@@ -33,6 +33,8 @@ public abstract class ConfigLoader implements Initializable {
 
     public abstract void save(Config config) throws SaveConfigException;
 
-    public abstract Config load() throws LoadConfigException;
+    public abstract Config loadOrGetCached() throws LoadConfigException;
+
+    public abstract Config reload() throws LoadConfigException;
 
 }

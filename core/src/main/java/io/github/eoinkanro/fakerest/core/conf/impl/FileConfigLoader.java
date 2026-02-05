@@ -9,29 +9,36 @@ import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.databind.module.SimpleModule;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.locks.ReentrantLock;
+
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 @Singleton
 public class FileConfigLoader extends ConfigLoader {
 
-    private static final String APP_DIR = "user.dir";
-    private static final String CONFIG_FILE = "config.json";
-    private static final String IMPORT_DIR = "import";
+    protected static final String APP_DIR = "user.dir";
+    protected static final String CONFIG_FILE = "config.json";
+    protected static final String IMPORT_DIR = "import";
+    protected static final String IMPORT_PROCESSED_DIR = "processed";
 
     private final Path configPath;
     private final Path autoImportPath;
+    private final Path autoImportProcessedPath;
     private final JsonMapper mapper;
     private final ReentrantLock lock;
 
     private Config cachedConfig;
 
-    public FileConfigLoader(HttpHandlerRegistry registry, HttpHandlerFactory factory) {
+    public FileConfigLoader(HttpHandlerRegistry registry, HttpHandlerFactory factory) throws IOException {
         super(registry, factory);
 
         String appPath = System.getProperty(APP_DIR);
         this.configPath = Path.of(appPath, CONFIG_FILE);
         this.autoImportPath = Path.of(appPath, IMPORT_DIR);
+        this.autoImportProcessedPath = Path.of(appPath, IMPORT_DIR, IMPORT_PROCESSED_DIR);
 
         SimpleModule module = new SimpleModule();
         module.addDeserializer(AbstractHttpHandlerConfig.class, new HttpHandlerDeserializer());
@@ -41,14 +48,15 @@ public class FileConfigLoader extends ConfigLoader {
             .build();
 
         this.lock = new ReentrantLock();
+
+        Files.createDirectories(autoImportProcessedPath);
     }
 
     @Override
-    public void save(Config conf) throws SaveConfigException {
+    public void save(Config config) throws SaveConfigException {
         lock.lock();
         try {
-            cachedConfig = null;
-            mapper.writeValue(configPath, conf);
+            saveInternal(config);
         } catch (Exception e) {
             throw new SaveConfigException(e);
         } finally {
@@ -86,11 +94,17 @@ public class FileConfigLoader extends ConfigLoader {
             return cachedConfig;
         }
 
-        cachedConfig = mapper.readValue(configPath, Config.class);
-        autoImport(cachedConfig);
+        Config config = mapper.readValue(configPath, Config.class);
+        autoImport(config);
+        cachedConfig = config;
         return cachedConfig;
     }
 
+    /**
+     * Auto import handlers from import folder and move processed files
+     *
+     * @param config config to add additional handler
+     */
     private void autoImport(Config config) {
         File autoImportDir = autoImportPath.toFile();
         if (!autoImportDir.exists() || !autoImportDir.isDirectory()) {
@@ -115,10 +129,20 @@ public class FileConfigLoader extends ConfigLoader {
                 importConfig.getHandlers().stream()
                     .filter(handler -> !config.getHandlers().contains(handler))
                     .forEach(handler -> config.getHandlers().add(handler));
+
+                Path toMovePath = autoImportProcessedPath.resolve(importFile.getName());
+                Files.move(importFile.toPath(), toMovePath, REPLACE_EXISTING);
             } catch (Exception e) {
                 //todo log
             }
         }
+
+        saveInternal(config);
+    }
+
+    private void saveInternal(Config conf) {
+        cachedConfig = null;
+        mapper.writeValue(configPath, conf);
     }
 
 }

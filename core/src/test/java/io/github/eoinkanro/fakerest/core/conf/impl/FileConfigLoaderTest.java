@@ -34,6 +34,7 @@ class FileConfigLoaderTest {
         "]}";
 
     private static final String CONFIG2 = "{\"mockPort\":123,\"uiPort\":456,\"handlers\":[" +
+        "{\"path\":\"/static\",\"method\":\"GET\",\"type\":\"STATIC\",\"responseBody\":\"WRONG_BODY\",\"responseCode\":200}," +
         "{\"path\":\"/static2\",\"method\":\"GET\",\"type\":\"STATIC\",\"responseBody\":\"body2\",\"responseCode\":202}]}";
 
     @TempDir
@@ -145,12 +146,23 @@ class FileConfigLoaderTest {
     void testSave() {
         init();
 
+        assertFalse(Files.exists(configPath));
+
         Config config = Config.builder()
             .uiPort(1010)
             .build();
 
         subject.save(config);
         assertTrue(Files.exists(configPath));
+    }
+
+    @Test
+    @SneakyThrows
+    void testLoadOrGetCachedWithoutFiles() {
+        init();
+
+        assertFalse(Files.exists(configPath));
+        assertNotNull(subject.loadOrGetCached());
     }
 
 }

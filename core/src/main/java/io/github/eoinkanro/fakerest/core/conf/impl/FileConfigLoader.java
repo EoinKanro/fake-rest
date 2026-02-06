@@ -24,9 +24,9 @@ public class FileConfigLoader extends ConfigLoader {
     protected static final String IMPORT_DIR = "import";
     protected static final String IMPORT_PROCESSED_DIR = "processed";
 
-    private final Path configPath;
-    private final Path autoImportPath;
-    private final Path autoImportProcessedPath;
+    private final Path configFilePath;
+    private final Path autoImportDirPath;
+    private final Path autoImportProcessedDirPath;
     private final JsonMapper mapper;
     private final ReentrantLock lock;
 
@@ -36,9 +36,9 @@ public class FileConfigLoader extends ConfigLoader {
         super(registry, factory);
 
         String appPath = System.getProperty(APP_DIR);
-        this.configPath = Path.of(appPath, CONFIG_FILE);
-        this.autoImportPath = Path.of(appPath, IMPORT_DIR);
-        this.autoImportProcessedPath = Path.of(appPath, IMPORT_DIR, IMPORT_PROCESSED_DIR);
+        this.configFilePath = Path.of(appPath, CONFIG_FILE);
+        this.autoImportDirPath = Path.of(appPath, IMPORT_DIR);
+        this.autoImportProcessedDirPath = Path.of(appPath, IMPORT_DIR, IMPORT_PROCESSED_DIR);
 
         SimpleModule module = new SimpleModule();
         module.addDeserializer(AbstractHttpHandlerConfig.class, new HttpHandlerDeserializer());
@@ -49,7 +49,7 @@ public class FileConfigLoader extends ConfigLoader {
 
         this.lock = new ReentrantLock();
 
-        Files.createDirectories(autoImportProcessedPath);
+        Files.createDirectories(autoImportProcessedDirPath);
     }
 
     @Override
@@ -94,55 +94,74 @@ public class FileConfigLoader extends ConfigLoader {
             return cachedConfig;
         }
 
-        Config config = mapper.readValue(configPath, Config.class);
+        File configFile = configFilePath.toFile();
+        Config config;
+        if (configFile.exists() && configFile.isFile()) {
+            config = mapper.readValue(configFilePath, Config.class);
+        } else {
+            config = Config.builder().build();
+        }
+
         autoImport(config);
         cachedConfig = config;
         return cachedConfig;
     }
 
     /**
-     * Auto import handlers from import folder and move processed files
+     * Auto import handlers from import folder into config
+     * and save result into main config file
      *
-     * @param config config to add additional handler
+     * @param config config to add additional handlers
      */
     private void autoImport(Config config) {
-        File autoImportDir = autoImportPath.toFile();
+        File autoImportDir = autoImportDirPath.toFile();
         if (!autoImportDir.exists() || !autoImportDir.isDirectory()) {
             return;
         }
 
         for (File importFile : autoImportDir.listFiles()) {
-            try {
-                if (!importFile.isFile()) {
-                    continue;
-                }
-
-                Config importConfig = mapper.readValue(importFile, Config.class);
-                if (importConfig.getHandlers() == null) {
-                    continue;
-                }
-                if (config.getHandlers() == null) {
-                    config.setHandlers(importConfig.getHandlers());
-                    continue;
-                }
-
-                importConfig.getHandlers().stream()
-                    .filter(handler -> !config.getHandlers().contains(handler))
-                    .forEach(handler -> config.getHandlers().add(handler));
-
-                Path toMovePath = autoImportProcessedPath.resolve(importFile.getName());
-                Files.move(importFile.toPath(), toMovePath, REPLACE_EXISTING);
-            } catch (Exception e) {
-                //todo log
-            }
+            autoImport(config, importFile);
         }
 
         saveInternal(config);
     }
 
+    /**
+     * Read config from importFile, add handlers into config and move
+     * importFile into processed folder
+     *
+     * @param config config to add additional handlers
+     * @param importFile import
+     */
+    private void autoImport(Config config, File importFile) {
+        try {
+            if (!importFile.isFile()) {
+                return;
+            }
+
+            Config importConfig = mapper.readValue(importFile, Config.class);
+            if (importConfig.getHandlers() == null) {
+                return;
+            }
+            if (config.getHandlers() == null) {
+                config.setHandlers(importConfig.getHandlers());
+                return;
+            }
+
+            importConfig.getHandlers().stream()
+                .filter(handler -> !config.getHandlers().contains(handler))
+                .forEach(handler -> config.getHandlers().add(handler));
+
+            Path toMovePath = autoImportProcessedDirPath.resolve(importFile.getName());
+            Files.move(importFile.toPath(), toMovePath, REPLACE_EXISTING);
+        } catch (Exception e) {
+            //todo log
+        }
+    }
+
     private void saveInternal(Config conf) {
         cachedConfig = null;
-        mapper.writeValue(configPath, conf);
+        mapper.writeValue(configFilePath, conf);
     }
 
 }

@@ -22,13 +22,13 @@ public class HttpHandlerFactoryImpl implements HttpHandlerFactory {
     @Override
     public HttpHandler create(AbstractHttpHandlerConfig config) {
         return switch (config.getType()) {
-            case STATIC -> createStaticHttphandler((StaticHttpHandlerConfig) config);
+            case STATIC -> createStaticHttpHandler((StaticHttpHandlerConfig) config);
             case GROOVY -> createGroovyHttpHandler((GroovyHttpHandlerConfig) config);
             case ROUTER -> createRouterHttpHandler((RouterHttpHandlerConfig) config);
         };
     }
 
-    private StaticHttpHandler createStaticHttphandler(StaticHttpHandlerConfig config) {
+    private StaticHttpHandler createStaticHttpHandler(StaticHttpHandlerConfig config) {
         return new StaticHttpHandler(config,
             HttpResponse.builder()
                 .code(config.getResponseCode())

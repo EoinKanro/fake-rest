@@ -15,7 +15,7 @@ public class StaticHttpHandler implements HttpHandler {
     private final HttpResponse httpResponse;
 
     @Override
-    public HttpResponse process(HttpRequest request) {
+    public HttpResponse handle(HttpRequest request) {
         return httpResponse;
     }
 

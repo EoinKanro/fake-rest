@@ -40,7 +40,7 @@ public class GroovyHttpHandler implements HttpHandler {
     }
 
     @Override
-    public HttpResponse process(HttpRequest request) {
+    public HttpResponse handle(HttpRequest request) {
         groovyShell.setVariable("request", request);
         return (HttpResponse) groovyShell.evaluate(script);
     }

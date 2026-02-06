@@ -73,7 +73,7 @@ public class JavalinServer implements HttpServer {
                 .build();
             request.getVariables().putAll(variables);
 
-            HttpResponse response = handler.process(request);
+            HttpResponse response = handler.handle(request);
 
             context.status(response.getCode());
             if (response.getBody() == null) {

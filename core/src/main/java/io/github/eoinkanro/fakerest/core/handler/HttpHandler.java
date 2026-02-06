@@ -8,6 +8,6 @@ public interface HttpHandler {
 
     AbstractHttpHandlerConfig getConfig();
 
-    HttpResponse process(HttpRequest request);
+    HttpResponse handle(HttpRequest request);
 
 }

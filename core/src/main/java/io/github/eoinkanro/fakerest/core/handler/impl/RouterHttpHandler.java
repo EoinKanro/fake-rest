@@ -17,7 +17,7 @@ public class RouterHttpHandler implements HttpHandler {
     private final HttpHandlerRegistry registry;
 
     @Override
-    public HttpResponse process(HttpRequest request) {
+    public HttpResponse handle(HttpRequest request) {
         HttpHandler handler = registry.find(config.getMethod(), config.getRouterPath());
 
         if (handler == null) {
@@ -27,6 +27,6 @@ public class RouterHttpHandler implements HttpHandler {
                 .build();
         }
 
-        return handler.process(request);
+        return handler.handle(request);
     }
 }

@@ -1,0 +1,48 @@
+package io.github.eoinkanro.fakerest.core.handler.impl;
+
+import io.github.eoinkanro.fakerest.core.conf.AbstractHttpHandlerConfig;
+import io.github.eoinkanro.fakerest.core.conf.impl.GroovyHttpHandlerConfig;
+import io.github.eoinkanro.fakerest.core.conf.impl.RouterHttpHandlerConfig;
+import io.github.eoinkanro.fakerest.core.conf.impl.StaticHttpHandlerConfig;
+import io.github.eoinkanro.fakerest.core.handler.HttpHandler;
+import io.github.eoinkanro.fakerest.core.handler.HttpHandlerDataRepository;
+import io.github.eoinkanro.fakerest.core.handler.HttpHandlerFactory;
+import io.github.eoinkanro.fakerest.core.handler.HttpHandlerRegistry;
+import io.github.eoinkanro.fakerest.core.model.HttpResponse;
+import jakarta.inject.Singleton;
+import lombok.RequiredArgsConstructor;
+
+@Singleton
+@RequiredArgsConstructor
+public class HttpHandlerFactoryImpl implements HttpHandlerFactory {
+
+    private final HttpHandlerRegistry handlerRegistry;
+    private final HttpHandlerDataRepository dataRepository;
+
+    @Override
+    public HttpHandler create(AbstractHttpHandlerConfig config) {
+        return switch (config.getType()) {
+            case STATIC -> createStaticHttpHandler((StaticHttpHandlerConfig) config);
+            case GROOVY -> createGroovyHttpHandler((GroovyHttpHandlerConfig) config);
+            case ROUTER -> createRouterHttpHandler((RouterHttpHandlerConfig) config);
+        };
+    }
+
+    private StaticHttpHandler createStaticHttpHandler(StaticHttpHandlerConfig config) {
+        return new StaticHttpHandler(config,
+            HttpResponse.builder()
+                .code(config.getResponseCode())
+                .body(config.getResponseBody())
+                .build()
+        );
+    }
+
+    private GroovyHttpHandler createGroovyHttpHandler(GroovyHttpHandlerConfig config) {
+        return new GroovyHttpHandler(config, dataRepository);
+    }
+
+    private RouterHttpHandler createRouterHttpHandler(RouterHttpHandlerConfig config) {
+        return new RouterHttpHandler(config, handlerRegistry);
+    }
+
+}

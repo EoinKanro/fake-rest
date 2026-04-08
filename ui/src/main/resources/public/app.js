@@ -169,7 +169,7 @@ async function loadConfig() {
         .forEach(handler => {
             const row = document.createElement('tr');
             row.innerHTML = `
-            <td>${handler.type}</td>
+            <td><span class="badge badge-${handler.type.toLowerCase()}">${handler.type}</span></td>
             <td>${handler.method}</td>
             <td>${handler.path}</td>
             <td><button onclick="openHandlerSettings(currentConfig.handlers.find(h => h.id === '${handler.id}'))">Edit</button></td>

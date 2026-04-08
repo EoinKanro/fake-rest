@@ -20,10 +20,49 @@ body {
     justify-content: flex-end;
     gap: 8px;
     margin-top: 8px;
+    margin-bottom: 16px;
 }
 
 #handlers-table {
     width: 100%;
+    border-collapse: collapse;
+}
+
+#handlers-table thead th {
+    padding: 10px 14px;
+    text-align: left;
+    background: #f0f0f0;
+    font-size: 13px;
+    color: #555;
+    border-bottom: 2px solid #ddd;
+}
+
+#handlers-table tbody tr {
+    background: #fafafa;
+    border-bottom: 1px solid #e8e8e8;
+}
+
+#handlers-table tbody tr:nth-child(even) {
+    background: #f3f3f3;
+}
+
+#handlers-table tbody tr:hover {
+    background: #eaeaea;
+}
+
+#handlers-table tbody td {
+    padding: 12px 14px;
+    font-size: 14px;
+}
+
+#handlers-table tbody td:last-child {
+    text-align: right;
+}
+
+#handlers-table button {
+    padding: 5px 14px;
+    font-size: 13px;
+    cursor: pointer;
 }
 
 /* ── Popup overlay ── */
@@ -121,6 +160,20 @@ body {
     gap: 8px;
     margin-top: 1.25rem;
 }
+
+/* ── Type badges ── */
+
+.badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.badge-static  { background: #d1f0e0; color: #1a6640; }
+.badge-groovy  { background: #e0d9fc; color: #3d2d99; }
+.badge-router  { background: #fde8c8; color: #8a4a00; }
 
 /* ── Central ── */
 

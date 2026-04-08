@@ -20,6 +20,8 @@ const textHandlerResponseBody = document.getElementById('h-response-body');
 const numberHandlerResponseCode = document.getElementById('h-response-code');
 const textHandlerGroovyCode = document.getElementById('h-groovy-code');
 const textHandlerRouterPath = document.getElementById('h-router-path');
+const popupConfirmation = document.getElementById('settings-handler-confirmation');
+const confirmationText = document.getElementById('confirmation-text');
 
 const buttonHandlerDelete = document.getElementById('button-handler-delete');
 
@@ -36,6 +38,7 @@ const tableBody = document.getElementById('handlers-table-body');
 // ── State ─────────────────────────────────────────────────
 
 let currentConfig = null;
+let _confirmAction = null;
 
 // ── Handlers ─────────────────────────────────────────────
 
@@ -77,6 +80,65 @@ function closeServerSettings() {
     popupSettingsServer.style.display = 'none';
 }
 
+// ── Save / Delete ─────────────────────────────────────────
+
+function openSaveConfirmation() {
+    const method = dropdownHandlerMethod.value;
+    const path   = textHandlerPath.value;
+    const id     = textHandlerId.value;
+    const label  = id ? `Update ${method} ${path}?` : `Create ${method} ${path}?`;
+    openConfirmation(label, saveHandler);
+}
+
+async function saveHandler() {
+    const id = textHandlerId.value;
+    const body = JSON.stringify({
+        id,
+        path:         textHandlerPath.value,
+        method:       dropdownHandlerMethod.value,
+        type:         dropdownHandlerType.value,
+        responseBody: textHandlerResponseBody.value,
+        responseCode: parseInt(numberHandlerResponseCode.value),
+        groovyCode:   textHandlerGroovyCode.value,
+        routerPath:   textHandlerRouterPath.value
+    });
+
+    await fetch('/api/handler', {
+        method:  id ? 'PATCH' : 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body
+    });
+}
+
+function openDeleteConfirmation() {
+    const method = dropdownHandlerMethod.value;
+    const path   = textHandlerPath.value;
+    openConfirmation(`Delete ${method} ${path}?`, deleteHandler);
+}
+
+async function deleteHandler() {
+    const id = textHandlerId.value;
+    await fetch(`/api/handler/${id}`, { method: 'DELETE' });
+}
+
+function openConfirmation(text, action) {
+    confirmationText.textContent = text;
+    _confirmAction = action;
+    popupConfirmation.style.display = 'flex';
+}
+
+function closeConfirmation() {
+    popupConfirmation.style.display = 'none';
+    _confirmAction = null;
+}
+
+async function runConfirmAction() {
+    if (_confirmAction) await _confirmAction();
+    closeConfirmation();
+    closeHandlerSettings();
+    await loadConfig();
+}
+
 // ── Config / Table ────────────────────────────────────────
 
 async function loadConfig() {
@@ -105,6 +167,11 @@ document.getElementById('button-add-handler').addEventListener('click', () => {
 });
 document.getElementById('button-handler-cancel').addEventListener('click', closeHandlerSettings);
 dropdownHandlerType.addEventListener('change', () => refreshHandlerTypeFields(dropdownHandlerType.value));
+
+document.getElementById('button-handler-save').addEventListener('click', openSaveConfirmation);
+document.getElementById('button-handler-delete').addEventListener('click', openDeleteConfirmation);
+document.getElementById('button-confirmation-confirm').addEventListener('click', runConfirmAction);
+document.getElementById('button-confirmation-cancel').addEventListener('click', closeConfirmation);
 
 document.getElementById('button-settings').addEventListener('click', () => openServerSettings(currentConfig));
 document.getElementById('button-server-cancel').addEventListener('click', closeServerSettings);

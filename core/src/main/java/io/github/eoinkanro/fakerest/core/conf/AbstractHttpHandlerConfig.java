@@ -25,7 +25,7 @@ public abstract class AbstractHttpHandlerConfig {
     public abstract HttpHandlerType getType();
 
     public void initId() {
-        if (id == null) {
+        if (id == null || id.isBlank()) {
             id = UUID.randomUUID().toString();
         }
     }

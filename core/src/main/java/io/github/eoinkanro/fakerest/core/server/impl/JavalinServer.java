@@ -13,11 +13,12 @@ import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
 import jakarta.inject.Singleton;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
 import java.util.Map;
 
-//todo logs
+@Slf4j
 @Singleton
 @RequiredArgsConstructor
 public class JavalinServer implements HttpServer {
@@ -37,7 +38,7 @@ public class JavalinServer implements HttpServer {
             config = configLoader.loadOrGetCached();
         } catch (Exception e) {
             config = Config.builder().build();
-            //todo log
+            log.error("Can't load config", e);
         }
 
         server = Javalin.create()

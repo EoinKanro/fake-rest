@@ -4,7 +4,9 @@ import io.github.eoinkanro.fakerest.core.handler.HttpHandlerFactory;
 import io.github.eoinkanro.fakerest.core.handler.HttpHandlerRegistry;
 import io.github.eoinkanro.fakerest.core.handler.RegisterException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RequiredArgsConstructor
 public abstract class ConfigLoader implements Initializable {
 
@@ -24,11 +26,11 @@ public abstract class ConfigLoader implements Initializable {
                     conf.initId();
                     registry.register(factory.create(conf));
                 } catch (RegisterException e) {
-                    //todo log
+                    log.warn("Cant register handler from config", e);
                 }
             });
         } catch (Exception e) {
-            //todo log
+            log.error("Cant init config", e);
         }
     }
 

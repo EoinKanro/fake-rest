@@ -4,6 +4,7 @@ import io.github.eoinkanro.fakerest.core.conf.*;
 import io.github.eoinkanro.fakerest.core.handler.HttpHandlerFactory;
 import io.github.eoinkanro.fakerest.core.handler.HttpHandlerRegistry;
 import jakarta.inject.Singleton;
+import lombok.extern.slf4j.Slf4j;
 import tools.jackson.databind.SerializationFeature;
 import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.databind.module.SimpleModule;
@@ -16,6 +17,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
+@Slf4j
 @Singleton
 public class FileConfigLoader extends ConfigLoader {
 
@@ -158,7 +160,7 @@ public class FileConfigLoader extends ConfigLoader {
             Path toMovePath = autoImportProcessedDirPath.resolve(importFile.getName());
             Files.move(importFile.toPath(), toMovePath, REPLACE_EXISTING);
         } catch (Exception e) {
-            //todo log
+            log.warn("Cant auto import config");
         }
     }
 

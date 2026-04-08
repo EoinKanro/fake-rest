@@ -10,4 +10,6 @@ public interface HttpHandlerRegistry {
 
     HttpHandler find(HttpMethod method, String path);
 
+    HttpHandler find(String id);
+
 }

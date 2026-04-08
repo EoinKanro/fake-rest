@@ -16,6 +16,9 @@ dependencies {
     implementation("io.avaje:avaje-inject:$avajeVersion")
     annotationProcessor("io.avaje:avaje-inject-generator:$avajeVersion")
 
+    //json
+    implementation("tools.jackson.core:jackson-databind:$jacksonVersion")
+
     testCompileOnly("org.projectlombok:lombok:$lombokVersion")
     testAnnotationProcessor("org.projectlombok:lombok:$lombokVersion")
 }

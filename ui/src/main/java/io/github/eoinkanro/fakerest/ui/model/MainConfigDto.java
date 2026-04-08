@@ -1,22 +1,18 @@
-package io.github.eoinkanro.fakerest.core.conf;
+package io.github.eoinkanro.fakerest.ui.model;
 
 import lombok.*;
 
-import java.util.Set;
-
 @Getter
 @Setter
-@Builder(toBuilder = true)
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Config {
+public class MainConfigDto {
 
     @Builder.Default
     private int mockPort = 8081;
 
     @Builder.Default
     private int uiPort = 8080;
-
-    private Set<AbstractHttpHandlerConfig> handlers;
 
 }

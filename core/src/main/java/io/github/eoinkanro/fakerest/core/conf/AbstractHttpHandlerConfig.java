@@ -7,17 +7,28 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+import java.util.UUID;
+
 @Getter
 @SuperBuilder
-@EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public abstract class AbstractHttpHandlerConfig {
 
+    private String id;
+    @EqualsAndHashCode.Include
     private String path;
+    @EqualsAndHashCode.Include
     private HttpMethod method;
 
     public abstract HttpHandlerType getType();
+
+    public void initId() {
+        if (id == null) {
+            id = UUID.randomUUID().toString();
+        }
+    }
 
 }
 

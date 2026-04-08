@@ -41,7 +41,7 @@ public class FileConfigLoader extends ConfigLoader {
         this.autoImportProcessedDirPath = Path.of(appPath, IMPORT_DIR, IMPORT_PROCESSED_DIR);
 
         SimpleModule module = new SimpleModule();
-        module.addDeserializer(AbstractHttpHandlerConfig.class, new HttpHandlerDeserializer());
+        module.addDeserializer(AbstractHttpHandlerConfig.class, new HttpHandlerConfigDeserializer());
         this.mapper = JsonMapper.builder()
             .enable(SerializationFeature.INDENT_OUTPUT)
             .addModule(module)
@@ -150,7 +150,10 @@ public class FileConfigLoader extends ConfigLoader {
 
             importConfig.getHandlers().stream()
                 .filter(handler -> !config.getHandlers().contains(handler))
-                .forEach(handler -> config.getHandlers().add(handler));
+                .forEach(handler -> {
+                    handler.initId();
+                    config.getHandlers().add(handler);
+                });
 
             Path toMovePath = autoImportProcessedDirPath.resolve(importFile.getName());
             Files.move(importFile.toPath(), toMovePath, REPLACE_EXISTING);

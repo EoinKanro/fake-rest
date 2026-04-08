@@ -10,34 +10,30 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import tools.jackson.core.JsonParser;
-import tools.jackson.databind.DeserializationContext;
 import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.databind.node.ObjectNode;
 
-import static org.mockito.Mockito.verify;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class HttpHandlerDeserializerTest {
+class HttpHandlerConfigDeserializerTest {
 
     private static final String TYPE = "type";
 
     @Mock
-    private DeserializationContext context;
-    @Mock
     private JsonParser jsonParser;
 
     @InjectMocks
-    private HttpHandlerDeserializer subject;
+    private HttpHandlerConfigDeserializer subject;
 
     @ParameterizedTest
     @MethodSource
     void test(ObjectNode node, Class clz) {
         when(jsonParser.readValueAsTree()).thenReturn(node);
 
-        subject.deserialize(jsonParser, context);
-
-        verify(context).readTreeAsValue(node, clz);
+        AbstractHttpHandlerConfig config = subject.deserialize(jsonParser, null);
+        assertEquals(clz, config.getClass());
     }
 
     private static Object[][] test() {

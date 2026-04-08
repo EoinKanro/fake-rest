@@ -21,6 +21,7 @@ public abstract class ConfigLoader implements Initializable {
 
             config.getHandlers().forEach(conf -> {
                 try {
+                    conf.initId();
                     registry.register(factory.create(conf));
                 } catch (RegisterException e) {
                     //todo log

@@ -1,5 +1,6 @@
 package io.github.eoinkanro.fakerest.ui.handler;
 
+import io.github.eoinkanro.fakerest.core.conf.Config;
 import io.github.eoinkanro.fakerest.core.conf.HttpHandlerConfigDeserializer;
 import io.github.eoinkanro.fakerest.core.service.HandlerConfigService;
 import io.javalin.http.Context;
@@ -14,7 +15,8 @@ public class GetConfigApiHandler extends AbstractApiHandler{
 
     @Override
     protected void process(Context context) throws Exception {
-        context.result(objectMapper.writeValueAsString(handlerConfigService.getConfig()));
+        Config config = handlerConfigService.getConfig();
+        context.result(objectMapper.writeValueAsString(config));
     }
 
 }

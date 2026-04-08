@@ -31,6 +31,12 @@ const fieldsStatic = document.querySelectorAll('.field-static');
 const fieldsGroovy = document.querySelectorAll('.field-groovy');
 const fieldsRouter = document.querySelectorAll('.field-router');
 
+const tableBody = document.getElementById('handlers-table-body');
+
+// ── State ─────────────────────────────────────────────────
+
+let currentConfig = null;
+
 // ── Handlers ─────────────────────────────────────────────
 
 function openHandlerSettings(config) {
@@ -71,6 +77,27 @@ function closeServerSettings() {
     popupSettingsServer.style.display = 'none';
 }
 
+// ── Config / Table ────────────────────────────────────────
+
+async function loadConfig() {
+    const response = await fetch('/api/conf');
+    currentConfig = await response.json();
+
+    tableBody.innerHTML = '';
+    (currentConfig.handlers || [])
+        .sort((a, b) => a.path.localeCompare(b.path) || a.method.localeCompare(b.method) || a.type.localeCompare(b.type))
+        .forEach(handler => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${handler.type}</td>
+            <td>${handler.method}</td>
+            <td>${handler.path}</td>
+            <td><button onclick="openHandlerSettings(currentConfig.handlers.find(h => h.id === '${handler.id}'))">Edit</button></td>
+        `;
+        tableBody.appendChild(row);
+    });
+}
+
 // ── Listeners ────────────────────────────────────────────
 
 document.getElementById('button-add-handler').addEventListener('click', () => {
@@ -79,5 +106,7 @@ document.getElementById('button-add-handler').addEventListener('click', () => {
 document.getElementById('button-handler-cancel').addEventListener('click', closeHandlerSettings);
 dropdownHandlerType.addEventListener('change', () => refreshHandlerTypeFields(dropdownHandlerType.value));
 
-document.getElementById('button-settings').addEventListener('click', openServerSettings);
+document.getElementById('button-settings').addEventListener('click', () => openServerSettings(currentConfig));
 document.getElementById('button-server-cancel').addEventListener('click', closeServerSettings);
+
+loadConfig();

@@ -15,6 +15,9 @@ import lombok.RequiredArgsConstructor;
 public class UiServer implements Initializable {
 
     public static final String ID_PATH = "id";
+    private static final String API_HANDLER_PATH = "/api/handler";
+    private static final String API_HANDLER_ID_PATH = "/api/handler/{" + ID_PATH + "}";
+    private static final String API_CONFIG_PATH = "/api/conf";
 
     private final CreateHttpHandlerApiHandler createHttpHandlerApiHandler;
     private final UpdateHttpHandlerApiHandler updateHttpHandlerApiHandler;
@@ -38,6 +41,11 @@ public class UiServer implements Initializable {
         }
 
         server = Javalin.create(cfg -> cfg.staticFiles.add("/public", Location.CLASSPATH))
+            .put(API_HANDLER_PATH, createHttpHandlerApiHandler::handle)
+            .patch(API_HANDLER_PATH, updateHttpHandlerApiHandler::handle)
+            .delete(API_HANDLER_ID_PATH, deleteHttpHandlerApiHandler::handle)
+            .get(API_CONFIG_PATH, getConfigApiHandler::handle)
+            .patch(API_CONFIG_PATH, updateConfigApiHandler::handle)
             .start(uiPort);
     }
 

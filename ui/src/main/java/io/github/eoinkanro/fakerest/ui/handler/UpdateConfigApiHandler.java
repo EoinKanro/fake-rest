@@ -6,7 +6,6 @@ import io.github.eoinkanro.fakerest.core.service.HandlerConfigService;
 import io.github.eoinkanro.fakerest.ui.model.MainConfigDto;
 import io.javalin.http.Context;
 import jakarta.inject.Singleton;
-import lombok.RequiredArgsConstructor;
 
 @Singleton
 public class UpdateConfigApiHandler extends AbstractApiHandler {

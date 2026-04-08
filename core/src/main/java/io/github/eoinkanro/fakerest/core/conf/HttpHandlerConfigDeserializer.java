@@ -7,9 +7,11 @@ import tools.jackson.core.JacksonException;
 import tools.jackson.core.JsonParser;
 import tools.jackson.databind.DeserializationContext;
 import tools.jackson.databind.ObjectMapper;
+import jakarta.inject.Singleton;
 import tools.jackson.databind.ValueDeserializer;
 import tools.jackson.databind.node.ObjectNode;
 
+@Singleton
 public class HttpHandlerConfigDeserializer extends ValueDeserializer<AbstractHttpHandlerConfig> {
 
     private final ObjectMapper objectMapper = new ObjectMapper();

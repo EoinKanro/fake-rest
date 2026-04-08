@@ -12,6 +12,9 @@ dependencies {
     compileOnly("org.projectlombok:lombok:$lombokVersion")
     annotationProcessor("org.projectlombok:lombok:$lombokVersion")
 
+    testCompileOnly("org.projectlombok:lombok:$lombokVersion")
+    testAnnotationProcessor("org.projectlombok:lombok:$lombokVersion")
+
     //DI
     implementation("io.avaje:avaje-inject:$avajeVersion")
     annotationProcessor("io.avaje:avaje-inject-generator:$avajeVersion")
@@ -19,8 +22,12 @@ dependencies {
     //json
     implementation("tools.jackson.core:jackson-databind:$jacksonVersion")
 
-    testCompileOnly("org.projectlombok:lombok:$lombokVersion")
-    testAnnotationProcessor("org.projectlombok:lombok:$lombokVersion")
+    //test
+    testImplementation(platform("org.junit:junit-bom:$junitVersion"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testImplementation("org.mockito:mockito-core:$mockitoVersion")
+    testImplementation("org.mockito:mockito-junit-jupiter:$mockitoVersion")
 }
 
 test {

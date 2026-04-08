@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fake Rest</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="central">
+    <h1>Fake Rest</h1>
+    <div id="table-actions">
+        <button id="button-settings">&#9881;</button>
+        <button id="button-add-handler">&#43;</button>
+    </div>
+    <table id="handlers-table">
+        <thead>
+            <tr>
+                <th>Type</th>
+                <th>Method</th>
+                <th>Path</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody id="handlers-table-body">
+        </tbody>
+    </table>
+</div>
+
+<div id="settings-handler">
+    <div class="popup">
+        <div class="popup-header">
+            <h2>Handler</h2>
+            <button id="button-handler-cancel">&#x2715;</button>
+        </div>
+
+        <div class="form-group">
+            <label for="h-path">Path</label>
+            <input type="text" id="h-path" placeholder="/example">
+        </div>
+        <div class="form-group">
+            <label for="h-method">Method</label>
+            <select id="h-method">
+                <option>GET</option>
+                <option>POST</option>
+                <option>PUT</option>
+                <option>PATCH</option>
+                <option>DELETE</option>
+                <option>HEAD</option>
+                <option>OPTIONS</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="h-type">Type</label>
+            <select id="h-type">
+                <option>STATIC</option>
+                <option>GROOVY</option>
+                <option>ROUTER</option>
+            </select>
+        </div>
+
+        <div class="form-group field-static">
+            <label for="h-response-body">Response body</label>
+            <textarea id="h-response-body"></textarea>
+        </div>
+        <div class="form-group field-static">
+            <label for="h-response-code">Response code</label>
+            <input type="number" id="h-response-code" value="200">
+        </div>
+
+        <div class="form-group field-groovy">
+            <label for="h-groovy-code">Groovy code</label>
+            <textarea id="h-groovy-code"></textarea>
+        </div>
+
+        <div class="form-group field-router">
+            <label for="h-router-path">Router path</label>
+            <input type="text" id="h-router-path">
+        </div>
+
+        <div class="popup-actions">
+            <button id="button-handler-delete">Delete</button>
+            <button id="button-handler-save">Save</button>
+        </div>
+    </div>
+</div>
+
+<div id="settings-handler-confirmation">
+    <div class="popup">
+        <p>Are you sure?</p>
+        <div class="popup-actions">
+            <button id="button-confirmation-confirm">Confirm</button>
+            <button id="button-confirmation-cancel">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

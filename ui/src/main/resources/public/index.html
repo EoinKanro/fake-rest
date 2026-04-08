@@ -33,6 +33,8 @@
             <button id="button-handler-cancel">&#x2715;</button>
         </div>
 
+        <input type="hidden" id="h-id">
+
         <div class="form-group">
             <label for="h-path">Path</label>
             <input type="text" id="h-path" placeholder="/example">
@@ -74,7 +76,7 @@
 
         <div class="form-group field-router">
             <label for="h-router-path">Router path</label>
-            <input type="text" id="h-router-path">
+            <input type="text" id="h-router-path" placeholder="/example">
         </div>
 
         <div class="popup-actions">
@@ -90,6 +92,28 @@
         <div class="popup-actions">
             <button id="button-confirmation-confirm">Confirm</button>
             <button id="button-confirmation-cancel">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<div id="settings-server">
+    <div class="popup">
+        <div class="popup-header">
+            <h2>Settings</h2>
+            <button id="button-server-cancel">&#x2715;</button>
+        </div>
+
+        <div class="form-group">
+            <label for="s-mock-port">Mock port</label>
+            <input type="number" id="s-mock-port" value="8081">
+        </div>
+        <div class="form-group">
+            <label for="s-ui-port">UI port</label>
+            <input type="number" id="s-ui-port" value="8080">
+        </div>
+
+        <div class="popup-actions">
+            <button id="button-server-save">Save</button>
         </div>
     </div>
 </div>

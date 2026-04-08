@@ -1,13 +1,23 @@
 plugins {
-    id 'java'
-}
-
-repositories {
-    mavenCentral()
+    id "java"
 }
 
 dependencies {
+    implementation project(":core")
 
+    //http server
+    implementation("io.javalin:javalin:$javalinVersion")
+
+    //lombok
+    compileOnly("org.projectlombok:lombok:$lombokVersion")
+    annotationProcessor("org.projectlombok:lombok:$lombokVersion")
+
+    //DI
+    implementation("io.avaje:avaje-inject:$avajeVersion")
+    annotationProcessor("io.avaje:avaje-inject-generator:$avajeVersion")
+
+    testCompileOnly("org.projectlombok:lombok:$lombokVersion")
+    testAnnotationProcessor("org.projectlombok:lombok:$lombokVersion")
 }
 
 test {
